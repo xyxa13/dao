@@ -58,8 +58,8 @@ export const AuthProvider = ({ children }) => {
       
       return new Promise((resolve, reject) => {
         authClient.login({
-          identityProvider: process.env.DFX_NETWORK === "local" 
-            ? `http://localhost:4943/?canisterId=${process.env.CANISTER_ID_INTERNET_IDENTITY}` 
+          identityProvider: import.meta.env.VITE_DFX_NETWORK === "local" 
+            ? `http://localhost:4943/?canisterId=${import.meta.env.VITE_CANISTER_ID_INTERNET_IDENTITY}` 
             : "https://identity.ic0.app",
           maxTimeToLive: MAX_TIME_TO_LIVE,
           windowOpenerFeatures: "toolbar=0,location=0,menubar=0,width=500,height=500,left=100,top=100",
