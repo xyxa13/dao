@@ -1,23 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Shield, Zap, Users, TrendingUp, Star, CheckCircle, Gamepad2, Coins, Rocket } from 'lucide-react';
+import { ArrowRight, Shield, Zap, Users, TrendingUp, Star, CheckCircle, Gamepad2, Coins, Rocket, Globe, Lock, Sparkles, ChevronDown } from 'lucide-react';
 
 const LandingPage = () => {
-  const [mouseTrail, setMouseTrail] = useState([]);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
-    const handleMouseMove = (e) => {
-      const newPoint = { x: e.clientX, y: e.clientY, id: Date.now() };
-      
-      setMouseTrail(prev => {
-        const newTrail = [newPoint, ...prev.slice(0, 19)]; // Keep last 20 points
-        return newTrail;
-      });
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % 3);
+    }, 4000);
+    return () => clearInterval(interval);
   }, []);
 
   const features = [
@@ -84,39 +77,42 @@ const LandingPage = () => {
     }
   ];
 
+  const heroSlides = [
+    {
+      title: "DAOVERSE",
+      subtitle: "THE FUTURE OF DECENTRALIZED FINANCE",
+      description: "Join the most advanced DAO platform powered by Internet Computer"
+    },
+    {
+      title: "INVEST SMART",
+      subtitle: "VETTED PROJECTS, MAXIMUM RETURNS",
+      description: "Access high-potential projects curated by our expert community"
+    },
+    {
+      title: "GOVERN TOGETHER",
+      subtitle: "YOUR VOICE, YOUR POWER",
+      description: "Participate in governance and shape the future of DeFi"
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-black text-white overflow-hidden relative">
-      {/* Mouse Trail */}
-      {mouseTrail.map((point, index) => (
-        <div
-          key={point.id}
-          className="fixed w-2 h-2 bg-cyan-400 rounded-full pointer-events-none z-50 mix-blend-screen"
-          style={{
-            left: point.x - 4,
-            top: point.y - 4,
-            opacity: (20 - index) / 20,
-            transform: `scale(${(20 - index) / 20})`,
-            transition: 'none'
-          }}
-        />
-      ))}
-
       {/* Animated Background */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-cyan-900/20"></div>
         
         {/* Floating Particles */}
-        {[...Array(50)].map((_, i) => (
+        {[...Array(30)].map((_, i) => (
           <motion.div
             key={i}
             className="absolute w-1 h-1 bg-cyan-400 rounded-full"
             initial={{
-              x: Math.random() * window.innerWidth,
-              y: Math.random() * window.innerHeight,
+              x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
+              y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
             }}
             animate={{
-              x: Math.random() * window.innerWidth,
-              y: Math.random() * window.innerHeight,
+              x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
+              y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
             }}
             transition={{
               duration: Math.random() * 20 + 10,
@@ -127,7 +123,7 @@ const LandingPage = () => {
         ))}
 
         {/* Grid Pattern */}
-        <div className="absolute inset-0 opacity-10">
+        <div className="absolute inset-0 opacity-5">
           <div className="grid grid-cols-20 grid-rows-20 h-full w-full">
             {[...Array(400)].map((_, i) => (
               <div key={i} className="border border-cyan-500/20"></div>
@@ -139,34 +135,21 @@ const LandingPage = () => {
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center px-4">
         <div className="max-w-6xl mx-auto text-center">
-          {/* Glitch Effect Title */}
+          {/* Dynamic Hero Content */}
           <motion.div
+            key={currentSlide}
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -50 }}
             transition={{ duration: 0.8 }}
             className="relative mb-8"
           >
             <h1 className="text-6xl md:text-8xl font-bold mb-4 relative">
               <span className="bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 text-transparent bg-clip-text">
-                DAOVERSE
+                {heroSlides[currentSlide].title}
               </span>
-              <motion.span
-                className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 text-transparent bg-clip-text"
-                animate={{
-                  x: [0, 2, -2, 0],
-                  opacity: [1, 0.8, 0.9, 1]
-                }}
-                transition={{
-                  duration: 0.2,
-                  repeat: Infinity,
-                  repeatDelay: 3
-                }}
-              >
-                DAOVERSE
-              </motion.span>
             </h1>
             
-            {/* Pixel Art Style Subtitle */}
             <div className="font-mono text-xl md:text-2xl text-cyan-400 mb-8">
               <motion.span
                 animate={{ opacity: [1, 0, 1] }}
@@ -174,21 +157,36 @@ const LandingPage = () => {
               >
                 >
               </motion.span>
-              {" "}THE FUTURE OF DECENTRALIZED FINANCE
+              {" "}{heroSlides[currentSlide].subtitle}
             </div>
           </motion.div>
 
           <motion.p
+            key={`desc-${currentSlide}`}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
             className="text-xl md:text-2xl text-gray-300 mb-12 max-w-4xl mx-auto leading-relaxed"
           >
-            Join the most advanced DAO platform powered by Internet Computer. 
-            Invest in vetted projects, participate in governance, and shape the future of finance.
+            {heroSlides[currentSlide].description}
           </motion.p>
 
-          {/* CTA Buttons */}
+          {/* Slide Indicators */}
+          <div className="flex justify-center space-x-2 mb-12">
+            {heroSlides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentSlide(index)}
+                className={`w-3 h-3 rounded-full transition-all ${
+                  index === currentSlide 
+                    ? 'bg-cyan-400 scale-125' 
+                    : 'bg-gray-600 hover:bg-gray-500'
+                }`}
+              />
+            ))}
+          </div>
+
+          {/* Enhanced CTA Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -197,28 +195,30 @@ const LandingPage = () => {
           >
             <Link
               to="/dashboard"
-              className="group relative px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-lg font-bold text-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/25"
+              className="group relative px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-lg font-bold text-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/25 overflow-hidden"
             >
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 to-blue-700 opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <span className="relative z-10 flex items-center">
-                <Gamepad2 className="mr-2 w-5 h-5" />
+                <Rocket className="mr-2 w-5 h-5" />
                 ENTER DAOVERSE
                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </span>
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 to-blue-700 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
             </Link>
             
             <Link
               to="/signin"
-              className="group px-8 py-4 border-2 border-cyan-400 text-cyan-400 rounded-lg font-bold text-lg transition-all duration-300 hover:bg-cyan-400 hover:text-black hover:scale-105"
+              className="group px-8 py-4 border-2 border-cyan-400 text-cyan-400 rounded-lg font-bold text-lg transition-all duration-300 hover:bg-cyan-400 hover:text-black hover:scale-105 relative overflow-hidden"
             >
-              <span className="flex items-center">
+              <span className="relative z-10 flex items-center">
                 <Shield className="mr-2 w-5 h-5" />
                 CONNECT IDENTITY
               </span>
+              <div className="absolute inset-0 bg-cyan-400 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
             </Link>
           </motion.div>
 
-          {/* Pixel Art Style Stats */}
+          {/* Enhanced Stats */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -228,19 +228,29 @@ const LandingPage = () => {
             {stats.map((stat, index) => (
               <motion.div
                 key={index}
-                whileHover={{ scale: 1.05 }}
-                className="bg-gray-900/50 border border-cyan-500/30 rounded-lg p-6 backdrop-blur-sm"
+                whileHover={{ scale: 1.05, rotateY: 5 }}
+                className="bg-gray-900/50 border border-cyan-500/30 rounded-lg p-6 backdrop-blur-sm relative overflow-hidden group"
               >
-                <stat.icon className="w-8 h-8 text-cyan-400 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-white mb-1">{stat.value}</div>
-                <div className="text-sm text-gray-400 font-mono">{stat.label}</div>
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <stat.icon className="w-8 h-8 text-cyan-400 mx-auto mb-2 relative z-10" />
+                <div className="text-2xl font-bold text-white mb-1 relative z-10">{stat.value}</div>
+                <div className="text-sm text-gray-400 font-mono relative z-10">{stat.label}</div>
               </motion.div>
             ))}
+          </div>
+
+          {/* Scroll Indicator */}
+          <motion.div
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+          >
+            <ChevronDown className="w-6 h-6 text-cyan-400" />
           </motion.div>
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* Enhanced Features Section */}
       <section className="py-20 relative">
         <div className="max-w-7xl mx-auto px-4">
           <motion.div
@@ -250,11 +260,15 @@ const LandingPage = () => {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-cyan-400 to-purple-500 text-transparent bg-clip-text">
-                POWER-UPS
-              </span>
-            </h2>
+            <div className="flex items-center justify-center mb-4">
+              <Sparkles className="w-8 h-8 text-cyan-400 mr-2" />
+              <h2 className="text-4xl md:text-5xl font-bold">
+                <span className="bg-gradient-to-r from-cyan-400 to-purple-500 text-transparent bg-clip-text">
+                  POWER-UPS
+                </span>
+              </h2>
+              <Sparkles className="w-8 h-8 text-purple-400 ml-2" />
+            </div>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto font-mono">
               > Experience the next generation of decentralized investment platform
             </p>
@@ -269,25 +283,28 @@ const LandingPage = () => {
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
                 whileHover={{ scale: 1.05, rotateY: 5 }}
-                className="group relative bg-gray-900/50 border border-cyan-500/30 rounded-lg p-8 backdrop-blur-sm hover:border-cyan-400/50 transition-all duration-300"
+                className="group relative bg-gray-900/50 border border-cyan-500/30 rounded-lg p-8 backdrop-blur-sm hover:border-cyan-400/50 transition-all duration-300 overflow-hidden"
               >
-                <div className={`w-16 h-16 bg-gradient-to-r ${feature.color} rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className={`w-16 h-16 bg-gradient-to-r ${feature.color} rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform relative z-10`}>
                   <feature.icon className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-xl font-bold text-white mb-3 font-mono">
+                <h3 className="text-xl font-bold text-white mb-3 font-mono relative z-10">
                   {feature.title}
                 </h3>
-                <p className="text-gray-400">{feature.description}</p>
+                <p className="text-gray-400 relative z-10">{feature.description}</p>
                 
-                {/* Hover Effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                {/* Animated border */}
+                <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute inset-0 rounded-lg border-2 border-transparent bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-border"></div>
+                </div>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Featured Projects */}
+      {/* Enhanced Featured Projects */}
       <section className="py-20 relative">
         <div className="max-w-7xl mx-auto px-4">
           <motion.div
@@ -297,11 +314,15 @@ const LandingPage = () => {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-purple-400 to-pink-500 text-transparent bg-clip-text">
-                FEATURED QUESTS
-              </span>
-            </h2>
+            <div className="flex items-center justify-center mb-4">
+              <Globe className="w-8 h-8 text-purple-400 mr-2" />
+              <h2 className="text-4xl md:text-5xl font-bold">
+                <span className="bg-gradient-to-r from-purple-400 to-pink-500 text-transparent bg-clip-text">
+                  FEATURED QUESTS
+                </span>
+              </h2>
+              <Star className="w-8 h-8 text-pink-400 ml-2" />
+            </div>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto font-mono">
               > Discover high-potential projects vetted by our community
             </p>
@@ -315,10 +336,13 @@ const LandingPage = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                whileHover={{ scale: 1.02 }}
-                className="group bg-gray-900/50 border border-purple-500/30 rounded-lg p-6 backdrop-blur-sm hover:border-purple-400/50 transition-all duration-300"
+                whileHover={{ scale: 1.02, y: -5 }}
+                className="group bg-gray-900/50 border border-purple-500/30 rounded-lg p-6 backdrop-blur-sm hover:border-purple-400/50 transition-all duration-300 relative overflow-hidden"
               >
-                <div className="flex items-center justify-between mb-4">
+                {/* Animated background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                
+                <div className="flex items-center justify-between mb-4 relative z-10">
                   <h3 className="text-xl font-bold text-white font-mono">
                     {project.name}
                   </h3>
@@ -331,14 +355,14 @@ const LandingPage = () => {
                   </span>
                 </div>
                 
-                <p className="text-gray-400 mb-4">{project.description}</p>
+                <p className="text-gray-400 mb-4 relative z-10">{project.description}</p>
                 
-                <div className="space-y-3 mb-4">
+                <div className="space-y-3 mb-4 relative z-10">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-500 font-mono">PROGRESS</span>
                     <span className="font-bold text-cyan-400">{project.progress}%</span>
                   </div>
-                  <div className="w-full bg-gray-800 rounded-full h-2">
+                  <div className="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
                     <motion.div 
                       className="bg-gradient-to-r from-cyan-500 to-purple-500 h-2 rounded-full"
                       initial={{ width: 0 }}
@@ -363,13 +387,16 @@ const LandingPage = () => {
                     <span className="font-bold text-purple-400">{project.participants.toLocaleString()}</span>
                   </div>
                 </div>
+
+                {/* Hover effect overlay */}
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"></div>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* Enhanced CTA Section */}
       <section className="py-20 relative">
         <div className="max-w-4xl mx-auto text-center px-4">
           <motion.div
@@ -377,25 +404,36 @@ const LandingPage = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="bg-gradient-to-r from-purple-900/50 to-cyan-900/50 border border-cyan-500/30 rounded-2xl p-12 backdrop-blur-sm"
+            className="bg-gradient-to-r from-purple-900/50 to-cyan-900/50 border border-cyan-500/30 rounded-2xl p-12 backdrop-blur-sm relative overflow-hidden"
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 font-mono">
-              READY TO{' '}
-              <span className="bg-gradient-to-r from-cyan-400 to-purple-500 text-transparent bg-clip-text">
-                LEVEL UP?
-              </span>
-            </h2>
-            <p className="text-xl text-gray-300 mb-8 font-mono">
-              > Connect your Internet Identity and start your DeFi adventure today.
-            </p>
-            <Link
-              to="/signin"
-              className="group inline-flex items-center px-8 py-4 bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-bold text-lg rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/25"
-            >
-              <Rocket className="mr-2 w-5 h-5" />
-              START MISSION
-              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
+            {/* Animated background elements */}
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5"></div>
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 to-purple-500"></div>
+            
+            <div className="relative z-10">
+              <div className="flex items-center justify-center mb-6">
+                <Lock className="w-8 h-8 text-cyan-400 mr-2" />
+                <h2 className="text-4xl md:text-5xl font-bold text-white font-mono">
+                  READY TO{' '}
+                  <span className="bg-gradient-to-r from-cyan-400 to-purple-500 text-transparent bg-clip-text">
+                    LEVEL UP?
+                  </span>
+                </h2>
+                <Sparkles className="w-8 h-8 text-purple-400 ml-2" />
+              </div>
+              <p className="text-xl text-gray-300 mb-8 font-mono">
+                > Connect your Internet Identity and start your DeFi adventure today.
+              </p>
+              <Link
+                to="/signin"
+                className="group inline-flex items-center px-8 py-4 bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-bold text-lg rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/25 relative overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                <Rocket className="mr-2 w-5 h-5 relative z-10" />
+                <span className="relative z-10">START MISSION</span>
+                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform relative z-10" />
+              </Link>
+            </div>
           </motion.div>
         </div>
       </section>

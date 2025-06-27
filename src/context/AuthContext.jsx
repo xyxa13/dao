@@ -46,29 +46,44 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = async () => {
-    if (!authClient) return;
+    if (!authClient) {
+      console.error('Auth client not initialized');
+      throw new Error('Auth client not initialized');
+    }
     
     try {
       const APP_NAME = "DAOVerse";
       const APP_LOGO = "https://via.placeholder.com/150x150/6366f1/ffffff?text=DAO";
       const MAX_TIME_TO_LIVE = BigInt(7 * 24 * 60 * 60 * 1000 * 1000 * 1000); // 7 days in nanoseconds
       
-      await authClient.login({
-        identityProvider: "https://identity.ic0.app",
-        maxTimeToLive: MAX_TIME_TO_LIVE,
-        windowOpenerFeatures: "toolbar=0,location=0,menubar=0,width=500,height=500,left=100,top=100",
-        onSuccess: async () => {
-          const identity = authClient.getIdentity();
-          const principalId = identity.getPrincipal().toText();
-          setPrincipal(principalId);
-          setIsAuthenticated(true);
-        },
-        onError: (error) => {
-          console.error('Login failed:', error);
-        }
+      return new Promise((resolve, reject) => {
+        authClient.login({
+          identityProvider: process.env.DFX_NETWORK === "local" 
+            ? `http://localhost:4943/?canisterId=${process.env.CANISTER_ID_INTERNET_IDENTITY}` 
+            : "https://identity.ic0.app",
+          maxTimeToLive: MAX_TIME_TO_LIVE,
+          windowOpenerFeatures: "toolbar=0,location=0,menubar=0,width=500,height=500,left=100,top=100",
+          onSuccess: async () => {
+            try {
+              const identity = authClient.getIdentity();
+              const principalId = identity.getPrincipal().toText();
+              setPrincipal(principalId);
+              setIsAuthenticated(true);
+              resolve();
+            } catch (error) {
+              console.error('Error after successful login:', error);
+              reject(error);
+            }
+          },
+          onError: (error) => {
+            console.error('Login failed:', error);
+            reject(error);
+          }
+        });
       });
     } catch (error) {
       console.error('Login failed:', error);
+      throw error;
     }
   };
 
@@ -81,6 +96,7 @@ export const AuthProvider = ({ children }) => {
       setPrincipal(null);
     } catch (error) {
       console.error('Logout failed:', error);
+      throw error;
     }
   };
 
