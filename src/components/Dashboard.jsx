@@ -160,11 +160,11 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
       {/* Interactive Animated Background */}
-      <div className="absolute inset-0">
+      <div className="fixed inset-0 z-0">
         <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-cyan-900/20"></div>
         
         {/* Enhanced Floating Particles with Interactive Movement */}
-        {[...Array(100)].map((_, i) => (
+        {[...Array(80)].map((_, i) => (
           <motion.div
             key={i}
             className={`absolute rounded-full ${
@@ -215,7 +215,7 @@ const Dashboard = () => {
         </div>
 
         {/* Floating Geometric Shapes */}
-        {[...Array(15)].map((_, i) => (
+        {[...Array(12)].map((_, i) => (
           <motion.div
             key={`shape-${i}`}
             className={`absolute ${
@@ -247,7 +247,7 @@ const Dashboard = () => {
         ))}
 
         {/* Pulsing Orbs */}
-        {[...Array(8)].map((_, i) => (
+        {[...Array(6)].map((_, i) => (
           <motion.div
             key={`orb-${i}`}
             className="absolute w-16 h-16 rounded-full bg-gradient-to-r from-cyan-500/10 to-purple-500/10 backdrop-blur-sm"
