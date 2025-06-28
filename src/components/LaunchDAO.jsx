@@ -274,116 +274,77 @@ const LaunchDAO = () => {
 
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
-      {/* Interactive Animated Background with Lighter Particles */}
-      <div className="fixed inset-0 z-0">
+      {/* Fixed Particle Background - Distributed Across Entire Screen */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
         <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-cyan-900/20"></div>
         
-        {/* Enhanced Floating Particles with Lighter Colors */}
-        {[...Array(80)].map((_, i) => (
-          <motion.div
-            key={i}
-            className={`absolute rounded-full ${
-              i % 5 === 0 ? 'w-3 h-3 bg-cyan-300/40' :
-              i % 5 === 1 ? 'w-2 h-2 bg-purple-300/40' :
-              i % 5 === 2 ? 'w-1.5 h-1.5 bg-pink-300/40' :
-              i % 5 === 3 ? 'w-2.5 h-2.5 bg-blue-300/40' :
-              'w-1 h-1 bg-green-300/40'
-            }`}
-            initial={{
-              x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
-              y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
-              opacity: Math.random() * 0.6 + 0.1,
-            }}
-            animate={{
-              x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
-              y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
-              opacity: [0.1, 0.6, 0.1],
-              scale: [1, 1.2, 1],
-            }}
-            transition={{
-              duration: Math.random() * 30 + 20,
-              repeat: Infinity,
-              ease: "linear"
-            }}
-            whileHover={{
-              scale: 2,
-              opacity: 0.8,
-              transition: { duration: 0.3 }
-            }}
-          />
-        ))}
+        {/* Enhanced Floating Particles - Distributed Evenly */}
+        {[...Array(60)].map((_, i) => {
+          // Calculate grid positions to ensure even distribution
+          const gridSize = 8; // 8x8 grid for 64 positions
+          const row = Math.floor(i / gridSize);
+          const col = i % gridSize;
+          const baseX = (col / gridSize) * 100; // Percentage of screen width
+          const baseY = (row / gridSize) * 100; // Percentage of screen height
+          
+          return (
+            <motion.div
+              key={i}
+              className={`absolute rounded-full ${
+                i % 5 === 0 ? 'w-2 h-2 bg-cyan-300/30' :
+                i % 5 === 1 ? 'w-1.5 h-1.5 bg-purple-300/30' :
+                i % 5 === 2 ? 'w-1 h-1 bg-pink-300/30' :
+                i % 5 === 3 ? 'w-2 h-2 bg-blue-300/30' :
+                'w-1 h-1 bg-green-300/30'
+              }`}
+              style={{
+                left: `${baseX + (Math.random() - 0.5) * 10}%`, // Small random offset
+                top: `${baseY + (Math.random() - 0.5) * 10}%`,
+              }}
+              animate={{
+                x: [0, Math.random() * 40 - 20, 0], // Small movement range
+                y: [0, Math.random() * 40 - 20, 0],
+                opacity: [0.2, 0.6, 0.2],
+                scale: [1, 1.2, 1],
+              }}
+              transition={{
+                duration: Math.random() * 8 + 6,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
+          );
+        })}
 
-        {/* Interactive Grid Pattern */}
+        {/* Grid Pattern */}
         <div className="absolute inset-0 opacity-3">
           <div className="grid grid-cols-20 grid-rows-20 h-full w-full">
             {[...Array(400)].map((_, i) => (
-              <motion.div 
-                key={i} 
-                className="border border-cyan-500/10"
-                whileHover={{
-                  backgroundColor: 'rgba(6, 182, 212, 0.05)',
-                  transition: { duration: 0.2 }
-                }}
-              />
+              <div key={i} className="border border-cyan-500/5" />
             ))}
           </div>
         </div>
 
-        {/* Floating Geometric Shapes with Lighter Colors */}
-        {[...Array(12)].map((_, i) => (
+        {/* Floating Geometric Shapes - Fixed Positions */}
+        {[...Array(8)].map((_, i) => (
           <motion.div
             key={`shape-${i}`}
             className={`absolute ${
-              i % 3 === 0 ? 'w-8 h-8 bg-gradient-to-r from-cyan-400/15 to-blue-400/15 rounded-full' :
-              i % 3 === 1 ? 'w-6 h-6 bg-gradient-to-r from-purple-400/15 to-pink-400/15 rotate-45' :
-              'w-4 h-8 bg-gradient-to-r from-green-400/15 to-emerald-400/15 rounded-full'
+              i % 3 === 0 ? 'w-6 h-6 bg-gradient-to-r from-cyan-400/10 to-blue-400/10 rounded-full' :
+              i % 3 === 1 ? 'w-4 h-4 bg-gradient-to-r from-purple-400/10 to-pink-400/10 rotate-45' :
+              'w-3 h-6 bg-gradient-to-r from-green-400/10 to-emerald-400/10 rounded-full'
             }`}
-            initial={{
-              x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
-              y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
-              rotate: 0,
+            style={{
+              left: `${(i * 12.5) + 10}%`, // Evenly spaced
+              top: `${20 + (i % 3) * 30}%`,
             }}
             animate={{
-              x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
-              y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
               rotate: 360,
+              scale: [1, 1.1, 1],
             }}
             transition={{
-              duration: Math.random() * 40 + 30,
-              repeat: Infinity,
-              ease: "linear"
-            }}
-            whileHover={{
-              scale: 1.5,
-              rotate: 180,
-              transition: { duration: 0.5 }
-            }}
-          />
-        ))}
-
-        {/* Pulsing Orbs with Lighter Colors */}
-        {[...Array(6)].map((_, i) => (
-          <motion.div
-            key={`orb-${i}`}
-            className="absolute w-16 h-16 rounded-full bg-gradient-to-r from-cyan-400/8 to-purple-400/8 backdrop-blur-sm"
-            initial={{
-              x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
-              y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
-              scale: 0.5,
-            }}
-            animate={{
-              scale: [0.5, 1.2, 0.5],
-              opacity: [0.2, 0.6, 0.2],
-            }}
-            transition={{
-              duration: Math.random() * 6 + 4,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-            whileHover={{
-              scale: 2,
-              opacity: 0.8,
-              transition: { duration: 0.3 }
+              rotate: { duration: 20, repeat: Infinity, ease: "linear" },
+              scale: { duration: 4, repeat: Infinity, ease: "easeInOut" }
             }}
           />
         ))}
@@ -516,7 +477,7 @@ const LaunchDAO = () => {
         </div>
       </section>
 
-      {/* Completely Redesigned Modal - Clean & Spacious */}
+      {/* Completely Redesigned Modal - Light Theme with Better Contrast */}
       <AnimatePresence>
         {isModalOpen && (
           <motion.div
@@ -529,46 +490,57 @@ const LaunchDAO = () => {
               initial={{ scale: 0.9, opacity: 0, y: 50 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 50 }}
-              className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] relative flex flex-col"
+              className="bg-gray-50 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] relative flex flex-col"
             >
               {/* Close Button */}
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors z-10"
+                className="absolute top-6 right-6 text-gray-500 hover:text-gray-700 transition-colors z-10 bg-white rounded-full p-2 shadow-md"
               >
-                <X className="w-6 h-6" />
+                <X className="w-5 h-5" />
               </button>
 
-              {/* Header */}
-              <div className="text-center py-8 px-8 border-b border-gray-200">
+              {/* Header with Better Contrast */}
+              <div className="text-center py-8 px-8 border-b border-gray-300 bg-white rounded-t-2xl">
                 <h2 className="text-3xl font-bold text-gray-900 mb-2">Create Your DAO</h2>
-                <p className="text-gray-600">Step {currentStep} of 5</p>
+                <p className="text-gray-700 font-medium">Step {currentStep} of 5</p>
               </div>
 
-              {/* Progress Bar */}
-              <div className="px-8 py-6 border-b border-gray-100">
+              {/* Progress Bar with Better Visibility */}
+              <div className="px-8 py-6 border-b border-gray-200 bg-white">
                 <div className="flex items-center justify-between">
                   {steps.map((step, index) => (
                     <div key={step.id} className="flex items-center">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all ${
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all font-semibold ${
                         currentStep >= step.id 
-                          ? 'bg-blue-600 border-blue-600 text-white' 
-                          : 'border-gray-300 text-gray-400'
+                          ? 'bg-blue-600 border-blue-600 text-white shadow-lg' 
+                          : 'border-gray-400 text-gray-500 bg-gray-100'
                       }`}>
                         <step.icon className="w-5 h-5" />
                       </div>
                       {index < steps.length - 1 && (
-                        <div className={`w-16 h-1 mx-3 transition-all ${
-                          currentStep > step.id ? 'bg-blue-600' : 'bg-gray-200'
+                        <div className={`w-16 h-2 mx-3 rounded-full transition-all ${
+                          currentStep > step.id ? 'bg-blue-600' : 'bg-gray-300'
                         }`} />
                       )}
                     </div>
                   ))}
                 </div>
+                <div className="flex justify-between mt-3">
+                  {steps.map((step) => (
+                    <div key={step.id} className="text-center">
+                      <p className={`text-sm font-medium ${
+                        currentStep >= step.id ? 'text-blue-600' : 'text-gray-500'
+                      }`}>
+                        {step.title}
+                      </p>
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              {/* Form Content */}
-              <div className="flex-1 overflow-y-auto p-8">
+              {/* Form Content with Better Contrast */}
+              <div className="flex-1 overflow-y-auto p-8 bg-gray-50">
                 {/* Step 1: Basic Info */}
                 {currentStep === 1 && (
                   <motion.div
@@ -579,18 +551,18 @@ const LaunchDAO = () => {
                   >
                     <div className="grid md:grid-cols-2 gap-6">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">DAO Name *</label>
+                        <label className="block text-sm font-semibold text-gray-800 mb-2">DAO Name *</label>
                         <input
                           type="text"
                           value={formData.name}
                           onChange={(e) => handleInputChange('name', e.target.value)}
-                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                          className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium bg-white ${
                             errors.name ? 'border-red-500' : 'border-gray-300'
                           }`}
                           placeholder="Enter your DAO name"
                         />
                         {errors.name && (
-                          <p className="text-red-500 text-sm mt-1 flex items-center">
+                          <p className="text-red-600 text-sm mt-1 flex items-center font-medium">
                             <AlertCircle className="w-4 h-4 mr-1" />
                             {errors.name}
                           </p>
@@ -598,30 +570,30 @@ const LaunchDAO = () => {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Website (Optional)</label>
+                        <label className="block text-sm font-semibold text-gray-800 mb-2">Website (Optional)</label>
                         <input
                           type="url"
                           value={formData.website}
                           onChange={(e) => handleInputChange('website', e.target.value)}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium bg-white"
                           placeholder="https://your-dao-website.com"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Description *</label>
+                      <label className="block text-sm font-semibold text-gray-800 mb-2">Description *</label>
                       <textarea
                         value={formData.description}
                         onChange={(e) => handleInputChange('description', e.target.value)}
                         rows={4}
-                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium bg-white ${
                           errors.description ? 'border-red-500' : 'border-gray-300'
                         }`}
                         placeholder="Describe your DAO's mission, goals, and vision"
                       />
                       {errors.description && (
-                        <p className="text-red-500 text-sm mt-1 flex items-center">
+                        <p className="text-red-600 text-sm mt-1 flex items-center font-medium">
                           <AlertCircle className="w-4 h-4 mr-1" />
                           {errors.description}
                         </p>
@@ -629,7 +601,7 @@ const LaunchDAO = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-3">Category *</label>
+                      <label className="block text-sm font-semibold text-gray-800 mb-3">Category *</label>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                         {categories.map((cat) => (
                           <motion.div
@@ -637,16 +609,16 @@ const LaunchDAO = () => {
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             onClick={() => handleInputChange('category', cat.value)}
-                            className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                            className={`relative p-4 rounded-lg border-2 cursor-pointer transition-all bg-white ${
                               formData.category === cat.value
-                                ? 'border-blue-500 bg-blue-50'
-                                : 'border-gray-200 hover:border-gray-300'
+                                ? 'border-blue-500 bg-blue-50 shadow-md'
+                                : 'border-gray-300 hover:border-gray-400 hover:shadow-sm'
                             }`}
                           >
                             <div className="text-center">
                               <div className="text-2xl mb-2">{cat.icon}</div>
-                              <h3 className="font-medium text-gray-900 text-sm">{cat.label}</h3>
-                              <p className="text-xs text-gray-500 mt-1">{cat.description}</p>
+                              <h3 className="font-semibold text-gray-900 text-sm">{cat.label}</h3>
+                              <p className="text-xs text-gray-600 mt-1">{cat.description}</p>
                             </div>
                             {formData.category === cat.value && (
                               <motion.div
@@ -654,14 +626,14 @@ const LaunchDAO = () => {
                                 animate={{ scale: 1 }}
                                 className="absolute top-2 right-2"
                               >
-                                <CheckCircle className="w-4 h-4 text-blue-500" />
+                                <CheckCircle className="w-5 h-5 text-blue-600" />
                               </motion.div>
                             )}
                           </motion.div>
                         ))}
                       </div>
                       {errors.category && (
-                        <p className="text-red-500 text-sm mt-2 flex items-center">
+                        <p className="text-red-600 text-sm mt-2 flex items-center font-medium">
                           <AlertCircle className="w-4 h-4 mr-1" />
                           {errors.category}
                         </p>
@@ -680,19 +652,19 @@ const LaunchDAO = () => {
                   >
                     <div className="text-center mb-6">
                       <h3 className="text-xl font-bold text-gray-900 mb-2">Select Modules</h3>
-                      <p className="text-gray-600">Choose the features your DAO needs. You can add more later.</p>
+                      <p className="text-gray-700 font-medium">Choose the features your DAO needs. You can add more later.</p>
                     </div>
 
                     <div className="space-y-6">
                       {selectedModules.map((category, categoryIndex) => (
-                        <div key={category.name} className="border border-gray-200 rounded-lg p-6">
+                        <div key={category.name} className="border-2 border-gray-300 rounded-lg p-6 bg-white">
                           <div className="flex items-center space-x-3 mb-4">
-                            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                              <category.icon className="w-5 h-5 text-blue-600" />
+                            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                              <category.icon className="w-6 h-6 text-blue-600" />
                             </div>
                             <div>
-                              <h4 className="text-lg font-semibold text-gray-900">{category.name}</h4>
-                              <p className="text-gray-600 text-sm">{category.description}</p>
+                              <h4 className="text-lg font-bold text-gray-900">{category.name}</h4>
+                              <p className="text-gray-700 font-medium">{category.description}</p>
                             </div>
                           </div>
 
@@ -701,22 +673,22 @@ const LaunchDAO = () => {
                               <motion.div
                                 key={module.id}
                                 whileHover={{ scale: 1.01 }}
-                                className={`flex items-center justify-between p-4 rounded-lg border cursor-pointer transition-all ${
+                                className={`flex items-center justify-between p-4 rounded-lg border-2 cursor-pointer transition-all ${
                                   module.selected
                                     ? 'border-blue-500 bg-blue-50'
-                                    : 'border-gray-200 hover:border-gray-300'
+                                    : 'border-gray-300 hover:border-gray-400 bg-white'
                                 }`}
                                 onClick={() => handleModuleToggle(categoryIndex, moduleIndex)}
                               >
                                 <div className="flex items-center space-x-3">
-                                  <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
-                                    module.selected ? 'border-blue-500 bg-blue-500' : 'border-gray-300'
+                                  <div className={`w-6 h-6 rounded border-2 flex items-center justify-center ${
+                                    module.selected ? 'border-blue-500 bg-blue-500' : 'border-gray-400 bg-white'
                                   }`}>
-                                    {module.selected && <CheckCircle className="w-3 h-3 text-white" />}
+                                    {module.selected && <CheckCircle className="w-4 h-4 text-white" />}
                                   </div>
                                   <div>
-                                    <h5 className="font-medium text-gray-900">{module.name}</h5>
-                                    <p className="text-gray-600 text-sm">{module.description}</p>
+                                    <h5 className="font-semibold text-gray-900">{module.name}</h5>
+                                    <p className="text-gray-700 text-sm">{module.description}</p>
                                   </div>
                                 </div>
                               </motion.div>
@@ -727,11 +699,11 @@ const LaunchDAO = () => {
                     </div>
 
                     {/* Selected Modules Summary */}
-                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                      <h4 className="text-sm font-medium text-gray-900 mb-2">
+                    <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+                      <h4 className="text-sm font-bold text-gray-900 mb-2">
                         Selected Modules ({getSelectedModulesCount()})
                       </h4>
-                      <div className="text-sm text-gray-600">
+                      <div className="text-sm text-gray-700 font-medium">
                         {getSelectedModulesCount() > 0 ? (
                           selectedModules.map(category => 
                             category.modules.filter(m => m.selected).map(module => module.name)
@@ -754,19 +726,19 @@ const LaunchDAO = () => {
                   >
                     <div className="grid md:grid-cols-2 gap-6">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Token Symbol *</label>
+                        <label className="block text-sm font-semibold text-gray-800 mb-2">Token Symbol *</label>
                         <input
                           type="text"
                           value={formData.tokenSymbol}
                           onChange={(e) => handleInputChange('tokenSymbol', e.target.value.toUpperCase())}
-                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                          className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium bg-white ${
                             errors.tokenSymbol ? 'border-red-500' : 'border-gray-300'
                           }`}
                           placeholder="e.g., MYDAO"
                           maxLength={6}
                         />
                         {errors.tokenSymbol && (
-                          <p className="text-red-500 text-sm mt-1 flex items-center">
+                          <p className="text-red-600 text-sm mt-1 flex items-center font-medium">
                             <AlertCircle className="w-4 h-4 mr-1" />
                             {errors.tokenSymbol}
                           </p>
@@ -774,18 +746,18 @@ const LaunchDAO = () => {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Total Supply *</label>
+                        <label className="block text-sm font-semibold text-gray-800 mb-2">Total Supply *</label>
                         <input
                           type="number"
                           value={formData.tokenSupply}
                           onChange={(e) => handleInputChange('tokenSupply', e.target.value)}
-                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                          className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium bg-white ${
                             errors.tokenSupply ? 'border-red-500' : 'border-gray-300'
                           }`}
                           placeholder="1000000"
                         />
                         {errors.tokenSupply && (
-                          <p className="text-red-500 text-sm mt-1 flex items-center">
+                          <p className="text-red-600 text-sm mt-1 flex items-center font-medium">
                             <AlertCircle className="w-4 h-4 mr-1" />
                             {errors.tokenSupply}
                           </p>
@@ -793,8 +765,8 @@ const LaunchDAO = () => {
                       </div>
                     </div>
 
-                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Token Distribution</h3>
+                    <div className="bg-white border-2 border-gray-300 rounded-lg p-6">
+                      <h3 className="text-lg font-bold text-gray-900 mb-4">Token Distribution</h3>
                       <div className="space-y-3">
                         {[
                           { label: 'Public Sale', percentage: 40, color: 'bg-blue-500' },
@@ -805,9 +777,9 @@ const LaunchDAO = () => {
                           <div key={index} className="flex items-center justify-between">
                             <div className="flex items-center">
                               <div className={`w-4 h-4 ${item.color} rounded mr-3`}></div>
-                              <span className="text-gray-700">{item.label}</span>
+                              <span className="text-gray-800 font-medium">{item.label}</span>
                             </div>
-                            <span className="text-gray-900 font-medium">{item.percentage}%</span>
+                            <span className="text-gray-900 font-bold">{item.percentage}%</span>
                           </div>
                         ))}
                       </div>
@@ -825,18 +797,18 @@ const LaunchDAO = () => {
                   >
                     <div className="grid md:grid-cols-3 gap-6">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Funding Goal (ICP) *</label>
+                        <label className="block text-sm font-semibold text-gray-800 mb-2">Funding Goal (ICP) *</label>
                         <input
                           type="number"
                           value={formData.fundingGoal}
                           onChange={(e) => handleInputChange('fundingGoal', e.target.value)}
-                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                          className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium bg-white ${
                             errors.fundingGoal ? 'border-red-500' : 'border-gray-300'
                           }`}
                           placeholder="1000"
                         />
                         {errors.fundingGoal && (
-                          <p className="text-red-500 text-sm mt-1 flex items-center">
+                          <p className="text-red-600 text-sm mt-1 flex items-center font-medium">
                             <AlertCircle className="w-4 h-4 mr-1" />
                             {errors.fundingGoal}
                           </p>
@@ -844,18 +816,18 @@ const LaunchDAO = () => {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Duration (Days) *</label>
+                        <label className="block text-sm font-semibold text-gray-800 mb-2">Duration (Days) *</label>
                         <input
                           type="number"
                           value={formData.duration}
                           onChange={(e) => handleInputChange('duration', e.target.value)}
-                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                          className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium bg-white ${
                             errors.duration ? 'border-red-500' : 'border-gray-300'
                           }`}
                           placeholder="30"
                         />
                         {errors.duration && (
-                          <p className="text-red-500 text-sm mt-1 flex items-center">
+                          <p className="text-red-600 text-sm mt-1 flex items-center font-medium">
                             <AlertCircle className="w-4 h-4 mr-1" />
                             {errors.duration}
                           </p>
@@ -863,18 +835,18 @@ const LaunchDAO = () => {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Min Investment (ICP) *</label>
+                        <label className="block text-sm font-semibold text-gray-800 mb-2">Min Investment (ICP) *</label>
                         <input
                           type="number"
                           value={formData.minInvestment}
                           onChange={(e) => handleInputChange('minInvestment', e.target.value)}
-                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                          className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium bg-white ${
                             errors.minInvestment ? 'border-red-500' : 'border-gray-300'
                           }`}
                           placeholder="1"
                         />
                         {errors.minInvestment && (
-                          <p className="text-red-500 text-sm mt-1 flex items-center">
+                          <p className="text-red-600 text-sm mt-1 flex items-center font-medium">
                             <AlertCircle className="w-4 h-4 mr-1" />
                             {errors.minInvestment}
                           </p>
@@ -882,8 +854,8 @@ const LaunchDAO = () => {
                       </div>
                     </div>
 
-                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Funding Milestones</h3>
+                    <div className="bg-white border-2 border-gray-300 rounded-lg p-6">
+                      <h3 className="text-lg font-bold text-gray-900 mb-4">Funding Milestones</h3>
                       <div className="space-y-3">
                         {[
                           { percentage: 25, milestone: 'MVP Development & Core Team' },
@@ -891,9 +863,9 @@ const LaunchDAO = () => {
                           { percentage: 75, milestone: 'Marketing & Partnership Expansion' },
                           { percentage: 100, milestone: 'Full Launch & Ecosystem Growth' }
                         ].map((item, index) => (
-                          <div key={index} className="flex items-center justify-between p-3 bg-white rounded border">
-                            <span className="text-gray-700">{item.percentage}% - {item.milestone}</span>
-                            <CheckCircle className="w-5 h-5 text-green-500" />
+                          <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded border-2 border-gray-200">
+                            <span className="text-gray-800 font-medium">{item.percentage}% - {item.milestone}</span>
+                            <CheckCircle className="w-5 h-5 text-green-600" />
                           </div>
                         ))}
                       </div>
@@ -911,40 +883,40 @@ const LaunchDAO = () => {
                   >
                     <div className="text-center mb-6">
                       <h3 className="text-xl font-bold text-gray-900 mb-2">Review Your DAO</h3>
-                      <p className="text-gray-600">Please review all details before launching</p>
+                      <p className="text-gray-700 font-medium">Please review all details before launching</p>
                     </div>
 
                     {/* Basic Info Review */}
-                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-                      <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <div className="bg-white border-2 border-gray-300 rounded-lg p-6">
+                      <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
                         <Globe className="w-5 h-5 mr-2" />
                         Basic Information
                       </h4>
                       <div className="grid md:grid-cols-2 gap-4">
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Name:</span>
-                          <span className="text-gray-900 font-medium">{formData.name || 'Not set'}</span>
+                          <span className="text-gray-700 font-medium">Name:</span>
+                          <span className="text-gray-900 font-bold">{formData.name || 'Not set'}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Category:</span>
-                          <span className="text-gray-900 font-medium">{formData.category || 'Not set'}</span>
+                          <span className="text-gray-700 font-medium">Category:</span>
+                          <span className="text-gray-900 font-bold">{formData.category || 'Not set'}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Website:</span>
-                          <span className="text-gray-900 font-medium">{formData.website || 'None'}</span>
+                          <span className="text-gray-700 font-medium">Website:</span>
+                          <span className="text-gray-900 font-bold">{formData.website || 'None'}</span>
                         </div>
                       </div>
                       {formData.description && (
                         <div className="mt-4">
-                          <span className="text-gray-600">Description:</span>
-                          <p className="text-gray-900 mt-1">{formData.description}</p>
+                          <span className="text-gray-700 font-medium">Description:</span>
+                          <p className="text-gray-900 font-medium mt-1">{formData.description}</p>
                         </div>
                       )}
                     </div>
 
                     {/* Selected Modules Review */}
-                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-                      <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <div className="bg-white border-2 border-gray-300 rounded-lg p-6">
+                      <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
                         <Settings className="w-5 h-5 mr-2" />
                         Selected Modules ({getSelectedModulesCount()})
                       </h4>
@@ -952,61 +924,61 @@ const LaunchDAO = () => {
                         <div className="space-y-2">
                           {selectedModules.map(category => 
                             category.modules.filter(module => module.selected).map(module => (
-                              <div key={module.id} className="flex items-center justify-between p-2 bg-white rounded">
-                                <span className="text-gray-700">{module.name}</span>
-                                <CheckCircle className="w-4 h-4 text-green-500" />
+                              <div key={module.id} className="flex items-center justify-between p-2 bg-gray-50 rounded border">
+                                <span className="text-gray-800 font-medium">{module.name}</span>
+                                <CheckCircle className="w-4 h-4 text-green-600" />
                               </div>
                             ))
                           )}
                         </div>
                       ) : (
-                        <p className="text-gray-600">No modules selected</p>
+                        <p className="text-gray-700 font-medium">No modules selected</p>
                       )}
                     </div>
 
                     {/* Tokenomics Review */}
-                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-                      <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <div className="bg-white border-2 border-gray-300 rounded-lg p-6">
+                      <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
                         <Coins className="w-5 h-5 mr-2" />
                         Tokenomics
                       </h4>
                       <div className="grid md:grid-cols-2 gap-4">
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Token Symbol:</span>
-                          <span className="text-gray-900 font-medium">{formData.tokenSymbol || 'Not set'}</span>
+                          <span className="text-gray-700 font-medium">Token Symbol:</span>
+                          <span className="text-gray-900 font-bold">{formData.tokenSymbol || 'Not set'}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Total Supply:</span>
-                          <span className="text-gray-900 font-medium">{formData.tokenSupply ? Number(formData.tokenSupply).toLocaleString() : 'Not set'}</span>
+                          <span className="text-gray-700 font-medium">Total Supply:</span>
+                          <span className="text-gray-900 font-bold">{formData.tokenSupply ? Number(formData.tokenSupply).toLocaleString() : 'Not set'}</span>
                         </div>
                       </div>
                     </div>
 
                     {/* Funding Review */}
-                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-                      <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <div className="bg-white border-2 border-gray-300 rounded-lg p-6">
+                      <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
                         <Target className="w-5 h-5 mr-2" />
                         Funding Details
                       </h4>
                       <div className="grid md:grid-cols-3 gap-4">
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Goal:</span>
-                          <span className="text-gray-900 font-medium">{formData.fundingGoal || 'Not set'} ICP</span>
+                          <span className="text-gray-700 font-medium">Goal:</span>
+                          <span className="text-gray-900 font-bold">{formData.fundingGoal || 'Not set'} ICP</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Duration:</span>
-                          <span className="text-gray-900 font-medium">{formData.duration || 'Not set'} days</span>
+                          <span className="text-gray-700 font-medium">Duration:</span>
+                          <span className="text-gray-900 font-bold">{formData.duration || 'Not set'} days</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Min Investment:</span>
-                          <span className="text-gray-900 font-medium">{formData.minInvestment || 'Not set'} ICP</span>
+                          <span className="text-gray-700 font-medium">Min Investment:</span>
+                          <span className="text-gray-900 font-bold">{formData.minInvestment || 'Not set'} ICP</span>
                         </div>
                       </div>
                     </div>
 
                     {/* Warning */}
-                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                      <p className="text-yellow-800 text-sm flex items-center">
+                    <div className="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-4">
+                      <p className="text-yellow-800 text-sm font-semibold flex items-center">
                         <Star className="w-4 h-4 mr-2" />
                         Once launched, some DAO parameters cannot be changed. Please review carefully.
                       </p>
@@ -1015,12 +987,12 @@ const LaunchDAO = () => {
                 )}
               </div>
 
-              {/* Navigation Buttons */}
-              <div className="flex justify-between p-6 border-t border-gray-200">
+              {/* Navigation Buttons with Better Contrast */}
+              <div className="flex justify-between p-6 border-t-2 border-gray-300 bg-white rounded-b-2xl">
                 <button
                   onClick={prevStep}
                   disabled={currentStep === 1}
-                  className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                  className="px-6 py-3 border-2 border-gray-400 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center font-semibold"
                 >
                   <ArrowRight className="w-4 h-4 mr-2 rotate-180" />
                   Previous
@@ -1029,7 +1001,7 @@ const LaunchDAO = () => {
                 {currentStep < 5 ? (
                   <button
                     onClick={nextStep}
-                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+                    className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center font-semibold shadow-lg"
                   >
                     Next
                     <ArrowRight className="w-4 h-4 ml-2" />
@@ -1039,9 +1011,9 @@ const LaunchDAO = () => {
                     onClick={handleSubmit}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center"
+                    className="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center font-semibold shadow-lg"
                   >
-                    <Rocket className="w-4 h-4 mr-2" />
+                    <Rocket className="w-5 h-5 mr-2" />
                     Launch DAO
                   </motion.button>
                 )}
