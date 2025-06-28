@@ -18,7 +18,8 @@ import {
   BarChart3,
   Plus,
   ExternalLink,
-  Shield
+  Shield,
+  Rocket
 } from 'lucide-react';
 
 const Dashboard = () => {
@@ -168,7 +169,7 @@ const Dashboard = () => {
                 WELCOME TO DAOVERSE! 🚀
               </h1>
               <p className="text-cyan-400 font-mono">
-                &gt; Principal: {principal?.slice(0, 12)}...{principal?.slice(-8)}
+                > Principal: {principal?.slice(0, 12)}...{principal?.slice(-8)}
               </p>
             </div>
             <div className="flex items-center space-x-4 mt-4 md:mt-0">
@@ -186,6 +187,13 @@ const Dashboard = () => {
                   <span>WALLET CONNECTED</span>
                 </div>
               )}
+              <button 
+                onClick={() => navigate('/launch')}
+                className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-lg hover:from-orange-600 hover:to-red-700 transition-all font-mono"
+              >
+                <Rocket className="w-4 h-4" />
+                <span>LAUNCH DAO</span>
+              </button>
               <button className="flex items-center space-x-2 px-4 py-2 bg-gray-800 border border-cyan-500/30 text-cyan-400 rounded-lg hover:bg-gray-700 transition-colors font-mono">
                 <Plus className="w-4 h-4" />
                 <span>ADD FUNDS</span>
@@ -384,7 +392,7 @@ const Dashboard = () => {
               <Search className="w-12 h-12 mx-auto" />
             </div>
             <h3 className="text-lg font-medium text-white mb-2 font-mono">NO PROJECTS FOUND</h3>
-            <p className="text-gray-400 font-mono">&gt; Try adjusting your filters or search terms</p>
+            <p className="text-gray-400 font-mono">> Try adjusting your filters or search terms</p>
           </motion.div>
         )}
       </div>

@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
-import { Wallet, User, LogOut, Menu, X } from 'lucide-react';
+import { Wallet, User, LogOut, Menu, X, Rocket } from 'lucide-react';
 
 const Navbar = () => {
   const { isAuthenticated, logout, principal } = useAuth();
@@ -12,6 +12,7 @@ const Navbar = () => {
   const navigation = [
     { name: 'Home', href: '/' },
     { name: 'Dashboard', href: '/dashboard' },
+    { name: 'Launch DAO', href: '/launch' },
   ];
 
   const isActive = (path) => location.pathname === path;
@@ -38,12 +39,13 @@ const Navbar = () => {
               <Link
                 key={item.name}
                 to={item.href}
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center ${
                   isActive(item.href)
                     ? 'text-blue-600 bg-blue-50'
                     : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
                 }`}
               >
+                {item.name === 'Launch DAO' && <Rocket className="w-4 h-4 mr-1" />}
                 {item.name}
               </Link>
             ))}
@@ -104,12 +106,13 @@ const Navbar = () => {
                 key={item.name}
                 to={item.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`block px-3 py-2 rounded-md text-base font-medium ${
+                className={`flex items-center px-3 py-2 rounded-md text-base font-medium ${
                   isActive(item.href)
                     ? 'text-blue-600 bg-blue-50'
                     : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
                 }`}
               >
+                {item.name === 'Launch DAO' && <Rocket className="w-4 h-4 mr-2" />}
                 {item.name}
               </Link>
             ))}
