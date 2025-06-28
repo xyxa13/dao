@@ -29,7 +29,8 @@ import {
   MessageSquare,
   Gavel,
   Trophy,
-  Gift
+  Gift,
+  AlertCircle
 } from 'lucide-react';
 
 const LaunchDAO = () => {
@@ -38,6 +39,7 @@ const LaunchDAO = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedModules, setSelectedModules] = useState([]);
+  const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -65,102 +67,168 @@ const LaunchDAO = () => {
     'DeFi', 'NFT', 'Gaming', 'Infrastructure', 'Social', 'Metaverse', 'AI/ML', 'Other'
   ];
 
-  const modules = [
+  // Exact modules from DAO Maker example
+  const moduleCategories = [
     {
-      id: 'governance',
-      name: 'Governance Module',
-      description: 'Enable voting and proposal creation for DAO members',
-      icon: Vote,
-      color: 'from-blue-500 to-cyan-500',
-      features: ['Proposal Creation', 'Voting System', 'Delegation', 'Quorum Management'],
-      price: 'Free'
+      name: 'Governance',
+      description: 'Voting mechanisms and proposal systems',
+      modules: [
+        {
+          id: 'token-weighted-voting',
+          name: 'Token-Weighted Voting',
+          description: 'Traditional token-based voting power',
+          selected: true,
+          disabled: false
+        },
+        {
+          id: 'quadratic-voting',
+          name: 'Quadratic Voting',
+          description: 'Quadratic voting to prevent whale dominance',
+          selected: false,
+          disabled: false
+        },
+        {
+          id: 'delegated-voting',
+          name: 'Delegated Voting',
+          description: 'Allow token holders to delegate their votes',
+          selected: false,
+          disabled: false
+        }
+      ]
     },
     {
-      id: 'treasury',
-      name: 'Treasury Management',
-      description: 'Manage DAO funds and financial operations',
-      icon: DollarSign,
-      color: 'from-green-500 to-emerald-500',
-      features: ['Multi-sig Wallet', 'Budget Tracking', 'Payment Automation', 'Financial Reports'],
-      price: '0.5 ICP/month'
+      name: 'Treasury',
+      description: 'Fund management and financial operations',
+      modules: [
+        {
+          id: 'multi-signature-wallet',
+          name: 'Multi-Signature Wallet',
+          description: 'Secure treasury with multiple approvals',
+          selected: true,
+          disabled: false
+        },
+        {
+          id: 'streaming-payments',
+          name: 'Streaming Payments',
+          description: 'Continuous payment streams for contributors',
+          selected: false,
+          disabled: false
+        },
+        {
+          id: 'token-vesting',
+          name: 'Token Vesting',
+          description: 'Time-locked token distribution',
+          selected: false,
+          disabled: false
+        }
+      ]
     },
     {
-      id: 'staking',
-      name: 'Staking & Rewards',
-      description: 'Implement token staking and reward distribution',
-      icon: Lock,
-      color: 'from-purple-500 to-pink-500',
-      features: ['Token Staking', 'Reward Distribution', 'Lock Periods', 'APY Calculator'],
-      price: '1 ICP/month'
+      name: 'Staking',
+      description: 'Token staking and reward mechanisms',
+      modules: [
+        {
+          id: 'simple-staking',
+          name: 'Simple Staking',
+          description: 'Basic staking with fixed rewards',
+          selected: true,
+          disabled: false
+        },
+        {
+          id: 'liquidity-mining',
+          name: 'Liquidity Mining',
+          description: 'Rewards for providing liquidity',
+          selected: false,
+          disabled: false
+        },
+        {
+          id: 'governance-staking',
+          name: 'Governance Staking',
+          description: 'Stake tokens for voting power',
+          selected: false,
+          disabled: false
+        }
+      ]
     },
     {
-      id: 'marketplace',
-      name: 'NFT Marketplace',
-      description: 'Built-in marketplace for trading NFTs',
-      icon: Trophy,
-      color: 'from-orange-500 to-red-500',
-      features: ['NFT Trading', 'Royalty System', 'Auction System', 'Collection Management'],
-      price: '2 ICP/month'
-    },
-    {
-      id: 'analytics',
-      name: 'Analytics Dashboard',
-      description: 'Comprehensive analytics and reporting tools',
-      icon: BarChart3,
-      color: 'from-indigo-500 to-blue-500',
-      features: ['Member Analytics', 'Token Metrics', 'Governance Stats', 'Custom Reports'],
-      price: '0.8 ICP/month'
-    },
-    {
-      id: 'communication',
-      name: 'Communication Hub',
-      description: 'Built-in chat and announcement system',
-      icon: MessageSquare,
-      color: 'from-teal-500 to-cyan-500',
-      features: ['Group Chat', 'Announcements', 'Direct Messages', 'Notification System'],
-      price: '0.3 ICP/month'
-    },
-    {
-      id: 'legal',
-      name: 'Legal Framework',
-      description: 'Legal compliance and documentation tools',
-      icon: Gavel,
-      color: 'from-gray-500 to-slate-500',
-      features: ['Legal Templates', 'Compliance Tracking', 'Document Storage', 'Audit Trail'],
-      price: '1.5 ICP/month'
-    },
-    {
-      id: 'rewards',
-      name: 'Incentive System',
-      description: 'Gamified rewards and achievement system',
-      icon: Gift,
-      color: 'from-yellow-500 to-orange-500',
-      features: ['Achievement Badges', 'Point System', 'Leaderboards', 'Custom Rewards'],
-      price: '0.6 ICP/month'
+      name: 'Analytics',
+      description: 'Monitoring and reporting tools',
+      modules: [
+        {
+          id: 'analytics-dashboard',
+          name: 'Analytics Dashboard',
+          description: 'Real-time DAO metrics and KPIs',
+          selected: true,
+          disabled: false
+        },
+        {
+          id: 'alert-system',
+          name: 'Alert System',
+          description: 'Automated notifications for key events',
+          selected: false,
+          disabled: false
+        },
+        {
+          id: 'financial-reports',
+          name: 'Financial Reports',
+          description: 'Comprehensive financial reporting',
+          selected: false,
+          disabled: false
+        }
+      ]
     }
   ];
 
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const validateStep = (step) => {
+    const newErrors = {};
+    
+    switch (step) {
+      case 1:
+        if (!formData.name.trim()) newErrors.name = 'DAO name is required';
+        if (!formData.description.trim()) newErrors.description = 'Description is required';
+        if (!formData.category) newErrors.category = 'Category is required';
+        break;
+      case 3:
+        if (!formData.tokenSymbol.trim()) newErrors.tokenSymbol = 'Token symbol is required';
+        if (!formData.tokenSupply || formData.tokenSupply <= 0) newErrors.tokenSupply = 'Valid token supply is required';
+        break;
+      case 4:
+        if (!formData.fundingGoal || formData.fundingGoal <= 0) newErrors.fundingGoal = 'Valid funding goal is required';
+        if (!formData.duration || formData.duration <= 0) newErrors.duration = 'Valid duration is required';
+        if (!formData.minInvestment || formData.minInvestment <= 0) newErrors.minInvestment = 'Valid minimum investment is required';
+        break;
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  const handleModuleToggle = (moduleId) => {
-    setSelectedModules(prev => {
-      const isSelected = prev.includes(moduleId);
-      if (isSelected) {
-        return prev.filter(id => id !== moduleId);
-      } else {
-        return [...prev, moduleId];
-      }
-    });
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: '' }));
+    }
+  };
+
+  const handleModuleToggle = (categoryIndex, moduleIndex) => {
+    const newCategories = [...moduleCategories];
+    const module = newCategories[categoryIndex].modules[moduleIndex];
+    
+    if (!module.disabled) {
+      module.selected = !module.selected;
+      setSelectedModules(newCategories);
+    }
   };
 
   const nextStep = () => {
-    if (currentStep === 2) {
-      setFormData(prev => ({ ...prev, modules: selectedModules }));
-    }
-    if (currentStep < 5) {
-      setCurrentStep(currentStep + 1);
+    if (validateStep(currentStep)) {
+      if (currentStep === 2) {
+        setFormData(prev => ({ ...prev, modules: moduleCategories }));
+      }
+      if (currentStep < 5) {
+        setCurrentStep(currentStep + 1);
+      }
     }
   };
 
@@ -171,7 +239,7 @@ const LaunchDAO = () => {
   };
 
   const handleSubmit = () => {
-    const finalData = { ...formData, modules: selectedModules };
+    const finalData = { ...formData, modules: moduleCategories };
     console.log('Creating DAO with data:', finalData);
     setIsModalOpen(false);
     // Show success animation or redirect
@@ -185,14 +253,9 @@ const LaunchDAO = () => {
     setIsModalOpen(true);
   };
 
-  const getTotalMonthlyCost = () => {
-    return selectedModules.reduce((total, moduleId) => {
-      const module = modules.find(m => m.id === moduleId);
-      if (module && module.price !== 'Free') {
-        const price = parseFloat(module.price.split(' ')[0]);
-        return total + price;
-      }
-      return total;
+  const getSelectedModulesCount = () => {
+    return moduleCategories.reduce((total, category) => {
+      return total + category.modules.filter(module => module.selected).length;
     }, 0);
   };
 
@@ -280,7 +343,7 @@ const LaunchDAO = () => {
                 animate={{ opacity: [1, 0, 1] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
               >
-                &gt;
+                >
               </motion.span>
               {" "}YOUR DECENTRALIZED FUTURE
             </motion.div>
@@ -380,7 +443,7 @@ const LaunchDAO = () => {
               initial={{ scale: 0.9, opacity: 0, y: 50 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 50 }}
-              className="bg-gray-900/95 border border-cyan-500/30 rounded-2xl p-8 max-w-6xl w-full max-h-[90vh] overflow-y-auto relative backdrop-blur-xl"
+              className="bg-gray-900/95 border border-cyan-500/30 rounded-2xl p-8 max-w-6xl w-full h-[90vh] relative backdrop-blur-xl flex flex-col"
             >
               {/* Close Button */}
               <button
@@ -430,8 +493,8 @@ const LaunchDAO = () => {
                 </div>
               </div>
 
-              {/* Form Content */}
-              <div className="space-y-6">
+              {/* Form Content - Scrollable */}
+              <div className="flex-1 overflow-y-auto space-y-6 pr-2">
                 {/* Step 1: Basic Info */}
                 {currentStep === 1 && (
                   <motion.div
@@ -447,9 +510,17 @@ const LaunchDAO = () => {
                           type="text"
                           value={formData.name}
                           onChange={(e) => handleInputChange('name', e.target.value)}
-                          className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono backdrop-blur-sm"
+                          className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono backdrop-blur-sm ${
+                            errors.name ? 'border-red-500' : 'border-gray-600'
+                          }`}
                           placeholder="Enter your DAO name"
                         />
+                        {errors.name && (
+                          <p className="text-red-400 text-sm mt-1 flex items-center">
+                            <AlertCircle className="w-4 h-4 mr-1" />
+                            {errors.name}
+                          </p>
+                        )}
                       </div>
 
                       <div>
@@ -457,13 +528,21 @@ const LaunchDAO = () => {
                         <select
                           value={formData.category}
                           onChange={(e) => handleInputChange('category', e.target.value)}
-                          className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono backdrop-blur-sm"
+                          className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono backdrop-blur-sm ${
+                            errors.category ? 'border-red-500' : 'border-gray-600'
+                          }`}
                         >
                           <option value="">Select a category</option>
                           {categories.map(cat => (
                             <option key={cat} value={cat}>{cat}</option>
                           ))}
                         </select>
+                        {errors.category && (
+                          <p className="text-red-400 text-sm mt-1 flex items-center">
+                            <AlertCircle className="w-4 h-4 mr-1" />
+                            {errors.category}
+                          </p>
+                        )}
                       </div>
                     </div>
 
@@ -473,9 +552,17 @@ const LaunchDAO = () => {
                         value={formData.description}
                         onChange={(e) => handleInputChange('description', e.target.value)}
                         rows={4}
-                        className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono backdrop-blur-sm"
+                        className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono backdrop-blur-sm ${
+                          errors.description ? 'border-red-500' : 'border-gray-600'
+                        }`}
                         placeholder="Describe your DAO's mission, goals, and vision"
                       />
+                      {errors.description && (
+                        <p className="text-red-400 text-sm mt-1 flex items-center">
+                          <AlertCircle className="w-4 h-4 mr-1" />
+                          {errors.description}
+                        </p>
+                      )}
                     </div>
 
                     <div>
@@ -500,101 +587,64 @@ const LaunchDAO = () => {
                     className="space-y-6"
                   >
                     <div className="text-center mb-6">
-                      <h3 className="text-2xl font-bold text-white mb-2 font-mono">Choose Your Modules</h3>
-                      <p className="text-gray-400 font-mono">Select the features your DAO needs. You can add more later.</p>
+                      <h3 className="text-2xl font-bold text-white mb-2 font-mono">Select Modules</h3>
+                      <p className="text-gray-400 font-mono">Select DAO modules</p>
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-6">
-                      {modules.map((module) => (
-                        <motion.div
-                          key={module.id}
-                          whileHover={{ scale: 1.02 }}
-                          className={`relative p-6 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
-                            selectedModules.includes(module.id)
-                              ? 'border-cyan-500 bg-cyan-500/10 shadow-lg shadow-cyan-500/25'
-                              : 'border-gray-600 bg-gray-800/50 hover:border-gray-500'
-                          }`}
-                          onClick={() => handleModuleToggle(module.id)}
-                        >
-                          {/* Selection Indicator */}
-                          <div className={`absolute top-4 right-4 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
-                            selectedModules.includes(module.id)
-                              ? 'border-cyan-500 bg-cyan-500'
-                              : 'border-gray-400'
-                          }`}>
-                            {selectedModules.includes(module.id) && (
+                    <div className="space-y-8">
+                      {moduleCategories.map((category, categoryIndex) => (
+                        <div key={category.name} className="space-y-4">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 bg-blue-500 rounded flex items-center justify-center">
+                              <Vote className="w-4 h-4 text-white" />
+                            </div>
+                            <div>
+                              <h4 className="text-lg font-bold text-white font-mono">{category.name}</h4>
+                              <p className="text-sm text-gray-400">{category.description}</p>
+                            </div>
+                          </div>
+
+                          <div className="grid gap-4 ml-11">
+                            {category.modules.map((module, moduleIndex) => (
                               <motion.div
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
+                                key={module.id}
+                                whileHover={{ scale: 1.01 }}
+                                className={`flex items-center justify-between p-4 rounded-lg border cursor-pointer transition-all ${
+                                  module.selected
+                                    ? 'border-blue-500 bg-blue-500/10'
+                                    : 'border-gray-600 bg-gray-800/30 hover:border-gray-500'
+                                } ${module.disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                onClick={() => handleModuleToggle(categoryIndex, moduleIndex)}
                               >
-                                <CheckCircle className="w-4 h-4 text-white" />
+                                <div className="flex items-center space-x-3">
+                                  <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
+                                    module.selected ? 'border-blue-500 bg-blue-500' : 'border-gray-400'
+                                  }`}>
+                                    {module.selected && <CheckCircle className="w-3 h-3 text-white" />}
+                                  </div>
+                                  <div>
+                                    <h5 className="font-medium text-white font-mono">{module.name}</h5>
+                                    <p className="text-sm text-gray-400">{module.description}</p>
+                                  </div>
+                                </div>
                               </motion.div>
-                            )}
-                          </div>
-
-                          {/* Module Icon */}
-                          <div className={`w-12 h-12 bg-gradient-to-r ${module.color} rounded-lg flex items-center justify-center mb-4`}>
-                            <module.icon className="w-6 h-6 text-white" />
-                          </div>
-
-                          {/* Module Info */}
-                          <h4 className="text-lg font-bold text-white mb-2 font-mono">{module.name}</h4>
-                          <p className="text-gray-400 text-sm mb-4">{module.description}</p>
-
-                          {/* Features */}
-                          <div className="space-y-1 mb-4">
-                            {module.features.slice(0, 3).map((feature, index) => (
-                              <div key={index} className="flex items-center text-xs text-gray-300">
-                                <CheckCircle className="w-3 h-3 text-green-400 mr-2" />
-                                {feature}
-                              </div>
                             ))}
-                            {module.features.length > 3 && (
-                              <div className="text-xs text-gray-500">+{module.features.length - 3} more features</div>
-                            )}
                           </div>
-
-                          {/* Price */}
-                          <div className="flex justify-between items-center">
-                            <span className={`text-sm font-bold ${
-                              module.price === 'Free' ? 'text-green-400' : 'text-cyan-400'
-                            } font-mono`}>
-                              {module.price}
-                            </span>
-                          </div>
-                        </motion.div>
+                        </div>
                       ))}
                     </div>
 
-                    {/* Cost Summary */}
-                    {selectedModules.length > 0 && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="bg-gray-800/50 border border-cyan-500/30 rounded-lg p-6"
-                      >
-                        <h4 className="text-lg font-bold text-white mb-4 font-mono">Selected Modules ({selectedModules.length})</h4>
-                        <div className="space-y-2 mb-4">
-                          {selectedModules.map(moduleId => {
-                            const module = modules.find(m => m.id === moduleId);
-                            return (
-                              <div key={moduleId} className="flex justify-between items-center">
-                                <span className="text-gray-300 font-mono">{module.name}</span>
-                                <span className="text-cyan-400 font-mono">{module.price}</span>
-                              </div>
-                            );
-                          })}
-                        </div>
-                        <div className="border-t border-gray-600 pt-4">
-                          <div className="flex justify-between items-center">
-                            <span className="text-white font-bold font-mono">Total Monthly Cost:</span>
-                            <span className="text-cyan-400 font-bold font-mono">
-                              {getTotalMonthlyCost() === 0 ? 'Free' : `${getTotalMonthlyCost()} ICP/month`}
-                            </span>
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
+                    {/* Selected Modules Summary */}
+                    <div className="bg-gray-800/50 border border-cyan-500/30 rounded-lg p-6">
+                      <h4 className="text-lg font-bold text-white mb-2 font-mono">
+                        Selected Modules ({getSelectedModulesCount()})
+                      </h4>
+                      <div className="text-sm text-gray-400 font-mono">
+                        {moduleCategories.map(category => 
+                          category.modules.filter(m => m.selected).map(module => module.name)
+                        ).flat().join(', ') || 'None selected'}
+                      </div>
+                    </div>
                   </motion.div>
                 )}
 
@@ -613,10 +663,18 @@ const LaunchDAO = () => {
                           type="text"
                           value={formData.tokenSymbol}
                           onChange={(e) => handleInputChange('tokenSymbol', e.target.value.toUpperCase())}
-                          className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono backdrop-blur-sm"
+                          className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono backdrop-blur-sm ${
+                            errors.tokenSymbol ? 'border-red-500' : 'border-gray-600'
+                          }`}
                           placeholder="e.g., MYDAO"
                           maxLength={6}
                         />
+                        {errors.tokenSymbol && (
+                          <p className="text-red-400 text-sm mt-1 flex items-center">
+                            <AlertCircle className="w-4 h-4 mr-1" />
+                            {errors.tokenSymbol}
+                          </p>
+                        )}
                       </div>
 
                       <div>
@@ -625,9 +683,17 @@ const LaunchDAO = () => {
                           type="number"
                           value={formData.tokenSupply}
                           onChange={(e) => handleInputChange('tokenSupply', e.target.value)}
-                          className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono backdrop-blur-sm"
+                          className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono backdrop-blur-sm ${
+                            errors.tokenSupply ? 'border-red-500' : 'border-gray-600'
+                          }`}
                           placeholder="1000000"
                         />
+                        {errors.tokenSupply && (
+                          <p className="text-red-400 text-sm mt-1 flex items-center">
+                            <AlertCircle className="w-4 h-4 mr-1" />
+                            {errors.tokenSupply}
+                          </p>
+                        )}
                       </div>
                     </div>
 
@@ -668,9 +734,17 @@ const LaunchDAO = () => {
                           type="number"
                           value={formData.fundingGoal}
                           onChange={(e) => handleInputChange('fundingGoal', e.target.value)}
-                          className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono backdrop-blur-sm"
+                          className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono backdrop-blur-sm ${
+                            errors.fundingGoal ? 'border-red-500' : 'border-gray-600'
+                          }`}
                           placeholder="1000"
                         />
+                        {errors.fundingGoal && (
+                          <p className="text-red-400 text-sm mt-1 flex items-center">
+                            <AlertCircle className="w-4 h-4 mr-1" />
+                            {errors.fundingGoal}
+                          </p>
+                        )}
                       </div>
 
                       <div>
@@ -679,9 +753,17 @@ const LaunchDAO = () => {
                           type="number"
                           value={formData.duration}
                           onChange={(e) => handleInputChange('duration', e.target.value)}
-                          className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono backdrop-blur-sm"
+                          className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono backdrop-blur-sm ${
+                            errors.duration ? 'border-red-500' : 'border-gray-600'
+                          }`}
                           placeholder="30"
                         />
+                        {errors.duration && (
+                          <p className="text-red-400 text-sm mt-1 flex items-center">
+                            <AlertCircle className="w-4 h-4 mr-1" />
+                            {errors.duration}
+                          </p>
+                        )}
                       </div>
 
                       <div>
@@ -690,9 +772,17 @@ const LaunchDAO = () => {
                           type="number"
                           value={formData.minInvestment}
                           onChange={(e) => handleInputChange('minInvestment', e.target.value)}
-                          className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono backdrop-blur-sm"
+                          className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono backdrop-blur-sm ${
+                            errors.minInvestment ? 'border-red-500' : 'border-gray-600'
+                          }`}
                           placeholder="1"
                         />
+                        {errors.minInvestment && (
+                          <p className="text-red-400 text-sm mt-1 flex items-center">
+                            <AlertCircle className="w-4 h-4 mr-1" />
+                            {errors.minInvestment}
+                          </p>
+                        )}
                       </div>
                     </div>
 
@@ -760,35 +850,21 @@ const LaunchDAO = () => {
                     <div className="bg-gray-800/50 border border-cyan-500/30 rounded-lg p-6">
                       <h4 className="text-lg font-bold text-white mb-4 font-mono flex items-center">
                         <Settings className="w-5 h-5 mr-2" />
-                        Selected Modules ({selectedModules.length})
+                        Selected Modules ({getSelectedModulesCount()})
                       </h4>
-                      {selectedModules.length > 0 ? (
-                        <div className="grid md:grid-cols-2 gap-4">
-                          {selectedModules.map(moduleId => {
-                            const module = modules.find(m => m.id === moduleId);
-                            return (
-                              <div key={moduleId} className="flex items-center justify-between">
-                                <div className="flex items-center">
-                                  <div className={`w-8 h-8 bg-gradient-to-r ${module.color} rounded mr-3 flex items-center justify-center`}>
-                                    <module.icon className="w-4 h-4 text-white" />
-                                  </div>
-                                  <span className="text-gray-300 font-mono">{module.name}</span>
-                                </div>
-                                <span className="text-cyan-400 font-mono">{module.price}</span>
+                      {getSelectedModulesCount() > 0 ? (
+                        <div className="space-y-2">
+                          {moduleCategories.map(category => 
+                            category.modules.filter(module => module.selected).map(module => (
+                              <div key={module.id} className="flex items-center justify-between">
+                                <span className="text-gray-300 font-mono">{module.name}</span>
+                                <CheckCircle className="w-4 h-4 text-green-400" />
                               </div>
-                            );
-                          })}
+                            ))
+                          )}
                         </div>
                       ) : (
                         <p className="text-gray-400 font-mono">No modules selected</p>
-                      )}
-                      {getTotalMonthlyCost() > 0 && (
-                        <div className="border-t border-gray-600 mt-4 pt-4">
-                          <div className="flex justify-between items-center">
-                            <span className="text-white font-bold font-mono">Monthly Cost:</span>
-                            <span className="text-cyan-400 font-bold font-mono">{getTotalMonthlyCost()} ICP/month</span>
-                          </div>
-                        </div>
                       )}
                     </div>
 
@@ -844,7 +920,7 @@ const LaunchDAO = () => {
               </div>
 
               {/* Enhanced Navigation Buttons */}
-              <div className="flex justify-between mt-8">
+              <div className="flex justify-between mt-8 pt-6 border-t border-gray-700">
                 <button
                   onClick={prevStep}
                   disabled={currentStep === 1}

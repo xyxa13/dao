@@ -19,7 +19,10 @@ import {
   Plus,
   ExternalLink,
   Shield,
-  Rocket
+  Rocket,
+  Zap,
+  Globe,
+  Settings
 } from 'lucide-react';
 
 const Dashboard = () => {
@@ -155,8 +158,123 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-black text-white relative overflow-hidden">
+      {/* Interactive Animated Background */}
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-cyan-900/20"></div>
+        
+        {/* Enhanced Floating Particles with Interactive Movement */}
+        {[...Array(100)].map((_, i) => (
+          <motion.div
+            key={i}
+            className={`absolute rounded-full ${
+              i % 5 === 0 ? 'w-3 h-3 bg-cyan-400' :
+              i % 5 === 1 ? 'w-2 h-2 bg-purple-400' :
+              i % 5 === 2 ? 'w-1.5 h-1.5 bg-pink-400' :
+              i % 5 === 3 ? 'w-2.5 h-2.5 bg-blue-400' :
+              'w-1 h-1 bg-green-400'
+            }`}
+            initial={{
+              x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
+              y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
+              opacity: Math.random() * 0.8 + 0.2,
+            }}
+            animate={{
+              x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
+              y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
+              opacity: [0.2, 1, 0.2],
+              scale: [1, 1.2, 1],
+            }}
+            transition={{
+              duration: Math.random() * 30 + 20,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+            whileHover={{
+              scale: 2,
+              opacity: 1,
+              transition: { duration: 0.3 }
+            }}
+          />
+        ))}
+
+        {/* Interactive Grid Pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="grid grid-cols-20 grid-rows-20 h-full w-full">
+            {[...Array(400)].map((_, i) => (
+              <motion.div 
+                key={i} 
+                className="border border-cyan-500/20"
+                whileHover={{
+                  backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                  transition: { duration: 0.2 }
+                }}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Floating Geometric Shapes */}
+        {[...Array(15)].map((_, i) => (
+          <motion.div
+            key={`shape-${i}`}
+            className={`absolute ${
+              i % 3 === 0 ? 'w-8 h-8 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-full' :
+              i % 3 === 1 ? 'w-6 h-6 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rotate-45' :
+              'w-4 h-8 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-full'
+            }`}
+            initial={{
+              x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
+              y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
+              rotate: 0,
+            }}
+            animate={{
+              x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
+              y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
+              rotate: 360,
+            }}
+            transition={{
+              duration: Math.random() * 40 + 30,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+            whileHover={{
+              scale: 1.5,
+              rotate: 180,
+              transition: { duration: 0.5 }
+            }}
+          />
+        ))}
+
+        {/* Pulsing Orbs */}
+        {[...Array(8)].map((_, i) => (
+          <motion.div
+            key={`orb-${i}`}
+            className="absolute w-16 h-16 rounded-full bg-gradient-to-r from-cyan-500/10 to-purple-500/10 backdrop-blur-sm"
+            initial={{
+              x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
+              y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
+              scale: 0.5,
+            }}
+            animate={{
+              scale: [0.5, 1.2, 0.5],
+              opacity: [0.3, 0.8, 0.3],
+            }}
+            transition={{
+              duration: Math.random() * 6 + 4,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            whileHover={{
+              scale: 2,
+              opacity: 1,
+              transition: { duration: 0.3 }
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -210,8 +328,16 @@ const Dashboard = () => {
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
         >
           {portfolioStats.map((stat, index) => (
-            <div key={index} className="bg-gray-900/50 border border-cyan-500/30 p-6 rounded-xl backdrop-blur-sm">
-              <div className="flex items-center justify-between">
+            <motion.div 
+              key={index} 
+              className="bg-gray-900/50 border border-cyan-500/30 p-6 rounded-xl backdrop-blur-sm relative overflow-hidden group"
+              whileHover={{ 
+                scale: 1.02,
+                boxShadow: "0 20px 40px rgba(6, 182, 212, 0.2)"
+              }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div className="flex items-center justify-between relative z-10">
                 <div>
                   <p className="text-sm text-gray-400 mb-1 font-mono">{stat.label}</p>
                   <p className="text-2xl font-bold text-white font-mono">{stat.value}</p>
@@ -223,7 +349,7 @@ const Dashboard = () => {
                   <ArrowUpRight className={`w-4 h-4 ${stat.trend === 'down' ? 'rotate-180' : ''}`} />
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </motion.div>
 
@@ -237,9 +363,11 @@ const Dashboard = () => {
           <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
             <div className="flex flex-wrap gap-2">
               {categories.map((category) => (
-                <button
+                <motion.button
                   key={category}
                   onClick={() => setSelectedCategory(category)}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors font-mono ${
                     selectedCategory === category
                       ? 'bg-gradient-to-r from-cyan-500 to-purple-600 text-white'
@@ -247,7 +375,7 @@ const Dashboard = () => {
                   }`}
                 >
                   {category}
-                </button>
+                </motion.button>
               ))}
             </div>
             
@@ -277,7 +405,12 @@ const Dashboard = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 * index }}
-              className="bg-gray-900/50 border border-purple-500/30 rounded-xl backdrop-blur-sm overflow-hidden hover:border-purple-400/50 transition-all group"
+              whileHover={{ 
+                scale: 1.02, 
+                y: -5,
+                boxShadow: "0 25px 50px rgba(139, 92, 246, 0.2)"
+              }}
+              className="bg-gray-900/50 border border-purple-500/30 rounded-xl backdrop-blur-sm overflow-hidden hover:border-purple-400/50 transition-all group relative"
             >
               {/* Project Header */}
               <div className="h-48 bg-gradient-to-br from-cyan-500/20 to-purple-600/20 relative overflow-hidden">
@@ -294,6 +427,27 @@ const Dashboard = () => {
                 <div className="absolute top-4 right-4 flex items-center space-x-1 bg-black/30 backdrop-blur-sm rounded-lg px-2 py-1">
                   <Star className="w-4 h-4 text-yellow-400 fill-current" />
                   <span className="text-white text-sm font-medium font-mono">{project.rating}</span>
+                </div>
+                
+                {/* Floating Icons */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <motion.div
+                    animate={{ 
+                      rotate: 360,
+                      scale: [1, 1.1, 1]
+                    }}
+                    transition={{ 
+                      rotate: { duration: 20, repeat: Infinity, ease: "linear" },
+                      scale: { duration: 3, repeat: Infinity, ease: "easeInOut" }
+                    }}
+                    className="w-16 h-16 bg-gradient-to-r from-cyan-400/30 to-purple-500/30 rounded-full flex items-center justify-center backdrop-blur-sm"
+                  >
+                    {project.category === 'DeFi' && <DollarSign className="w-8 h-8 text-cyan-400" />}
+                    {project.category === 'Gaming' && <Target className="w-8 h-8 text-purple-400" />}
+                    {project.category === 'NFT' && <Award className="w-8 h-8 text-pink-400" />}
+                    {project.category === 'Social' && <Users className="w-8 h-8 text-green-400" />}
+                    {project.category === 'Infrastructure' && <Settings className="w-8 h-8 text-blue-400" />}
+                  </motion.div>
                 </div>
               </div>
 
@@ -330,10 +484,12 @@ const Dashboard = () => {
                     <span className="font-medium text-cyan-400">{project.progress}%</span>
                   </div>
                   <div className="w-full bg-gray-800 rounded-full h-2">
-                    <div 
+                    <motion.div 
                       className="bg-gradient-to-r from-cyan-500 to-purple-600 h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${project.progress}%` }}
-                    ></div>
+                      initial={{ width: 0 }}
+                      animate={{ width: `${project.progress}%` }}
+                      transition={{ duration: 1, delay: 0.5 }}
+                    ></motion.div>
                   </div>
                   
                   <div className="grid grid-cols-2 gap-4 text-sm font-mono">
@@ -369,12 +525,20 @@ const Dashboard = () => {
 
                 {/* Action Buttons */}
                 <div className="flex space-x-3">
-                  <button className="flex-1 bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 text-white py-2 px-4 rounded-lg transition-all text-sm font-medium font-mono">
+                  <motion.button 
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="flex-1 bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 text-white py-2 px-4 rounded-lg transition-all text-sm font-medium font-mono"
+                  >
                     INVEST NOW
-                  </button>
-                  <button className="px-4 py-2 border border-gray-600 text-gray-300 hover:bg-gray-800 rounded-lg transition-colors text-sm font-mono">
+                  </motion.button>
+                  <motion.button 
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="px-4 py-2 border border-gray-600 text-gray-300 hover:bg-gray-800 rounded-lg transition-colors text-sm font-mono"
+                  >
                     DETAILS
-                  </button>
+                  </motion.button>
                 </div>
               </div>
             </motion.div>
