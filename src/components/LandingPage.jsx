@@ -100,6 +100,34 @@ const LandingPage = () => {
       {/* Animated Background */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-cyan-900/20"></div>
+        
+        {/* Enhanced Floating Particles */}
+        {[...Array(80)].map((_, i) => (
+          <motion.div
+            key={i}
+            className={`absolute rounded-full ${
+              i % 4 === 0 ? 'w-2 h-2 bg-cyan-400' :
+              i % 4 === 1 ? 'w-1 h-1 bg-purple-400' :
+              i % 4 === 2 ? 'w-1.5 h-1.5 bg-pink-400' :
+              'w-1 h-1 bg-blue-400'
+            }`}
+            initial={{
+              x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
+              y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
+              opacity: Math.random() * 0.8 + 0.2,
+            }}
+            animate={{
+              x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
+              y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
+              opacity: [0.2, 1, 0.2],
+            }}
+            transition={{
+              duration: Math.random() * 40 + 20,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+          />
+        ))}
 
         {/* Grid Pattern */}
         <div className="absolute inset-0 opacity-5">
