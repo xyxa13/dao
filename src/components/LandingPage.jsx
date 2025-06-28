@@ -216,7 +216,7 @@ const LandingPage = () => {
                 <div className="text-sm text-gray-400 font-mono relative z-10">{stat.label}</div>
               </motion.div>
             ))}
-          </div>
+          </motion.div>
 
           {/* Scroll Indicator */}
           <motion.div
