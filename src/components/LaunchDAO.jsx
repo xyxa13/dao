@@ -274,30 +274,30 @@ const LaunchDAO = () => {
 
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
-      {/* Interactive Animated Background */}
+      {/* Interactive Animated Background with Lighter Particles */}
       <div className="fixed inset-0 z-0">
         <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-cyan-900/20"></div>
         
-        {/* Enhanced Floating Particles with Interactive Movement */}
+        {/* Enhanced Floating Particles with Lighter Colors */}
         {[...Array(80)].map((_, i) => (
           <motion.div
             key={i}
             className={`absolute rounded-full ${
-              i % 5 === 0 ? 'w-3 h-3 bg-cyan-400' :
-              i % 5 === 1 ? 'w-2 h-2 bg-purple-400' :
-              i % 5 === 2 ? 'w-1.5 h-1.5 bg-pink-400' :
-              i % 5 === 3 ? 'w-2.5 h-2.5 bg-blue-400' :
-              'w-1 h-1 bg-green-400'
+              i % 5 === 0 ? 'w-3 h-3 bg-cyan-300/40' :
+              i % 5 === 1 ? 'w-2 h-2 bg-purple-300/40' :
+              i % 5 === 2 ? 'w-1.5 h-1.5 bg-pink-300/40' :
+              i % 5 === 3 ? 'w-2.5 h-2.5 bg-blue-300/40' :
+              'w-1 h-1 bg-green-300/40'
             }`}
             initial={{
               x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
               y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
-              opacity: Math.random() * 0.8 + 0.2,
+              opacity: Math.random() * 0.6 + 0.1,
             }}
             animate={{
               x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
               y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
-              opacity: [0.2, 1, 0.2],
+              opacity: [0.1, 0.6, 0.1],
               scale: [1, 1.2, 1],
             }}
             transition={{
@@ -307,21 +307,21 @@ const LaunchDAO = () => {
             }}
             whileHover={{
               scale: 2,
-              opacity: 1,
+              opacity: 0.8,
               transition: { duration: 0.3 }
             }}
           />
         ))}
 
         {/* Interactive Grid Pattern */}
-        <div className="absolute inset-0 opacity-5">
+        <div className="absolute inset-0 opacity-3">
           <div className="grid grid-cols-20 grid-rows-20 h-full w-full">
             {[...Array(400)].map((_, i) => (
               <motion.div 
                 key={i} 
-                className="border border-cyan-500/20"
+                className="border border-cyan-500/10"
                 whileHover={{
-                  backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                  backgroundColor: 'rgba(6, 182, 212, 0.05)',
                   transition: { duration: 0.2 }
                 }}
               />
@@ -329,14 +329,14 @@ const LaunchDAO = () => {
           </div>
         </div>
 
-        {/* Floating Geometric Shapes */}
+        {/* Floating Geometric Shapes with Lighter Colors */}
         {[...Array(12)].map((_, i) => (
           <motion.div
             key={`shape-${i}`}
             className={`absolute ${
-              i % 3 === 0 ? 'w-8 h-8 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-full' :
-              i % 3 === 1 ? 'w-6 h-6 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rotate-45' :
-              'w-4 h-8 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-full'
+              i % 3 === 0 ? 'w-8 h-8 bg-gradient-to-r from-cyan-400/15 to-blue-400/15 rounded-full' :
+              i % 3 === 1 ? 'w-6 h-6 bg-gradient-to-r from-purple-400/15 to-pink-400/15 rotate-45' :
+              'w-4 h-8 bg-gradient-to-r from-green-400/15 to-emerald-400/15 rounded-full'
             }`}
             initial={{
               x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
@@ -361,11 +361,11 @@ const LaunchDAO = () => {
           />
         ))}
 
-        {/* Pulsing Orbs */}
+        {/* Pulsing Orbs with Lighter Colors */}
         {[...Array(6)].map((_, i) => (
           <motion.div
             key={`orb-${i}`}
-            className="absolute w-16 h-16 rounded-full bg-gradient-to-r from-cyan-500/10 to-purple-500/10 backdrop-blur-sm"
+            className="absolute w-16 h-16 rounded-full bg-gradient-to-r from-cyan-400/8 to-purple-400/8 backdrop-blur-sm"
             initial={{
               x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
               y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
@@ -373,7 +373,7 @@ const LaunchDAO = () => {
             }}
             animate={{
               scale: [0.5, 1.2, 0.5],
-              opacity: [0.3, 0.8, 0.3],
+              opacity: [0.2, 0.6, 0.2],
             }}
             transition={{
               duration: Math.random() * 6 + 4,
@@ -382,7 +382,7 @@ const LaunchDAO = () => {
             }}
             whileHover={{
               scale: 2,
-              opacity: 1,
+              opacity: 0.8,
               transition: { duration: 0.3 }
             }}
           />
@@ -516,7 +516,7 @@ const LaunchDAO = () => {
         </div>
       </section>
 
-      {/* Enhanced Modal */}
+      {/* Enhanced Modal with Much More Spacing */}
       <AnimatePresence>
         {isModalOpen && (
           <motion.div
@@ -529,36 +529,36 @@ const LaunchDAO = () => {
               initial={{ scale: 0.9, opacity: 0, y: 50 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 50 }}
-              className="bg-gray-900/95 border border-cyan-500/30 rounded-2xl p-8 max-w-6xl w-full max-h-[90vh] relative backdrop-blur-xl flex flex-col"
+              className="bg-gray-900/95 border border-cyan-500/30 rounded-2xl p-12 max-w-7xl w-full max-h-[95vh] relative backdrop-blur-xl flex flex-col"
             >
               {/* Close Button */}
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="absolute top-6 right-6 text-gray-400 hover:text-white transition-colors z-10"
+                className="absolute top-8 right-8 text-gray-400 hover:text-white transition-colors z-10"
               >
-                <X className="w-6 h-6" />
+                <X className="w-8 h-8" />
               </button>
 
-              {/* Header */}
-              <div className="text-center mb-8">
-                <h2 className="text-4xl font-bold text-white mb-2 font-mono">CREATE YOUR DAO</h2>
-                <p className="text-cyan-400 font-mono">Step {currentStep} of 5</p>
+              {/* Header with More Spacing */}
+              <div className="text-center mb-16">
+                <h2 className="text-5xl font-bold text-white mb-4 font-mono">CREATE YOUR DAO</h2>
+                <p className="text-cyan-400 font-mono text-xl">Step {currentStep} of 5</p>
               </div>
 
-              {/* Enhanced Progress Bar */}
-              <div className="flex justify-center mb-8">
-                <div className="flex items-center space-x-2">
+              {/* Enhanced Progress Bar with More Spacing */}
+              <div className="flex justify-center mb-16">
+                <div className="flex items-center space-x-6">
                   {steps.map((step, index) => (
                     <div key={step.id} className="flex items-center">
                       <motion.div 
-                        className={`w-14 h-14 rounded-full flex items-center justify-center border-2 transition-all relative ${
+                        className={`w-20 h-20 rounded-full flex items-center justify-center border-2 transition-all relative ${
                           currentStep >= step.id 
                             ? 'bg-gradient-to-r from-cyan-500 to-purple-500 border-cyan-500 text-white shadow-lg shadow-cyan-500/25' 
                             : 'border-gray-600 text-gray-400'
                         }`}
                         whileHover={{ scale: 1.1 }}
                       >
-                        <step.icon className="w-6 h-6" />
+                        <step.icon className="w-8 h-8" />
                         {currentStep >= step.id && (
                           <motion.div
                             initial={{ scale: 0 }}
@@ -568,7 +568,7 @@ const LaunchDAO = () => {
                         )}
                       </motion.div>
                       {index < steps.length - 1 && (
-                        <div className={`w-12 h-1 mx-2 transition-all rounded-full ${
+                        <div className={`w-16 h-2 mx-4 transition-all rounded-full ${
                           currentStep > step.id 
                             ? 'bg-gradient-to-r from-cyan-500 to-purple-500' 
                             : 'bg-gray-600'
@@ -579,78 +579,78 @@ const LaunchDAO = () => {
                 </div>
               </div>
 
-              {/* Form Content - Scrollable */}
-              <div className="flex-1 overflow-y-auto space-y-8 pr-2">
-                {/* Step 1: Basic Info */}
+              {/* Form Content - Much More Spacious */}
+              <div className="flex-1 overflow-y-auto space-y-12 pr-4">
+                {/* Step 1: Basic Info with Massive Spacing */}
                 {currentStep === 1 && (
                   <motion.div
                     initial={{ opacity: 0, x: 50 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -50 }}
-                    className="space-y-8"
+                    className="space-y-12"
                   >
-                    <div className="grid md:grid-cols-2 gap-8">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-3 font-mono">DAO Name *</label>
+                    <div className="grid md:grid-cols-2 gap-12">
+                      <div className="space-y-4">
+                        <label className="block text-lg font-medium text-gray-300 mb-4 font-mono">DAO Name *</label>
                         <input
                           type="text"
                           value={formData.name}
                           onChange={(e) => handleInputChange('name', e.target.value)}
-                          className={`w-full px-4 py-4 bg-gray-800/50 border rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono backdrop-blur-sm ${
+                          className={`w-full px-6 py-6 bg-gray-800/50 border rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono backdrop-blur-sm text-lg ${
                             errors.name ? 'border-red-500' : 'border-gray-600'
                           }`}
                           placeholder="Enter your DAO name"
                         />
                         {errors.name && (
-                          <p className="text-red-400 text-sm mt-2 flex items-center">
-                            <AlertCircle className="w-4 h-4 mr-1" />
+                          <p className="text-red-400 text-base mt-3 flex items-center">
+                            <AlertCircle className="w-5 h-5 mr-2" />
                             {errors.name}
                           </p>
                         )}
                       </div>
 
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-3 font-mono">Website (Optional)</label>
+                      <div className="space-y-4">
+                        <label className="block text-lg font-medium text-gray-300 mb-4 font-mono">Website (Optional)</label>
                         <input
                           type="url"
                           value={formData.website}
                           onChange={(e) => handleInputChange('website', e.target.value)}
-                          className="w-full px-4 py-4 bg-gray-800/50 border border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono backdrop-blur-sm"
+                          className="w-full px-6 py-6 bg-gray-800/50 border border-gray-600 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono backdrop-blur-sm text-lg"
                           placeholder="https://your-dao-website.com"
                         />
                       </div>
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-3 font-mono">Description *</label>
+                    <div className="space-y-4">
+                      <label className="block text-lg font-medium text-gray-300 mb-4 font-mono">Description *</label>
                       <textarea
                         value={formData.description}
                         onChange={(e) => handleInputChange('description', e.target.value)}
-                        rows={5}
-                        className={`w-full px-4 py-4 bg-gray-800/50 border rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono backdrop-blur-sm ${
+                        rows={6}
+                        className={`w-full px-6 py-6 bg-gray-800/50 border rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono backdrop-blur-sm text-lg ${
                           errors.description ? 'border-red-500' : 'border-gray-600'
                         }`}
                         placeholder="Describe your DAO's mission, goals, and vision"
                       />
                       {errors.description && (
-                        <p className="text-red-400 text-sm mt-2 flex items-center">
-                          <AlertCircle className="w-4 h-4 mr-1" />
+                        <p className="text-red-400 text-base mt-3 flex items-center">
+                          <AlertCircle className="w-5 h-5 mr-2" />
                           {errors.description}
                         </p>
                       )}
                     </div>
 
-                    {/* Enhanced Category Selection */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-4 font-mono">Category *</label>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {/* Enhanced Category Selection with Massive Spacing */}
+                    <div className="space-y-6">
+                      <label className="block text-lg font-medium text-gray-300 mb-6 font-mono">Category *</label>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                         {categories.map((cat) => (
                           <motion.div
                             key={cat.value}
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             onClick={() => handleInputChange('category', cat.value)}
-                            className={`p-6 rounded-xl border-2 cursor-pointer transition-all duration-300 relative overflow-hidden group ${
+                            className={`p-8 rounded-2xl border-2 cursor-pointer transition-all duration-300 relative overflow-hidden group ${
                               formData.category === cat.value
                                 ? 'border-cyan-500 bg-cyan-500/10'
                                 : 'border-gray-600 bg-gray-800/30 hover:border-gray-500'
@@ -658,25 +658,25 @@ const LaunchDAO = () => {
                           >
                             <div className={`absolute inset-0 bg-gradient-to-r ${cat.gradient} opacity-0 group-hover:opacity-10 transition-opacity`}></div>
                             <div className="text-center relative z-10">
-                              <div className="text-3xl mb-3">{cat.icon}</div>
-                              <h3 className="font-bold text-white mb-2 font-mono">{cat.label}</h3>
-                              <p className="text-xs text-gray-400">{cat.description}</p>
+                              <div className="text-4xl mb-4">{cat.icon}</div>
+                              <h3 className="font-bold text-white mb-3 font-mono text-lg">{cat.label}</h3>
+                              <p className="text-sm text-gray-400">{cat.description}</p>
                             </div>
                             {formData.category === cat.value && (
                               <motion.div
                                 initial={{ scale: 0 }}
                                 animate={{ scale: 1 }}
-                                className="absolute top-2 right-2"
+                                className="absolute top-3 right-3"
                               >
-                                <CheckCircle className="w-5 h-5 text-cyan-400" />
+                                <CheckCircle className="w-6 h-6 text-cyan-400" />
                               </motion.div>
                             )}
                           </motion.div>
                         ))}
                       </div>
                       {errors.category && (
-                        <p className="text-red-400 text-sm mt-2 flex items-center">
-                          <AlertCircle className="w-4 h-4 mr-1" />
+                        <p className="text-red-400 text-base mt-3 flex items-center">
+                          <AlertCircle className="w-5 h-5 mr-2" />
                           {errors.category}
                         </p>
                       )}
@@ -684,53 +684,53 @@ const LaunchDAO = () => {
                   </motion.div>
                 )}
 
-                {/* Step 2: Module Selection */}
+                {/* Step 2: Module Selection with Massive Spacing */}
                 {currentStep === 2 && (
                   <motion.div
                     initial={{ opacity: 0, x: 50 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -50 }}
-                    className="space-y-8"
+                    className="space-y-12"
                   >
-                    <div className="text-center mb-8">
-                      <h3 className="text-2xl font-bold text-white mb-3 font-mono">Select Modules</h3>
-                      <p className="text-gray-400 font-mono">Choose the features your DAO needs. You can add more later.</p>
+                    <div className="text-center mb-12">
+                      <h3 className="text-3xl font-bold text-white mb-4 font-mono">Select Modules</h3>
+                      <p className="text-gray-400 font-mono text-lg">Choose the features your DAO needs. You can add more later.</p>
                     </div>
 
-                    <div className="space-y-10">
+                    <div className="space-y-16">
                       {selectedModules.map((category, categoryIndex) => (
-                        <div key={category.name} className="space-y-6">
-                          <div className="flex items-center space-x-4 p-4 bg-gray-800/50 rounded-lg border border-cyan-500/30">
-                            <div className="w-12 h-12 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-lg flex items-center justify-center">
-                              <category.icon className="w-6 h-6 text-white" />
+                        <div key={category.name} className="space-y-8">
+                          <div className="flex items-center space-x-6 p-8 bg-gray-800/50 rounded-xl border border-cyan-500/30">
+                            <div className="w-16 h-16 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-xl flex items-center justify-center">
+                              <category.icon className="w-8 h-8 text-white" />
                             </div>
                             <div>
-                              <h4 className="text-xl font-bold text-white font-mono">{category.name}</h4>
-                              <p className="text-gray-400">{category.description}</p>
+                              <h4 className="text-2xl font-bold text-white font-mono">{category.name}</h4>
+                              <p className="text-gray-400 text-lg">{category.description}</p>
                             </div>
                           </div>
 
-                          <div className="grid gap-6 ml-16">
+                          <div className="grid gap-8 ml-20">
                             {category.modules.map((module, moduleIndex) => (
                               <motion.div
                                 key={module.id}
                                 whileHover={{ scale: 1.01 }}
-                                className={`flex items-center justify-between p-6 rounded-lg border cursor-pointer transition-all ${
+                                className={`flex items-center justify-between p-8 rounded-xl border cursor-pointer transition-all ${
                                   module.selected
                                     ? 'border-cyan-500 bg-cyan-500/10'
                                     : 'border-gray-600 bg-gray-800/30 hover:border-gray-500'
                                 } ${module.disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 onClick={() => handleModuleToggle(categoryIndex, moduleIndex)}
                               >
-                                <div className="flex items-center space-x-4">
-                                  <div className={`w-6 h-6 rounded border-2 flex items-center justify-center ${
+                                <div className="flex items-center space-x-6">
+                                  <div className={`w-8 h-8 rounded border-2 flex items-center justify-center ${
                                     module.selected ? 'border-cyan-500 bg-cyan-500' : 'border-gray-400'
                                   }`}>
-                                    {module.selected && <CheckCircle className="w-4 h-4 text-white" />}
+                                    {module.selected && <CheckCircle className="w-6 h-6 text-white" />}
                                   </div>
                                   <div>
-                                    <h5 className="font-medium text-white font-mono text-lg">{module.name}</h5>
-                                    <p className="text-gray-400 mt-1">{module.description}</p>
+                                    <h5 className="font-medium text-white font-mono text-xl">{module.name}</h5>
+                                    <p className="text-gray-400 mt-2 text-lg">{module.description}</p>
                                   </div>
                                 </div>
                               </motion.div>
@@ -740,12 +740,12 @@ const LaunchDAO = () => {
                       ))}
                     </div>
 
-                    {/* Selected Modules Summary */}
-                    <div className="bg-gray-800/50 border border-cyan-500/30 rounded-lg p-6">
-                      <h4 className="text-lg font-bold text-white mb-3 font-mono">
+                    {/* Selected Modules Summary with More Spacing */}
+                    <div className="bg-gray-800/50 border border-cyan-500/30 rounded-xl p-8">
+                      <h4 className="text-xl font-bold text-white mb-4 font-mono">
                         Selected Modules ({getSelectedModulesCount()})
                       </h4>
-                      <div className="text-sm text-gray-400 font-mono">
+                      <div className="text-lg text-gray-400 font-mono">
                         {getSelectedModulesCount() > 0 ? (
                           selectedModules.map(category => 
                             category.modules.filter(m => m.selected).map(module => module.name)
@@ -758,58 +758,58 @@ const LaunchDAO = () => {
                   </motion.div>
                 )}
 
-                {/* Step 3: Tokenomics */}
+                {/* Step 3: Tokenomics with More Spacing */}
                 {currentStep === 3 && (
                   <motion.div
                     initial={{ opacity: 0, x: 50 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -50 }}
-                    className="space-y-8"
+                    className="space-y-12"
                   >
-                    <div className="grid md:grid-cols-2 gap-8">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-3 font-mono">Token Symbol *</label>
+                    <div className="grid md:grid-cols-2 gap-12">
+                      <div className="space-y-4">
+                        <label className="block text-lg font-medium text-gray-300 mb-4 font-mono">Token Symbol *</label>
                         <input
                           type="text"
                           value={formData.tokenSymbol}
                           onChange={(e) => handleInputChange('tokenSymbol', e.target.value.toUpperCase())}
-                          className={`w-full px-4 py-4 bg-gray-800/50 border rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono backdrop-blur-sm ${
+                          className={`w-full px-6 py-6 bg-gray-800/50 border rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono backdrop-blur-sm text-lg ${
                             errors.tokenSymbol ? 'border-red-500' : 'border-gray-600'
                           }`}
                           placeholder="e.g., MYDAO"
                           maxLength={6}
                         />
                         {errors.tokenSymbol && (
-                          <p className="text-red-400 text-sm mt-2 flex items-center">
-                            <AlertCircle className="w-4 h-4 mr-1" />
+                          <p className="text-red-400 text-base mt-3 flex items-center">
+                            <AlertCircle className="w-5 h-5 mr-2" />
                             {errors.tokenSymbol}
                           </p>
                         )}
                       </div>
 
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-3 font-mono">Total Supply *</label>
+                      <div className="space-y-4">
+                        <label className="block text-lg font-medium text-gray-300 mb-4 font-mono">Total Supply *</label>
                         <input
                           type="number"
                           value={formData.tokenSupply}
                           onChange={(e) => handleInputChange('tokenSupply', e.target.value)}
-                          className={`w-full px-4 py-4 bg-gray-800/50 border rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono backdrop-blur-sm ${
+                          className={`w-full px-6 py-6 bg-gray-800/50 border rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono backdrop-blur-sm text-lg ${
                             errors.tokenSupply ? 'border-red-500' : 'border-gray-600'
                           }`}
                           placeholder="1000000"
                         />
                         {errors.tokenSupply && (
-                          <p className="text-red-400 text-sm mt-2 flex items-center">
-                            <AlertCircle className="w-4 h-4 mr-1" />
+                          <p className="text-red-400 text-base mt-3 flex items-center">
+                            <AlertCircle className="w-5 h-5 mr-2" />
                             {errors.tokenSupply}
                           </p>
                         )}
                       </div>
                     </div>
 
-                    <div className="bg-gray-800/50 border border-cyan-500/30 rounded-lg p-8">
-                      <h3 className="text-xl font-bold text-white mb-6 font-mono">Token Distribution</h3>
-                      <div className="space-y-6">
+                    <div className="bg-gray-800/50 border border-cyan-500/30 rounded-xl p-10">
+                      <h3 className="text-2xl font-bold text-white mb-8 font-mono">Token Distribution</h3>
+                      <div className="space-y-8">
                         {[
                           { label: 'Public Sale', percentage: 40, color: 'bg-cyan-500' },
                           { label: 'Team & Advisors', percentage: 20, color: 'bg-purple-500' },
@@ -818,10 +818,10 @@ const LaunchDAO = () => {
                         ].map((item, index) => (
                           <div key={index} className="flex items-center justify-between">
                             <div className="flex items-center">
-                              <div className={`w-6 h-6 ${item.color} rounded mr-4`}></div>
-                              <span className="text-gray-300 font-mono text-lg">{item.label}</span>
+                              <div className={`w-8 h-8 ${item.color} rounded mr-6`}></div>
+                              <span className="text-gray-300 font-mono text-xl">{item.label}</span>
                             </div>
-                            <span className="text-cyan-400 font-mono text-lg font-bold">{item.percentage}%</span>
+                            <span className="text-cyan-400 font-mono text-xl font-bold">{item.percentage}%</span>
                           </div>
                         ))}
                       </div>
@@ -829,85 +829,85 @@ const LaunchDAO = () => {
                   </motion.div>
                 )}
 
-                {/* Step 4: Funding */}
+                {/* Step 4: Funding with More Spacing */}
                 {currentStep === 4 && (
                   <motion.div
                     initial={{ opacity: 0, x: 50 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -50 }}
-                    className="space-y-8"
+                    className="space-y-12"
                   >
-                    <div className="grid md:grid-cols-3 gap-8">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-3 font-mono">Funding Goal (ICP) *</label>
+                    <div className="grid md:grid-cols-3 gap-12">
+                      <div className="space-y-4">
+                        <label className="block text-lg font-medium text-gray-300 mb-4 font-mono">Funding Goal (ICP) *</label>
                         <input
                           type="number"
                           value={formData.fundingGoal}
                           onChange={(e) => handleInputChange('fundingGoal', e.target.value)}
-                          className={`w-full px-4 py-4 bg-gray-800/50 border rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono backdrop-blur-sm ${
+                          className={`w-full px-6 py-6 bg-gray-800/50 border rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono backdrop-blur-sm text-lg ${
                             errors.fundingGoal ? 'border-red-500' : 'border-gray-600'
                           }`}
                           placeholder="1000"
                         />
                         {errors.fundingGoal && (
-                          <p className="text-red-400 text-sm mt-2 flex items-center">
-                            <AlertCircle className="w-4 h-4 mr-1" />
+                          <p className="text-red-400 text-base mt-3 flex items-center">
+                            <AlertCircle className="w-5 h-5 mr-2" />
                             {errors.fundingGoal}
                           </p>
                         )}
                       </div>
 
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-3 font-mono">Duration (Days) *</label>
+                      <div className="space-y-4">
+                        <label className="block text-lg font-medium text-gray-300 mb-4 font-mono">Duration (Days) *</label>
                         <input
                           type="number"
                           value={formData.duration}
                           onChange={(e) => handleInputChange('duration', e.target.value)}
-                          className={`w-full px-4 py-4 bg-gray-800/50 border rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono backdrop-blur-sm ${
+                          className={`w-full px-6 py-6 bg-gray-800/50 border rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono backdrop-blur-sm text-lg ${
                             errors.duration ? 'border-red-500' : 'border-gray-600'
                           }`}
                           placeholder="30"
                         />
                         {errors.duration && (
-                          <p className="text-red-400 text-sm mt-2 flex items-center">
-                            <AlertCircle className="w-4 h-4 mr-1" />
+                          <p className="text-red-400 text-base mt-3 flex items-center">
+                            <AlertCircle className="w-5 h-5 mr-2" />
                             {errors.duration}
                           </p>
                         )}
                       </div>
 
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-3 font-mono">Min Investment (ICP) *</label>
+                      <div className="space-y-4">
+                        <label className="block text-lg font-medium text-gray-300 mb-4 font-mono">Min Investment (ICP) *</label>
                         <input
                           type="number"
                           value={formData.minInvestment}
                           onChange={(e) => handleInputChange('minInvestment', e.target.value)}
-                          className={`w-full px-4 py-4 bg-gray-800/50 border rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono backdrop-blur-sm ${
+                          className={`w-full px-6 py-6 bg-gray-800/50 border rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono backdrop-blur-sm text-lg ${
                             errors.minInvestment ? 'border-red-500' : 'border-gray-600'
                           }`}
                           placeholder="1"
                         />
                         {errors.minInvestment && (
-                          <p className="text-red-400 text-sm mt-2 flex items-center">
-                            <AlertCircle className="w-4 h-4 mr-1" />
+                          <p className="text-red-400 text-base mt-3 flex items-center">
+                            <AlertCircle className="w-5 h-5 mr-2" />
                             {errors.minInvestment}
                           </p>
                         )}
                       </div>
                     </div>
 
-                    <div className="bg-gray-800/50 border border-cyan-500/30 rounded-lg p-8">
-                      <h3 className="text-xl font-bold text-white mb-6 font-mono">Funding Milestones</h3>
-                      <div className="space-y-4">
+                    <div className="bg-gray-800/50 border border-cyan-500/30 rounded-xl p-10">
+                      <h3 className="text-2xl font-bold text-white mb-8 font-mono">Funding Milestones</h3>
+                      <div className="space-y-6">
                         {[
                           { percentage: 25, milestone: 'MVP Development & Core Team' },
                           { percentage: 50, milestone: 'Beta Launch & Community Building' },
                           { percentage: 75, milestone: 'Marketing & Partnership Expansion' },
                           { percentage: 100, milestone: 'Full Launch & Ecosystem Growth' }
                         ].map((item, index) => (
-                          <div key={index} className="flex items-center justify-between p-4 bg-gray-700/30 rounded-lg">
-                            <span className="text-gray-300 font-mono">{item.percentage}% - {item.milestone}</span>
-                            <CheckCircle className="w-6 h-6 text-green-400" />
+                          <div key={index} className="flex items-center justify-between p-6 bg-gray-700/30 rounded-xl">
+                            <span className="text-gray-300 font-mono text-lg">{item.percentage}% - {item.milestone}</span>
+                            <CheckCircle className="w-8 h-8 text-green-400" />
                           </div>
                         ))}
                       </div>
@@ -915,113 +915,113 @@ const LaunchDAO = () => {
                   </motion.div>
                 )}
 
-                {/* Step 5: Review & Launch */}
+                {/* Step 5: Review & Launch with More Spacing */}
                 {currentStep === 5 && (
                   <motion.div
                     initial={{ opacity: 0, x: 50 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -50 }}
-                    className="space-y-8"
+                    className="space-y-12"
                   >
-                    <div className="text-center mb-8">
-                      <h3 className="text-2xl font-bold text-white mb-3 font-mono">Review Your DAO</h3>
-                      <p className="text-gray-400 font-mono">Please review all details before launching</p>
+                    <div className="text-center mb-12">
+                      <h3 className="text-3xl font-bold text-white mb-4 font-mono">Review Your DAO</h3>
+                      <p className="text-gray-400 font-mono text-lg">Please review all details before launching</p>
                     </div>
 
                     {/* Basic Info Review */}
-                    <div className="bg-gray-800/50 border border-cyan-500/30 rounded-lg p-8">
-                      <h4 className="text-xl font-bold text-white mb-6 font-mono flex items-center">
-                        <Globe className="w-6 h-6 mr-3" />
+                    <div className="bg-gray-800/50 border border-cyan-500/30 rounded-xl p-10">
+                      <h4 className="text-2xl font-bold text-white mb-8 font-mono flex items-center">
+                        <Globe className="w-8 h-8 mr-4" />
                         Basic Information
                       </h4>
-                      <div className="grid md:grid-cols-2 gap-6">
+                      <div className="grid md:grid-cols-2 gap-8">
                         <div className="flex justify-between">
-                          <span className="text-gray-300 font-mono">Name:</span>
-                          <span className="text-cyan-400 font-mono">{formData.name || 'Not set'}</span>
+                          <span className="text-gray-300 font-mono text-lg">Name:</span>
+                          <span className="text-cyan-400 font-mono text-lg">{formData.name || 'Not set'}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-300 font-mono">Category:</span>
-                          <span className="text-cyan-400 font-mono">{formData.category || 'Not set'}</span>
+                          <span className="text-gray-300 font-mono text-lg">Category:</span>
+                          <span className="text-cyan-400 font-mono text-lg">{formData.category || 'Not set'}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-300 font-mono">Website:</span>
-                          <span className="text-cyan-400 font-mono">{formData.website || 'None'}</span>
+                          <span className="text-gray-300 font-mono text-lg">Website:</span>
+                          <span className="text-cyan-400 font-mono text-lg">{formData.website || 'None'}</span>
                         </div>
                       </div>
                       {formData.description && (
-                        <div className="mt-6">
-                          <span className="text-gray-300 font-mono">Description:</span>
-                          <p className="text-cyan-400 font-mono mt-2">{formData.description}</p>
+                        <div className="mt-8">
+                          <span className="text-gray-300 font-mono text-lg">Description:</span>
+                          <p className="text-cyan-400 font-mono mt-3 text-lg">{formData.description}</p>
                         </div>
                       )}
                     </div>
 
                     {/* Selected Modules Review */}
-                    <div className="bg-gray-800/50 border border-cyan-500/30 rounded-lg p-8">
-                      <h4 className="text-xl font-bold text-white mb-6 font-mono flex items-center">
-                        <Settings className="w-6 h-6 mr-3" />
+                    <div className="bg-gray-800/50 border border-cyan-500/30 rounded-xl p-10">
+                      <h4 className="text-2xl font-bold text-white mb-8 font-mono flex items-center">
+                        <Settings className="w-8 h-8 mr-4" />
                         Selected Modules ({getSelectedModulesCount()})
                       </h4>
                       {getSelectedModulesCount() > 0 ? (
-                        <div className="space-y-3">
+                        <div className="space-y-4">
                           {selectedModules.map(category => 
                             category.modules.filter(module => module.selected).map(module => (
-                              <div key={module.id} className="flex items-center justify-between p-3 bg-gray-700/30 rounded-lg">
-                                <span className="text-gray-300 font-mono">{module.name}</span>
-                                <CheckCircle className="w-5 h-5 text-green-400" />
+                              <div key={module.id} className="flex items-center justify-between p-4 bg-gray-700/30 rounded-xl">
+                                <span className="text-gray-300 font-mono text-lg">{module.name}</span>
+                                <CheckCircle className="w-6 h-6 text-green-400" />
                               </div>
                             ))
                           )}
                         </div>
                       ) : (
-                        <p className="text-gray-400 font-mono">No modules selected</p>
+                        <p className="text-gray-400 font-mono text-lg">No modules selected</p>
                       )}
                     </div>
 
                     {/* Tokenomics Review */}
-                    <div className="bg-gray-800/50 border border-cyan-500/30 rounded-lg p-8">
-                      <h4 className="text-xl font-bold text-white mb-6 font-mono flex items-center">
-                        <Coins className="w-6 h-6 mr-3" />
+                    <div className="bg-gray-800/50 border border-cyan-500/30 rounded-xl p-10">
+                      <h4 className="text-2xl font-bold text-white mb-8 font-mono flex items-center">
+                        <Coins className="w-8 h-8 mr-4" />
                         Tokenomics
                       </h4>
-                      <div className="grid md:grid-cols-2 gap-6">
+                      <div className="grid md:grid-cols-2 gap-8">
                         <div className="flex justify-between">
-                          <span className="text-gray-300 font-mono">Token Symbol:</span>
-                          <span className="text-cyan-400 font-mono">{formData.tokenSymbol || 'Not set'}</span>
+                          <span className="text-gray-300 font-mono text-lg">Token Symbol:</span>
+                          <span className="text-cyan-400 font-mono text-lg">{formData.tokenSymbol || 'Not set'}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-300 font-mono">Total Supply:</span>
-                          <span className="text-cyan-400 font-mono">{formData.tokenSupply ? Number(formData.tokenSupply).toLocaleString() : 'Not set'}</span>
+                          <span className="text-gray-300 font-mono text-lg">Total Supply:</span>
+                          <span className="text-cyan-400 font-mono text-lg">{formData.tokenSupply ? Number(formData.tokenSupply).toLocaleString() : 'Not set'}</span>
                         </div>
                       </div>
                     </div>
 
                     {/* Funding Review */}
-                    <div className="bg-gray-800/50 border border-cyan-500/30 rounded-lg p-8">
-                      <h4 className="text-xl font-bold text-white mb-6 font-mono flex items-center">
-                        <Target className="w-6 h-6 mr-3" />
+                    <div className="bg-gray-800/50 border border-cyan-500/30 rounded-xl p-10">
+                      <h4 className="text-2xl font-bold text-white mb-8 font-mono flex items-center">
+                        <Target className="w-8 h-8 mr-4" />
                         Funding Details
                       </h4>
-                      <div className="grid md:grid-cols-3 gap-6">
+                      <div className="grid md:grid-cols-3 gap-8">
                         <div className="flex justify-between">
-                          <span className="text-gray-300 font-mono">Goal:</span>
-                          <span className="text-cyan-400 font-mono">{formData.fundingGoal || 'Not set'} ICP</span>
+                          <span className="text-gray-300 font-mono text-lg">Goal:</span>
+                          <span className="text-cyan-400 font-mono text-lg">{formData.fundingGoal || 'Not set'} ICP</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-300 font-mono">Duration:</span>
-                          <span className="text-cyan-400 font-mono">{formData.duration || 'Not set'} days</span>
+                          <span className="text-gray-300 font-mono text-lg">Duration:</span>
+                          <span className="text-cyan-400 font-mono text-lg">{formData.duration || 'Not set'} days</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-300 font-mono">Min Investment:</span>
-                          <span className="text-cyan-400 font-mono">{formData.minInvestment || 'Not set'} ICP</span>
+                          <span className="text-gray-300 font-mono text-lg">Min Investment:</span>
+                          <span className="text-cyan-400 font-mono text-lg">{formData.minInvestment || 'Not set'} ICP</span>
                         </div>
                       </div>
                     </div>
 
                     {/* Warning */}
-                    <div className="bg-yellow-500/20 border border-yellow-500/30 rounded-lg p-6">
-                      <p className="text-yellow-400 text-sm font-mono flex items-center">
-                        <Star className="w-5 h-5 mr-2" />
+                    <div className="bg-yellow-500/20 border border-yellow-500/30 rounded-xl p-8">
+                      <p className="text-yellow-400 text-lg font-mono flex items-center">
+                        <Star className="w-6 h-6 mr-3" />
                         Once launched, some DAO parameters cannot be changed. Please review carefully.
                       </p>
                     </div>
@@ -1029,33 +1029,33 @@ const LaunchDAO = () => {
                 )}
               </div>
 
-              {/* Enhanced Navigation Buttons */}
-              <div className="flex justify-between mt-8 pt-6 border-t border-gray-700">
+              {/* Enhanced Navigation Buttons with More Spacing */}
+              <div className="flex justify-between mt-16 pt-8 border-t border-gray-700">
                 <button
                   onClick={prevStep}
                   disabled={currentStep === 1}
-                  className="px-8 py-4 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-mono flex items-center"
+                  className="px-10 py-5 border border-gray-600 text-gray-300 rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-mono flex items-center text-lg"
                 >
-                  <ArrowRight className="w-5 h-5 mr-2 rotate-180" />
+                  <ArrowRight className="w-6 h-6 mr-3 rotate-180" />
                   Previous
                 </button>
 
                 {currentStep < 5 ? (
                   <button
                     onClick={nextStep}
-                    className="px-10 py-4 bg-gradient-to-r from-cyan-500 to-purple-600 text-white rounded-lg hover:from-cyan-600 hover:to-purple-700 transition-all font-mono flex items-center shadow-lg"
+                    className="px-12 py-5 bg-gradient-to-r from-cyan-500 to-purple-600 text-white rounded-xl hover:from-cyan-600 hover:to-purple-700 transition-all font-mono flex items-center shadow-lg text-lg"
                   >
                     Next
-                    <ArrowRight className="w-5 h-5 ml-2" />
+                    <ArrowRight className="w-6 h-6 ml-3" />
                   </button>
                 ) : (
                   <motion.button
                     onClick={handleSubmit}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="px-10 py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all font-mono flex items-center shadow-lg"
+                    className="px-12 py-5 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all font-mono flex items-center shadow-lg text-lg"
                   >
-                    <Rocket className="w-6 h-6 mr-2" />
+                    <Rocket className="w-7 h-7 mr-3" />
                     Launch DAO
                   </motion.button>
                 )}

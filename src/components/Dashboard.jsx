@@ -159,30 +159,30 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
-      {/* Interactive Animated Background */}
+      {/* Interactive Animated Background with Lighter Particles */}
       <div className="fixed inset-0 z-0">
         <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-cyan-900/20"></div>
         
-        {/* Enhanced Floating Particles with Interactive Movement */}
+        {/* Enhanced Floating Particles with Lighter Colors */}
         {[...Array(80)].map((_, i) => (
           <motion.div
             key={i}
             className={`absolute rounded-full ${
-              i % 5 === 0 ? 'w-3 h-3 bg-cyan-400' :
-              i % 5 === 1 ? 'w-2 h-2 bg-purple-400' :
-              i % 5 === 2 ? 'w-1.5 h-1.5 bg-pink-400' :
-              i % 5 === 3 ? 'w-2.5 h-2.5 bg-blue-400' :
-              'w-1 h-1 bg-green-400'
+              i % 5 === 0 ? 'w-3 h-3 bg-cyan-300/40' :
+              i % 5 === 1 ? 'w-2 h-2 bg-purple-300/40' :
+              i % 5 === 2 ? 'w-1.5 h-1.5 bg-pink-300/40' :
+              i % 5 === 3 ? 'w-2.5 h-2.5 bg-blue-300/40' :
+              'w-1 h-1 bg-green-300/40'
             }`}
             initial={{
               x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
               y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
-              opacity: Math.random() * 0.8 + 0.2,
+              opacity: Math.random() * 0.6 + 0.1,
             }}
             animate={{
               x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
               y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
-              opacity: [0.2, 1, 0.2],
+              opacity: [0.1, 0.6, 0.1],
               scale: [1, 1.2, 1],
             }}
             transition={{
@@ -192,21 +192,21 @@ const Dashboard = () => {
             }}
             whileHover={{
               scale: 2,
-              opacity: 1,
+              opacity: 0.8,
               transition: { duration: 0.3 }
             }}
           />
         ))}
 
         {/* Interactive Grid Pattern */}
-        <div className="absolute inset-0 opacity-5">
+        <div className="absolute inset-0 opacity-3">
           <div className="grid grid-cols-20 grid-rows-20 h-full w-full">
             {[...Array(400)].map((_, i) => (
               <motion.div 
                 key={i} 
-                className="border border-cyan-500/20"
+                className="border border-cyan-500/10"
                 whileHover={{
-                  backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                  backgroundColor: 'rgba(6, 182, 212, 0.05)',
                   transition: { duration: 0.2 }
                 }}
               />
@@ -214,14 +214,14 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Floating Geometric Shapes */}
+        {/* Floating Geometric Shapes with Lighter Colors */}
         {[...Array(12)].map((_, i) => (
           <motion.div
             key={`shape-${i}`}
             className={`absolute ${
-              i % 3 === 0 ? 'w-8 h-8 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-full' :
-              i % 3 === 1 ? 'w-6 h-6 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rotate-45' :
-              'w-4 h-8 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-full'
+              i % 3 === 0 ? 'w-8 h-8 bg-gradient-to-r from-cyan-400/15 to-blue-400/15 rounded-full' :
+              i % 3 === 1 ? 'w-6 h-6 bg-gradient-to-r from-purple-400/15 to-pink-400/15 rotate-45' :
+              'w-4 h-8 bg-gradient-to-r from-green-400/15 to-emerald-400/15 rounded-full'
             }`}
             initial={{
               x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
@@ -246,11 +246,11 @@ const Dashboard = () => {
           />
         ))}
 
-        {/* Pulsing Orbs */}
+        {/* Pulsing Orbs with Lighter Colors */}
         {[...Array(6)].map((_, i) => (
           <motion.div
             key={`orb-${i}`}
-            className="absolute w-16 h-16 rounded-full bg-gradient-to-r from-cyan-500/10 to-purple-500/10 backdrop-blur-sm"
+            className="absolute w-16 h-16 rounded-full bg-gradient-to-r from-cyan-400/8 to-purple-400/8 backdrop-blur-sm"
             initial={{
               x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
               y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
@@ -258,7 +258,7 @@ const Dashboard = () => {
             }}
             animate={{
               scale: [0.5, 1.2, 0.5],
-              opacity: [0.3, 0.8, 0.3],
+              opacity: [0.2, 0.6, 0.2],
             }}
             transition={{
               duration: Math.random() * 6 + 4,
@@ -267,7 +267,7 @@ const Dashboard = () => {
             }}
             whileHover={{
               scale: 2,
-              opacity: 1,
+              opacity: 0.8,
               transition: { duration: 0.3 }
             }}
           />
