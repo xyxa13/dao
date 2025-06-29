@@ -6,56 +6,46 @@ import Result "mo:base/Result";
 import Principal "mo:base/Principal";
 import Debug "mo:base/Debug";
 import Buffer "mo:base/Buffer";
-import Text "mo:base/Text";
 
 import Types "../shared/types";
 
-actor ProposalsCanister {
+actor GovernanceCanister {
     type Result<T, E> = Result.Result<T, E>;
     type Proposal = Types.Proposal;
-    type ProposalId = Types.ProposalId;
     type Vote = Types.Vote;
+    type ProposalId = Types.ProposalId;
+    type GovernanceConfig = Types.GovernanceConfig;
+    type GovernanceError = Types.GovernanceError;
+    type CommonError = Types.CommonError;
 
     // Stable storage for upgrades
     private stable var nextProposalId : Nat = 1;
     private stable var proposalsEntries : [(ProposalId, Proposal)] = [];
     private stable var votesEntries : [(Text, Vote)] = []; // Key: proposalId_voter
-    private stable var proposalTemplatesEntries : [(Text, ProposalTemplate)] = [];
+    private stable var configEntries : [(Text, GovernanceConfig)] = [];
 
     // Runtime storage
-    private var proposals = HashMap.HashMap<ProposalId, Proposal>(100, Nat.equal, func(n: Nat) : Nat32 { Nat32.fromNat(n) });
-    private var votes = HashMap.HashMap<Text, Vote>(500, Text.equal, Text.hash);
-    private var proposalTemplates = HashMap.HashMap<Text, ProposalTemplate>(10, Text.equal, Text.hash);
+    private var proposals = HashMap.HashMap<ProposalId, Proposal>(10, Nat.equal, func(n: Nat) : Nat32 { Nat32.fromNat(n) });
+    private var votes = HashMap.HashMap<Text, Vote>(100, Text.equal, Text.hash);
+    private var config = HashMap.HashMap<Text, GovernanceConfig>(1, Text.equal, Text.hash);
 
-    // Proposal template type
-    type ProposalTemplate = {
-        id: Text;
-        name: Text;
-        description: Text;
-        category: Text;
-        requiredFields: [Text];
-        votingPeriod: Nat;
-        quorumThreshold: Nat;
-        approvalThreshold: Nat;
-        isActive: Bool;
+    // Initialize default configuration
+    private func initializeConfig() {
+        let defaultConfig : GovernanceConfig = {
+            votingPeriod = 7 * 24 * 60 * 60 * 1_000_000_000; // 7 days in nanoseconds
+            quorumThreshold = 1000; // Minimum 1000 voting power
+            approvalThreshold = 51; // 51% approval needed
+            proposalDeposit = 100; // 100 tokens required
+            maxProposalsPerUser = 3; // Max 3 active proposals per user
+        };
+        config.put("default", defaultConfig);
     };
-
-    // Proposal categories
-    private let proposalCategories = [
-        "Treasury",
-        "Governance",
-        "Technical",
-        "Community",
-        "Partnership",
-        "Marketing",
-        "Operations"
-    ];
 
     // System functions for upgrades
     system func preupgrade() {
         proposalsEntries := Iter.toArray(proposals.entries());
         votesEntries := Iter.toArray(votes.entries());
-        proposalTemplatesEntries := Iter.toArray(proposalTemplates.entries());
+        configEntries := Iter.toArray(config.entries());
     };
 
     system func postupgrade() {
@@ -71,223 +61,52 @@ actor ProposalsCanister {
             Text.equal, 
             Text.hash
         );
-        proposalTemplates := HashMap.fromIter<Text, ProposalTemplate>(
-            proposalTemplatesEntries.vals(), 
-            proposalTemplatesEntries.size(), 
+        config := HashMap.fromIter<Text, GovernanceConfig>(
+            configEntries.vals(), 
+            configEntries.size(), 
             Text.equal, 
             Text.hash
         );
         
-        if (proposalTemplates.size() == 0) {
-            initializeTemplates();
+        if (config.size() == 0) {
+            initializeConfig();
         };
     };
 
-    // Helper function to parse Nat from Text
-    private func parseNat(text: Text) : ?Nat {
-        var result : Nat = 0;
-        var multiplier : Nat = 1;
-        let chars = Text.toIter(text);
-        let charArray = Iter.toArray(chars);
-        
-        if (charArray.size() == 0) return null;
-        
-        var i = charArray.size();
-        while (i > 0) {
-            i -= 1;
-            let char = charArray[i];
-            switch (char) {
-                case ('0') { result += 0 * multiplier; };
-                case ('1') { result += 1 * multiplier; };
-                case ('2') { result += 2 * multiplier; };
-                case ('3') { result += 3 * multiplier; };
-                case ('4') { result += 4 * multiplier; };
-                case ('5') { result += 5 * multiplier; };
-                case ('6') { result += 6 * multiplier; };
-                case ('7') { result += 7 * multiplier; };
-                case ('8') { result += 8 * multiplier; };
-                case ('9') { result += 9 * multiplier; };
-                case (_) { return null; };
-            };
-            multiplier *= 10;
-        };
-        ?result
-    };
-
-    // Initialize default proposal templates
-    private func initializeTemplates() {
-        let templates = [
-            {
-                id = "treasury_transfer";
-                name = "Treasury Transfer";
-                description = "Proposal to transfer funds from treasury";
-                category = "Treasury";
-                requiredFields = ["recipient", "amount", "reason"];
-                votingPeriod = 7 * 24 * 60 * 60 * 1_000_000_000; // 7 days
-                quorumThreshold = 1000;
-                approvalThreshold = 51;
-                isActive = true;
-            },
-            {
-                id = "parameter_change";
-                name = "Parameter Change";
-                description = "Proposal to change governance parameters";
-                category = "Governance";
-                requiredFields = ["parameter", "newValue", "justification"];
-                votingPeriod = 10 * 24 * 60 * 60 * 1_000_000_000; // 10 days
-                quorumThreshold = 1500;
-                approvalThreshold = 67;
-                isActive = true;
-            },
-            {
-                id = "membership_change";
-                name = "Membership Change";
-                description = "Proposal to add or remove DAO members";
-                category = "Community";
-                requiredFields = ["member", "action", "role", "justification"];
-                votingPeriod = 5 * 24 * 60 * 60 * 1_000_000_000; // 5 days
-                quorumThreshold = 800;
-                approvalThreshold = 60;
-                isActive = true;
-            },
-            {
-                id = "text_proposal";
-                name = "Text Proposal";
-                description = "General text proposal for discussion";
-                category = "Community";
-                requiredFields = ["content"];
-                votingPeriod = 7 * 24 * 60 * 60 * 1_000_000_000; // 7 days
-                quorumThreshold = 500;
-                approvalThreshold = 51;
-                isActive = true;
-            }
-        ];
-
-        for (template in templates.vals()) {
-            proposalTemplates.put(template.id, template);
-        };
-    };
-
-    // Initialize templates on first deployment
-    if (proposalTemplates.size() == 0) {
-        initializeTemplates();
+    // Initialize on first deployment
+    if (config.size() == 0) {
+        initializeConfig();
     };
 
     // Public functions
 
-    // Create proposal from template
-    public shared(msg) func createProposalFromTemplate(
-        templateId: Text,
+    // Create a new proposal
+    public shared(msg) func createProposal(
         title: Text,
         description: Text,
-        proposalData: [(Text, Text)] // Key-value pairs for template fields
+        proposalType: Types.ProposalType,
+        votingPeriod: ?Nat
     ) : async Result<ProposalId, Text> {
         let caller = msg.caller;
-
-        let template = switch (proposalTemplates.get(templateId)) {
-            case (?t) t;
-            case null return #err("Template not found");
+        
+        // Check if user has too many active proposals
+        let activeProposals = getActiveProposalsByUser(caller);
+        let currentConfig = switch (config.get("default")) {
+            case (?c) c;
+            case null return #err("Configuration not found");
         };
-
-        if (not template.isActive) {
-            return #err("Template is not active");
-        };
-
-        // Validate required fields
-        let dataMap = HashMap.fromIter<Text, Text>(
-            proposalData.vals(),
-            proposalData.size(),
-            Text.equal,
-            Text.hash
-        );
-
-        for (field in template.requiredFields.vals()) {
-            switch (dataMap.get(field)) {
-                case null return #err("Missing required field: " # field);
-                case (?value) {
-                    if (Text.size(value) == 0) {
-                        return #err("Empty value for required field: " # field);
-                    };
-                };
-            };
-        };
-
-        // Create proposal type based on template
-        let proposalType = switch (templateId) {
-            case ("treasury_transfer") {
-                let recipient = switch (dataMap.get("recipient")) {
-                    case (?r) switch (Principal.fromText(r)) {
-                        case (#ok(p)) p;
-                        case (#err(_)) return #err("Invalid recipient principal");
-                    };
-                    case null return #err("Missing recipient");
-                };
-                let amount = switch (dataMap.get("amount")) {
-                    case (?a) switch (parseNat(a)) {
-                        case (?n) n;
-                        case null return #err("Invalid amount");
-                    };
-                    case null return #err("Missing amount");
-                };
-                let reason = switch (dataMap.get("reason")) {
-                    case (?r) r;
-                    case null return #err("Missing reason");
-                };
-                #treasuryTransfer({
-                    recipient = recipient;
-                    amount = amount;
-                    reason = reason;
-                })
-            };
-            case ("parameter_change") {
-                let parameter = switch (dataMap.get("parameter")) {
-                    case (?p) p;
-                    case null return #err("Missing parameter");
-                };
-                let newValue = switch (dataMap.get("newValue")) {
-                    case (?v) v;
-                    case null return #err("Missing new value");
-                };
-                #parameterChange({
-                    parameter = parameter;
-                    newValue = newValue;
-                    oldValue = ""; // Would be fetched from current config
-                })
-            };
-            case ("membership_change") {
-                let member = switch (dataMap.get("member")) {
-                    case (?m) switch (Principal.fromText(m)) {
-                        case (#ok(p)) p;
-                        case (#err(_)) return #err("Invalid member principal");
-                    };
-                    case null return #err("Missing member");
-                };
-                let action = switch (dataMap.get("action")) {
-                    case (?"add") #add;
-                    case (?"remove") #remove;
-                    case (_) return #err("Invalid action, must be 'add' or 'remove'");
-                };
-                let role = switch (dataMap.get("role")) {
-                    case (?r) r;
-                    case null return #err("Missing role");
-                };
-                #membershipChange({
-                    member = member;
-                    action = action;
-                    role = role;
-                })
-            };
-            case (_) {
-                let content = switch (dataMap.get("content")) {
-                    case (?c) c;
-                    case null description;
-                };
-                #textProposal(content)
-            };
+        
+        if (activeProposals.size() >= currentConfig.maxProposalsPerUser) {
+            return #err("Maximum active proposals limit reached");
         };
 
         let proposalId = nextProposalId;
         nextProposalId += 1;
+
+        let period = switch (votingPeriod) {
+            case (?p) p;
+            case null currentConfig.votingPeriod;
+        };
 
         let proposal : Proposal = {
             id = proposalId;
@@ -300,22 +119,21 @@ actor ProposalsCanister {
             votesAgainst = 0;
             totalVotingPower = 0;
             createdAt = Time.now();
-            votingDeadline = Time.now() + template.votingPeriod;
-            executionDeadline = ?(Time.now() + template.votingPeriod + (24 * 60 * 60 * 1_000_000_000));
-            quorumThreshold = template.quorumThreshold;
-            approvalThreshold = template.approvalThreshold;
+            votingDeadline = Time.now() + period;
+            executionDeadline = ?(Time.now() + period + (24 * 60 * 60 * 1_000_000_000)); // 1 day after voting
+            quorumThreshold = currentConfig.quorumThreshold;
+            approvalThreshold = currentConfig.approvalThreshold;
         };
 
         proposals.put(proposalId, proposal);
         #ok(proposalId)
     };
 
-    // Vote on proposal with delegation support - FIXED: Updated to use #inFavor
-    public shared(msg) func voteWithDelegation(
+    // Cast a vote on a proposal - FIXED: Updated to use #inFavor instead of #for
+    public shared(msg) func vote(
         proposalId: ProposalId,
         choice: Types.VoteChoice,
         votingPower: Nat,
-        delegatedVotes: ?[(Principal, Nat)], // Optional delegated votes
         reason: ?Text
     ) : async Result<(), Text> {
         let caller = msg.caller;
@@ -327,11 +145,13 @@ actor ProposalsCanister {
             case null {};
         };
 
+        // Get proposal
         let proposal = switch (proposals.get(proposalId)) {
             case (?p) p;
             case null return #err("Proposal not found");
         };
 
+        // Check if proposal is active and not expired
         if (proposal.status != #active) {
             return #err("Proposal is not active");
         };
@@ -340,23 +160,12 @@ actor ProposalsCanister {
             return #err("Voting period has ended");
         };
 
-        // Calculate total voting power including delegated votes
-        var totalPower = votingPower;
-        switch (delegatedVotes) {
-            case (?delegated) {
-                for ((delegator, power) in delegated.vals()) {
-                    // In real implementation, verify delegation authorization
-                    totalPower += power;
-                };
-            };
-            case null {};
-        };
-
+        // Create vote record
         let vote : Vote = {
             voter = caller;
             proposalId = proposalId;
             choice = choice;
-            votingPower = totalPower;
+            votingPower = votingPower;
             timestamp = Time.now();
             reason = reason;
         };
@@ -367,19 +176,19 @@ actor ProposalsCanister {
         let updatedProposal = switch (choice) {
             case (#inFavor) {
                 proposal with {
-                    votesFor = proposal.votesFor + totalPower;
-                    totalVotingPower = proposal.totalVotingPower + totalPower;
+                    votesFor = proposal.votesFor + votingPower;
+                    totalVotingPower = proposal.totalVotingPower + votingPower;
                 }
             };
             case (#against) {
                 proposal with {
-                    votesAgainst = proposal.votesAgainst + totalPower;
-                    totalVotingPower = proposal.totalVotingPower + totalPower;
+                    votesAgainst = proposal.votesAgainst + votingPower;
+                    totalVotingPower = proposal.totalVotingPower + votingPower;
                 }
             };
             case (#abstain) {
                 proposal with {
-                    totalVotingPower = proposal.totalVotingPower + totalPower;
+                    totalVotingPower = proposal.totalVotingPower + votingPower;
                 }
             };
         };
@@ -388,165 +197,95 @@ actor ProposalsCanister {
         #ok()
     };
 
-    // Batch vote on multiple proposals
-    public shared(msg) func batchVote(
-        votesToCast: [(ProposalId, Types.VoteChoice, Nat, ?Text)]
-    ) : async Result<[Result<(), Text>], Text> {
-        let caller = msg.caller;
-        let results = Buffer.Buffer<Result<(), Text>>(votesToCast.size());
-
-        for ((proposalId, choice, votingPower, reason) in votesToCast.vals()) {
-            let result = await voteWithDelegation(proposalId, choice, votingPower, null, reason);
-            results.add(result);
+    // Execute a proposal
+    public shared(msg) func executeProposal(proposalId: ProposalId) : async Result<(), Text> {
+        let proposal = switch (proposals.get(proposalId)) {
+            case (?p) p;
+            case null return #err("Proposal not found");
         };
 
-        #ok(Buffer.toArray(results))
+        // Check if proposal can be executed
+        if (proposal.status != #active) {
+            return #err("Proposal is not active");
+        };
+
+        if (Time.now() <= proposal.votingDeadline) {
+            return #err("Voting period has not ended");
+        };
+
+        // Check quorum
+        if (proposal.totalVotingPower < proposal.quorumThreshold) {
+            let failedProposal = proposal with { status = #failed };
+            proposals.put(proposalId, failedProposal);
+            return #err("Quorum not met");
+        };
+
+        // Check approval threshold
+        let approvalRate = if (proposal.totalVotingPower > 0) {
+            (proposal.votesFor * 100) / proposal.totalVotingPower
+        } else { 0 };
+
+        let newStatus = if (approvalRate >= proposal.approvalThreshold) {
+            #succeeded
+        } else {
+            #failed
+        };
+
+        let updatedProposal = proposal with { status = newStatus };
+        proposals.put(proposalId, updatedProposal);
+
+        if (newStatus == #succeeded) {
+            // Here you would implement the actual execution logic
+            // For now, we just mark it as executed
+            let executedProposal = updatedProposal with { status = #executed };
+            proposals.put(proposalId, executedProposal);
+        };
+
+        #ok()
     };
 
     // Query functions
 
-    // Get proposals by category
-    public query func getProposalsByCategory(category: Text) : async [Proposal] {
+    // Get proposal by ID
+    public query func getProposal(proposalId: ProposalId) : async ?Proposal {
+        proposals.get(proposalId)
+    };
+
+    // Get all proposals
+    public query func getAllProposals() : async [Proposal] {
+        Iter.toArray(proposals.vals())
+    };
+
+    // Get active proposals
+    public query func getActiveProposals() : async [Proposal] {
+        let activeProposals = Buffer.Buffer<Proposal>(0);
+        for (proposal in proposals.vals()) {
+            if (proposal.status == #active and Time.now() <= proposal.votingDeadline) {
+                activeProposals.add(proposal);
+            };
+        };
+        Buffer.toArray(activeProposals)
+    };
+
+    // Get proposals by status
+    public query func getProposalsByStatus(status: Types.ProposalStatus) : async [Proposal] {
         let filteredProposals = Buffer.Buffer<Proposal>(0);
         for (proposal in proposals.vals()) {
-            // In real implementation, you'd store category with proposal
-            // For now, we'll derive it from proposal type
-            let proposalCategory = getProposalCategory(proposal.proposalType);
-            if (proposalCategory == category) {
+            if (proposal.status == status) {
                 filteredProposals.add(proposal);
             };
         };
         Buffer.toArray(filteredProposals)
     };
 
-    // Get trending proposals (most voted recently)
-    public query func getTrendingProposals(limit: Nat) : async [Proposal] {
-        let allProposals = Iter.toArray(proposals.vals());
-        let sortedProposals = Array.sort(allProposals, func(a: Proposal, b: Proposal) : {#less; #equal; #greater} {
-            let aScore = a.totalVotingPower + (if (Time.now() - a.createdAt < 24 * 60 * 60 * 1_000_000_000) 1000 else 0);
-            let bScore = b.totalVotingPower + (if (Time.now() - b.createdAt < 24 * 60 * 60 * 1_000_000_000) 1000 else 0);
-            
-            if (aScore > bScore) #less
-            else if (aScore < bScore) #greater
-            else #equal
-        });
-        
-        if (sortedProposals.size() <= limit) {
-            sortedProposals
-        } else {
-            Array.tabulate<Proposal>(limit, func(i) = sortedProposals[i])
-        }
+    // Get user's vote on a proposal
+    public query func getUserVote(proposalId: ProposalId, user: Principal) : async ?Vote {
+        let voteKey = Nat.toText(proposalId) # "_" # Principal.toText(user);
+        votes.get(voteKey)
     };
 
-    // Get proposal templates
-    public query func getProposalTemplates() : async [ProposalTemplate] {
-        let activeTemplates = Buffer.Buffer<ProposalTemplate>(0);
-        for (template in proposalTemplates.vals()) {
-            if (template.isActive) {
-                activeTemplates.add(template);
-            };
-        };
-        Buffer.toArray(activeTemplates)
-    };
-
-    // Get template by ID
-    public query func getProposalTemplate(templateId: Text) : async ?ProposalTemplate {
-        proposalTemplates.get(templateId)
-    };
-
-    // Get proposal categories
-    public query func getProposalCategories() : async [Text] {
-        proposalCategories
-    };
-
-    // Get voting statistics for a proposal
-    public query func getProposalVotingStats(proposalId: ProposalId) : async ?{
-        totalVotes: Nat;
-        votesFor: Nat;
-        votesAgainst: Nat;
-        abstentions: Nat;
-        participationRate: Float;
-        approvalRate: Float;
-        timeRemaining: Int;
-    } {
-        switch (proposals.get(proposalId)) {
-            case (?proposal) {
-                let proposalVotes = getProposalVotesInternal(proposalId);
-                var abstentions = 0;
-                
-                for (vote in proposalVotes.vals()) {
-                    if (vote.choice == #abstain) {
-                        abstentions += vote.votingPower;
-                    };
-                };
-
-                let participationRate = if (proposal.totalVotingPower > 0) {
-                    Float.fromInt(proposal.totalVotingPower) / Float.fromInt(proposal.quorumThreshold) * 100.0
-                } else { 0.0 };
-
-                let approvalRate = if (proposal.totalVotingPower > 0) {
-                    Float.fromInt(proposal.votesFor) / Float.fromInt(proposal.totalVotingPower) * 100.0
-                } else { 0.0 };
-
-                ?{
-                    totalVotes = proposalVotes.size();
-                    votesFor = proposal.votesFor;
-                    votesAgainst = proposal.votesAgainst;
-                    abstentions = abstentions;
-                    participationRate = participationRate;
-                    approvalRate = approvalRate;
-                    timeRemaining = proposal.votingDeadline - Time.now();
-                }
-            };
-            case null null;
-        }
-    };
-
-    // Administrative functions
-
-    // Add new proposal template
-    public shared(msg) func addProposalTemplate(template: ProposalTemplate) : async Result<(), Text> {
-        // In real implementation, only governance should be able to do this
-        proposalTemplates.put(template.id, template);
-        #ok()
-    };
-
-    // Update proposal template
-    public shared(msg) func updateProposalTemplate(templateId: Text, template: ProposalTemplate) : async Result<(), Text> {
-        // In real implementation, only governance should be able to do this
-        switch (proposalTemplates.get(templateId)) {
-            case (?_) {
-                proposalTemplates.put(templateId, template);
-                #ok()
-            };
-            case null #err("Template not found");
-        }
-    };
-
-    // Deactivate proposal template
-    public shared(msg) func deactivateProposalTemplate(templateId: Text) : async Result<(), Text> {
-        // In real implementation, only governance should be able to do this
-        switch (proposalTemplates.get(templateId)) {
-            case (?template) {
-                let updatedTemplate = template with { isActive = false };
-                proposalTemplates.put(templateId, updatedTemplate);
-                #ok()
-            };
-            case null #err("Template not found");
-        }
-    };
-
-    // Helper functions
-    private func getProposalCategory(proposalType: Types.ProposalType) : Text {
-        switch (proposalType) {
-            case (#treasuryTransfer(_)) "Treasury";
-            case (#parameterChange(_)) "Governance";
-            case (#membershipChange(_)) "Community";
-            case (#textProposal(_)) "Community";
-        }
-    };
-
-    private func getProposalVotesInternal(proposalId: ProposalId) : [Vote] {
+    // Get all votes for a proposal
+    public query func getProposalVotes(proposalId: ProposalId) : async [Vote] {
         let proposalVotes = Buffer.Buffer<Vote>(0);
         for (vote in votes.vals()) {
             if (vote.proposalId == proposalId) {
@@ -554,5 +293,58 @@ actor ProposalsCanister {
             };
         };
         Buffer.toArray(proposalVotes)
+    };
+
+    // Get governance configuration
+    public query func getConfig() : async ?GovernanceConfig {
+        config.get("default")
+    };
+
+    // Update governance configuration (admin only)
+    public shared(msg) func updateConfig(newConfig: GovernanceConfig) : async Result<(), Text> {
+        // In a real implementation, you'd check if the caller is an admin
+        config.put("default", newConfig);
+        #ok()
+    };
+
+    // Helper functions
+    private func getActiveProposalsByUser(user: Principal) : [Proposal] {
+        let userProposals = Buffer.Buffer<Proposal>(0);
+        for (proposal in proposals.vals()) {
+            if (proposal.proposer == user and proposal.status == #active) {
+                userProposals.add(proposal);
+            };
+        };
+        Buffer.toArray(userProposals)
+    };
+
+    // Get governance statistics
+    public query func getGovernanceStats() : async {
+        totalProposals: Nat;
+        activeProposals: Nat;
+        succeededProposals: Nat;
+        failedProposals: Nat;
+        totalVotes: Nat;
+    } {
+        var activeCount = 0;
+        var succeededCount = 0;
+        var failedCount = 0;
+
+        for (proposal in proposals.vals()) {
+            switch (proposal.status) {
+                case (#active) activeCount += 1;
+                case (#succeeded or #executed) succeededCount += 1;
+                case (#failed) failedCount += 1;
+                case (_) {};
+            };
+        };
+
+        {
+            totalProposals = proposals.size();
+            activeProposals = activeCount;
+            succeededProposals = succeededCount;
+            failedProposals = failedCount;
+            totalVotes = votes.size();
+        }
     };
 }
