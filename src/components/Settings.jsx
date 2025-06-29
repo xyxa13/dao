@@ -1,720 +1,962 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import BackgroundParticles from './BackgroundParticles';
 import { 
-  User, 
-  Shield, 
-  Bell, 
-  Palette, 
-  Globe, 
-  Lock, 
-  Key, 
-  Eye, 
-  EyeOff,
-  Save,
-  ArrowLeft,
-  Copy,
-  Check,
-  Edit3,
-  Camera,
-  Trash2,
-  Download,
+  Rocket, 
+  Users, 
+  Coins, 
+  Target, 
+  Calendar,
+  ArrowRight,
+  CheckCircle,
   Upload,
-  RefreshCw,
-  AlertTriangle,
-  Info,
-  Settings as SettingsIcon,
-  Moon,
-  Sun,
-  Volume2,
-  VolumeX,
-  Smartphone,
-  Mail,
-  MessageSquare,
+  Globe,
+  Shield,
   Zap,
-  DollarSign,
   TrendingUp,
-  Activity,
-  Award,
+  X,
+  Plus,
+  Sparkles,
   Star,
-  ChevronRight,
-  ExternalLink
+  Settings,
+  Vote,
+  DollarSign,
+  Lock,
+  Unlock,
+  BarChart3,
+  FileText,
+  MessageSquare,
+  Gavel,
+  Trophy,
+  Gift,
+  AlertCircle,
+  ChevronDown
 } from 'lucide-react';
 
-const Settings = () => {
-  const { isAuthenticated, principal, logout, userSettings, updateUserSettings } = useAuth();
+const LaunchDAO = () => {
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('profile');
-  const [copied, setCopied] = useState(false);
-  const [showPrincipal, setShowPrincipal] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [tempDisplayName, setTempDisplayName] = useState(userSettings.displayName);
+  const [currentStep, setCurrentStep] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    category: '',
+    fundingGoal: '',
+    duration: '',
+    tokenSymbol: '',
+    tokenSupply: '',
+    minInvestment: '',
+    website: '',
+    whitepaper: null,
+    logo: null,
+    modules: []
+  });
 
-  React.useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/signin');
-    }
-  }, [isAuthenticated, navigate]);
-
-  React.useEffect(() => {
-    setTempDisplayName(userSettings.displayName);
-  }, [userSettings.displayName]);
-
-  const copyPrincipal = async () => {
-    await navigator.clipboard.writeText(principal);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handleSaveDisplayName = async () => {
-    setIsSaving(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Update global user settings
-    const newSettings = { ...userSettings, displayName: tempDisplayName };
-    updateUserSettings(newSettings);
-    
-    setIsEditing(false);
-    setIsSaving(false);
-  };
-
-  const handleSettingChange = (category, setting, value) => {
-    const newSettings = {
-      ...userSettings,
-      [category]: {
-        ...userSettings[category],
-        [setting]: value
-      }
-    };
-    updateUserSettings(newSettings);
-  };
-
-  const tabs = [
-    { id: 'profile', label: 'Profile', icon: User },
-    { id: 'security', label: 'Security', icon: Shield },
-    { id: 'notifications', label: 'Notifications', icon: Bell },
-    { id: 'preferences', label: 'Preferences', icon: SettingsIcon },
-    { id: 'privacy', label: 'Privacy', icon: Eye },
-    { id: 'advanced', label: 'Advanced', icon: Zap }
+  const steps = [
+    { id: 1, title: 'Basic Info', icon: Globe },
+    { id: 2, title: 'Module Selection', icon: Settings },
+    { id: 3, title: 'Tokenomics', icon: Coins },
+    { id: 4, title: 'Funding', icon: Target },
+    { id: 5, title: 'Review & Launch', icon: CheckCircle }
   ];
 
-  const renderProfileTab = () => (
-    <div className="space-y-6 lg:space-y-8">
-      {/* Profile Header */}
-      <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-4 lg:p-6 backdrop-blur-sm">
-        <h3 className="text-lg lg:text-xl font-bold text-white mb-4 lg:mb-6 flex items-center">
-          <User className="w-5 h-5 mr-2 text-cyan-400" />
-          Profile Information
-        </h3>
-        
-        <div className="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-6">
-          {/* Avatar Section */}
-          <div className="relative mx-auto sm:mx-0">
-            <div className="w-20 h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-cyan-400 to-purple-500 rounded-xl flex items-center justify-center shadow-lg">
-              <User className="w-10 h-10 lg:w-12 lg:h-12 text-white" />
-            </div>
-            <button className="absolute -bottom-2 -right-2 w-7 h-7 lg:w-8 lg:h-8 bg-cyan-500 hover:bg-cyan-600 rounded-full flex items-center justify-center transition-colors">
-              <Camera className="w-3 h-3 lg:w-4 lg:h-4 text-white" />
-            </button>
-          </div>
+  const categories = [
+    { value: 'DeFi', label: 'DeFi', icon: '💰', description: 'Decentralized Finance protocols', gradient: 'from-green-400 to-emerald-500' },
+    { value: 'NFT', label: 'NFT', icon: '🎨', description: 'Non-Fungible Token projects', gradient: 'from-purple-400 to-pink-500' },
+    { value: 'Gaming', label: 'Gaming', icon: '🎮', description: 'Blockchain gaming platforms', gradient: 'from-blue-400 to-cyan-500' },
+    { value: 'Infrastructure', label: 'Infrastructure', icon: '🏗️', description: 'Blockchain infrastructure', gradient: 'from-orange-400 to-red-500' },
+    { value: 'Social', label: 'Social', icon: '👥', description: 'Social and community platforms', gradient: 'from-indigo-400 to-purple-500' },
+    { value: 'Metaverse', label: 'Metaverse', icon: '🌐', description: 'Virtual world experiences', gradient: 'from-cyan-400 to-blue-500' },
+    { value: 'AI/ML', label: 'AI/ML', icon: '🤖', description: 'Artificial Intelligence & ML', gradient: 'from-pink-400 to-rose-500' },
+    { value: 'Other', label: 'Other', icon: '📦', description: 'Other innovative projects', gradient: 'from-gray-400 to-gray-600' }
+  ];
 
-          {/* Profile Details */}
-          <div className="flex-1 w-full space-y-4">
-            {/* Display Name */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-300 mb-2">Display Name</label>
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
-                {isEditing ? (
-                  <input
-                    type="text"
-                    value={tempDisplayName}
-                    onChange={(e) => setTempDisplayName(e.target.value)}
-                    className="flex-1 px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white"
-                    placeholder="Enter your display name"
-                  />
-                ) : (
-                  <div className="flex-1 px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg text-white">
-                    {userSettings.displayName}
-                  </div>
-                )}
-                
-                {isEditing ? (
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={handleSaveDisplayName}
-                      disabled={isSaving}
-                      className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center space-x-2 disabled:opacity-50"
-                    >
-                      {isSaving ? (
-                        <RefreshCw className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <Save className="w-4 h-4" />
-                      )}
-                      <span className="hidden sm:inline">{isSaving ? 'Saving...' : 'Save'}</span>
-                    </button>
-                    <button
-                      onClick={() => {
-                        setIsEditing(false);
-                        setTempDisplayName(userSettings.displayName);
-                      }}
-                      className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
-                    >
-                      <span className="hidden sm:inline">Cancel</span>
-                      <span className="sm:hidden">✕</span>
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => setIsEditing(true)}
-                    className="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg transition-colors flex items-center space-x-2"
-                  >
-                    <Edit3 className="w-4 h-4" />
-                    <span className="hidden sm:inline">Edit</span>
-                  </button>
-                )}
-              </div>
-            </div>
+  // Exact modules from DAO Maker example - NO AUTO SELECTION
+  const moduleCategories = [
+    {
+      name: 'Governance',
+      description: 'Voting mechanisms and proposal systems',
+      icon: Vote,
+      modules: [
+        {
+          id: 'token-weighted-voting',
+          name: 'Token-Weighted Voting',
+          description: 'Traditional token-based voting power',
+          selected: false,
+          disabled: false
+        },
+        {
+          id: 'quadratic-voting',
+          name: 'Quadratic Voting',
+          description: 'Quadratic voting to prevent whale dominance',
+          selected: false,
+          disabled: false
+        },
+        {
+          id: 'delegated-voting',
+          name: 'Delegated Voting',
+          description: 'Allow token holders to delegate their votes',
+          selected: false,
+          disabled: false
+        }
+      ]
+    },
+    {
+      name: 'Treasury',
+      description: 'Fund management and financial operations',
+      icon: DollarSign,
+      modules: [
+        {
+          id: 'multi-signature-wallet',
+          name: 'Multi-Signature Wallet',
+          description: 'Secure treasury with multiple approvals',
+          selected: false,
+          disabled: false
+        },
+        {
+          id: 'streaming-payments',
+          name: 'Streaming Payments',
+          description: 'Continuous payment streams for contributors',
+          selected: false,
+          disabled: false
+        },
+        {
+          id: 'token-vesting',
+          name: 'Token Vesting',
+          description: 'Time-locked token distribution',
+          selected: false,
+          disabled: false
+        }
+      ]
+    },
+    {
+      name: 'Staking',
+      description: 'Token staking and reward mechanisms',
+      icon: Zap,
+      modules: [
+        {
+          id: 'simple-staking',
+          name: 'Simple Staking',
+          description: 'Basic staking with fixed rewards',
+          selected: false,
+          disabled: false
+        },
+        {
+          id: 'liquidity-mining',
+          name: 'Liquidity Mining',
+          description: 'Rewards for providing liquidity',
+          selected: false,
+          disabled: false
+        },
+        {
+          id: 'governance-staking',
+          name: 'Governance Staking',
+          description: 'Stake tokens for voting power',
+          selected: false,
+          disabled: false
+        }
+      ]
+    },
+    {
+      name: 'Analytics',
+      description: 'Monitoring and reporting tools',
+      icon: BarChart3,
+      modules: [
+        {
+          id: 'analytics-dashboard',
+          name: 'Analytics Dashboard',
+          description: 'Real-time DAO metrics and KPIs',
+          selected: false,
+          disabled: false
+        },
+        {
+          id: 'alert-system',
+          name: 'Alert System',
+          description: 'Automated notifications for key events',
+          selected: false,
+          disabled: false
+        },
+        {
+          id: 'financial-reports',
+          name: 'Financial Reports',
+          description: 'Comprehensive financial reporting',
+          selected: false,
+          disabled: false
+        }
+      ]
+    }
+  ];
 
-            {/* Principal ID */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-300 mb-2">Principal ID</label>
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
-                <div className="flex-1 px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg font-mono text-cyan-400 text-xs lg:text-sm break-all">
-                  {showPrincipal ? principal : `${principal?.slice(0, 12)}...${principal?.slice(-8)}`}
-                </div>
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => setShowPrincipal(!showPrincipal)}
-                    className="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
-                  >
-                    {showPrincipal ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                  <button
-                    onClick={copyPrincipal}
-                    className="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
-                  >
-                    {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
-                  </button>
-                </div>
-              </div>
-            </div>
+  const [selectedModules, setSelectedModules] = useState(moduleCategories);
 
-            {/* Bio */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-300 mb-2">Bio</label>
-              <textarea
-                value={userSettings.bio}
-                onChange={(e) => updateUserSettings({ ...userSettings, bio: e.target.value })}
-                rows={3}
-                className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white resize-none"
-                placeholder="Tell us about yourself..."
-              />
-            </div>
-          </div>
-        </div>
-      </div>
+  const validateStep = (step) => {
+    const newErrors = {};
+    
+    switch (step) {
+      case 1:
+        if (!formData.name.trim()) newErrors.name = 'DAO name is required';
+        if (!formData.description.trim()) newErrors.description = 'Description is required';
+        if (!formData.category) newErrors.category = 'Category is required';
+        break;
+      case 3:
+        if (!formData.tokenSymbol.trim()) newErrors.tokenSymbol = 'Token symbol is required';
+        if (!formData.tokenSupply || formData.tokenSupply <= 0) newErrors.tokenSupply = 'Valid token supply is required';
+        break;
+      case 4:
+        if (!formData.fundingGoal || formData.fundingGoal <= 0) newErrors.fundingGoal = 'Valid funding goal is required';
+        if (!formData.duration || formData.duration <= 0) newErrors.duration = 'Valid duration is required';
+        if (!formData.minInvestment || formData.minInvestment <= 0) newErrors.minInvestment = 'Valid minimum investment is required';
+        break;
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
-      {/* Portfolio Stats - Responsive Grid */}
-      <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-4 lg:p-6 backdrop-blur-sm">
-        <h3 className="text-lg lg:text-xl font-bold text-white mb-4 lg:mb-6 flex items-center">
-          <TrendingUp className="w-5 h-5 mr-2 text-green-400" />
-          Portfolio Overview
-        </h3>
-        
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
-          {[
-            { label: 'Total Invested', value: '$12,450', icon: DollarSign, color: 'text-green-400' },
-            { label: 'Active Projects', value: '8', icon: Activity, color: 'text-blue-400' },
-            { label: 'Total Returns', value: '+24.5%', icon: TrendingUp, color: 'text-green-400' },
-            { label: 'DAO Tokens', value: '1,247', icon: Award, color: 'text-purple-400' }
-          ].map((stat, index) => (
-            <div key={index} className="bg-gray-800/50 rounded-lg p-3 lg:p-4 border border-gray-700/30">
-              <div className="flex items-center space-x-1 lg:space-x-2 mb-1 lg:mb-2">
-                <stat.icon className={`w-3 h-3 lg:w-4 lg:h-4 ${stat.color}`} />
-                <span className="text-xs text-gray-400 font-mono">{stat.label.toUpperCase()}</span>
-              </div>
-              <p className={`text-sm lg:text-lg font-bold ${stat.color}`}>{stat.value}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderSecurityTab = () => (
-    <div className="space-y-4 lg:space-y-6">
-      {/* Two-Factor Authentication */}
-      <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-4 lg:p-6 backdrop-blur-sm">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0 mb-4">
-          <div>
-            <h3 className="text-base lg:text-lg font-bold text-white flex items-center">
-              <Shield className="w-5 h-5 mr-2 text-cyan-400" />
-              Two-Factor Authentication
-            </h3>
-            <p className="text-gray-400 text-sm">Add an extra layer of security to your account</p>
-          </div>
-          <button
-            onClick={() => handleSettingChange('security', 'twoFactor', !userSettings.security.twoFactor)}
-            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-              userSettings.security.twoFactor ? 'bg-cyan-600' : 'bg-gray-600'
-            }`}
-          >
-            <span
-              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                userSettings.security.twoFactor ? 'translate-x-6' : 'translate-x-1'
-              }`}
-            />
-          </button>
-        </div>
-        {userSettings.security.twoFactor && (
-          <div className="mt-4 p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
-            <p className="text-green-400 text-sm flex items-center">
-              <Check className="w-4 h-4 mr-2" />
-              Two-factor authentication is enabled
-            </p>
-          </div>
-        )}
-      </div>
-
-      {/* Session Management */}
-      <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-4 lg:p-6 backdrop-blur-sm">
-        <h3 className="text-base lg:text-lg font-bold text-white mb-4 flex items-center">
-          <Key className="w-5 h-5 mr-2 text-cyan-400" />
-          Session Management
-        </h3>
-        
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-semibold text-gray-300 mb-2">Session Timeout (minutes)</label>
-            <select
-              value={userSettings.security.sessionTimeout}
-              onChange={(e) => handleSettingChange('security', 'sessionTimeout', parseInt(e.target.value))}
-              className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white"
-            >
-              <option value={15}>15 minutes</option>
-              <option value={30}>30 minutes</option>
-              <option value={60}>1 hour</option>
-              <option value={120}>2 hours</option>
-              <option value={0}>Never</option>
-            </select>
-          </div>
-
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
-            <div>
-              <h4 className="text-white font-medium">Login Alerts</h4>
-              <p className="text-gray-400 text-sm">Get notified of new login attempts</p>
-            </div>
-            <button
-              onClick={() => handleSettingChange('security', 'loginAlerts', !userSettings.security.loginAlerts)}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                userSettings.security.loginAlerts ? 'bg-cyan-600' : 'bg-gray-600'
-              }`}
-            >
-              <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                  userSettings.security.loginAlerts ? 'translate-x-6' : 'translate-x-1'
-                }`}
-              />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Danger Zone */}
-      <div className="bg-red-900/20 border border-red-500/30 rounded-xl p-4 lg:p-6 backdrop-blur-sm">
-        <h3 className="text-base lg:text-lg font-bold text-red-400 mb-4 flex items-center">
-          <AlertTriangle className="w-5 h-5 mr-2" />
-          Danger Zone
-        </h3>
-        
-        <div className="space-y-3 lg:space-y-4">
-          <button className="w-full px-4 py-3 bg-red-600/20 border border-red-500/30 text-red-400 rounded-lg hover:bg-red-600/30 transition-colors flex items-center justify-center space-x-2">
-            <Trash2 className="w-4 h-4" />
-            <span>Delete Account</span>
-          </button>
-          
-          <button 
-            onClick={logout}
-            className="w-full px-4 py-3 bg-orange-600/20 border border-orange-500/30 text-orange-400 rounded-lg hover:bg-orange-600/30 transition-colors flex items-center justify-center space-x-2"
-          >
-            <RefreshCw className="w-4 h-4" />
-            <span>Sign Out All Devices</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderNotificationsTab = () => (
-    <div className="space-y-4 lg:space-y-6">
-      {/* Email Notifications */}
-      <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-4 lg:p-6 backdrop-blur-sm">
-        <h3 className="text-base lg:text-lg font-bold text-white mb-4 lg:mb-6 flex items-center">
-          <Mail className="w-5 h-5 mr-2 text-cyan-400" />
-          Email Notifications
-        </h3>
-        
-        <div className="space-y-4">
-          {[
-            { key: 'email', label: 'Email Notifications', desc: 'Receive notifications via email' },
-            { key: 'marketing', label: 'Marketing Emails', desc: 'Receive updates about new features and promotions' }
-          ].map((item) => (
-            <div key={item.key} className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
-              <div>
-                <h4 className="text-white font-medium">{item.label}</h4>
-                <p className="text-gray-400 text-sm">{item.desc}</p>
-              </div>
-              <button
-                onClick={() => handleSettingChange('notifications', item.key, !userSettings.notifications[item.key])}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  userSettings.notifications[item.key] ? 'bg-cyan-600' : 'bg-gray-600'
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    userSettings.notifications[item.key] ? 'translate-x-6' : 'translate-x-1'
-                  }`}
-                />
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Push Notifications */}
-      <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-4 lg:p-6 backdrop-blur-sm">
-        <h3 className="text-base lg:text-lg font-bold text-white mb-4 lg:mb-6 flex items-center">
-          <Smartphone className="w-5 h-5 mr-2 text-cyan-400" />
-          Push Notifications
-        </h3>
-        
-        <div className="space-y-4">
-          {[
-            { key: 'push', label: 'Push Notifications', desc: 'Receive push notifications on your device' },
-            { key: 'sms', label: 'SMS Notifications', desc: 'Receive important alerts via SMS' }
-          ].map((item) => (
-            <div key={item.key} className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
-              <div>
-                <h4 className="text-white font-medium">{item.label}</h4>
-                <p className="text-gray-400 text-sm">{item.desc}</p>
-              </div>
-              <button
-                onClick={() => handleSettingChange('notifications', item.key, !userSettings.notifications[item.key])}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  userSettings.notifications[item.key] ? 'bg-cyan-600' : 'bg-gray-600'
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    userSettings.notifications[item.key] ? 'translate-x-6' : 'translate-x-1'
-                  }`}
-                />
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderPreferencesTab = () => (
-    <div className="space-y-4 lg:space-y-6">
-      {/* Appearance */}
-      <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-4 lg:p-6 backdrop-blur-sm">
-        <h3 className="text-base lg:text-lg font-bold text-white mb-4 lg:mb-6 flex items-center">
-          <Palette className="w-5 h-5 mr-2 text-cyan-400" />
-          Appearance
-        </h3>
-        
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-semibold text-gray-300 mb-2">Theme</label>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {[
-                { value: 'dark', label: 'Dark', icon: Moon },
-                { value: 'light', label: 'Light', icon: Sun }
-              ].map((theme) => (
-                <button
-                  key={theme.value}
-                  onClick={() => handleSettingChange('preferences', 'theme', theme.value)}
-                  className={`p-4 rounded-lg border-2 transition-all flex items-center space-x-3 ${
-                    userSettings.preferences.theme === theme.value
-                      ? 'border-cyan-500 bg-cyan-500/10'
-                      : 'border-gray-600 hover:border-gray-500'
-                  }`}
-                >
-                  <theme.icon className="w-5 h-5 text-cyan-400" />
-                  <span className="text-white font-medium">{theme.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
-            <div>
-              <h4 className="text-white font-medium">Sound Effects</h4>
-              <p className="text-gray-400 text-sm">Play sounds for interactions</p>
-            </div>
-            <button
-              onClick={() => handleSettingChange('preferences', 'soundEffects', !userSettings.preferences.soundEffects)}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                userSettings.preferences.soundEffects ? 'bg-cyan-600' : 'bg-gray-600'
-              }`}
-            >
-              <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                  userSettings.preferences.soundEffects ? 'translate-x-6' : 'translate-x-1'
-                }`}
-              />
-            </button>
-          </div>
-
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
-            <div>
-              <h4 className="text-white font-medium">Animations</h4>
-              <p className="text-gray-400 text-sm">Enable smooth animations</p>
-            </div>
-            <button
-              onClick={() => handleSettingChange('preferences', 'animations', !userSettings.preferences.animations)}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                userSettings.preferences.animations ? 'bg-cyan-600' : 'bg-gray-600'
-              }`}
-            >
-              <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                  userSettings.preferences.animations ? 'translate-x-6' : 'translate-x-1'
-                }`}
-              />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Localization */}
-      <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-4 lg:p-6 backdrop-blur-sm">
-        <h3 className="text-base lg:text-lg font-bold text-white mb-4 lg:mb-6 flex items-center">
-          <Globe className="w-5 h-5 mr-2 text-cyan-400" />
-          Localization
-        </h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-semibold text-gray-300 mb-2">Language</label>
-            <select
-              value={userSettings.preferences.language}
-              onChange={(e) => handleSettingChange('preferences', 'language', e.target.value)}
-              className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white"
-            >
-              <option value="en">English</option>
-              <option value="es">Español</option>
-              <option value="fr">Français</option>
-              <option value="de">Deutsch</option>
-              <option value="zh">中文</option>
-              <option value="ja">日本語</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-300 mb-2">Currency</label>
-            <select
-              value={userSettings.preferences.currency}
-              onChange={(e) => handleSettingChange('preferences', 'currency', e.target.value)}
-              className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white"
-            >
-              <option value="USD">USD ($)</option>
-              <option value="EUR">EUR (€)</option>
-              <option value="GBP">GBP (£)</option>
-              <option value="JPY">JPY (¥)</option>
-              <option value="ICP">ICP</option>
-            </select>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderPrivacyTab = () => (
-    <div className="space-y-4 lg:space-y-6">
-      <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-4 lg:p-6 backdrop-blur-sm">
-        <h3 className="text-base lg:text-lg font-bold text-white mb-4 lg:mb-6 flex items-center">
-          <Eye className="w-5 h-5 mr-2 text-cyan-400" />
-          Privacy Settings
-        </h3>
-        
-        <div className="space-y-4">
-          {[
-            { key: 'showProfile', label: 'Public Profile', desc: 'Allow others to view your profile' },
-            { key: 'showActivity', label: 'Activity Visibility', desc: 'Show your recent activity to others' },
-            { key: 'showInvestments', label: 'Investment History', desc: 'Display your investment history publicly' }
-          ].map((item) => (
-            <div key={item.key} className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
-              <div>
-                <h4 className="text-white font-medium">{item.label}</h4>
-                <p className="text-gray-400 text-sm">{item.desc}</p>
-              </div>
-              <button
-                onClick={() => handleSettingChange('privacy', item.key, !userSettings.privacy[item.key])}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  userSettings.privacy[item.key] ? 'bg-cyan-600' : 'bg-gray-600'
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    userSettings.privacy[item.key] ? 'translate-x-6' : 'translate-x-1'
-                  }`}
-                />
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderAdvancedTab = () => (
-    <div className="space-y-4 lg:space-y-6">
-      {/* Data Management */}
-      <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-4 lg:p-6 backdrop-blur-sm">
-        <h3 className="text-base lg:text-lg font-bold text-white mb-4 lg:mb-6 flex items-center">
-          <Download className="w-5 h-5 mr-2 text-cyan-400" />
-          Data Management
-        </h3>
-        
-        <div className="space-y-3 lg:space-y-4">
-          <button className="w-full px-4 py-3 bg-cyan-600/20 border border-cyan-500/30 text-cyan-400 rounded-lg hover:bg-cyan-600/30 transition-colors flex items-center justify-center space-x-2">
-            <Download className="w-4 h-4" />
-            <span>Export My Data</span>
-          </button>
-          
-          <button className="w-full px-4 py-3 bg-blue-600/20 border border-blue-500/30 text-blue-400 rounded-lg hover:bg-blue-600/30 transition-colors flex items-center justify-center space-x-2">
-            <Upload className="w-4 h-4" />
-            <span>Import Data</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Developer Options */}
-      <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-4 lg:p-6 backdrop-blur-sm">
-        <h3 className="text-base lg:text-lg font-bold text-white mb-4 lg:mb-6 flex items-center">
-          <Zap className="w-5 h-5 mr-2 text-cyan-400" />
-          Developer Options
-        </h3>
-        
-        <div className="space-y-4">
-          <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-700">
-            <h4 className="text-white font-medium mb-2">API Access</h4>
-            <p className="text-gray-400 text-sm mb-3">Generate API keys for third-party integrations</p>
-            <button className="w-full sm:w-auto px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors flex items-center justify-center space-x-2">
-              <Key className="w-4 h-4" />
-              <span>Generate API Key</span>
-            </button>
-          </div>
-
-          <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-700">
-            <h4 className="text-white font-medium mb-2">Webhook URLs</h4>
-            <p className="text-gray-400 text-sm mb-3">Configure webhooks for real-time notifications</p>
-            <button className="w-full sm:w-auto px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center justify-center space-x-2">
-              <ExternalLink className="w-4 h-4" />
-              <span>Configure Webhooks</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case 'profile': return renderProfileTab();
-      case 'security': return renderSecurityTab();
-      case 'notifications': return renderNotificationsTab();
-      case 'preferences': return renderPreferencesTab();
-      case 'privacy': return renderPrivacyTab();
-      case 'advanced': return renderAdvancedTab();
-      default: return renderProfileTab();
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: '' }));
     }
   };
 
-  if (!isAuthenticated) {
-    return null;
-  }
+  const handleModuleToggle = (categoryIndex, moduleIndex) => {
+    const newCategories = [...selectedModules];
+    const module = newCategories[categoryIndex].modules[moduleIndex];
+    
+    if (!module.disabled) {
+      module.selected = !module.selected;
+      setSelectedModules(newCategories);
+    }
+  };
+
+  const nextStep = () => {
+    if (validateStep(currentStep)) {
+      if (currentStep === 2) {
+        setFormData(prev => ({ ...prev, modules: selectedModules }));
+      }
+      if (currentStep < 5) {
+        setCurrentStep(currentStep + 1);
+      }
+    }
+  };
+
+  const prevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const handleSubmit = () => {
+    const finalData = { ...formData, modules: selectedModules };
+    console.log('Creating DAO with data:', finalData);
+    setIsModalOpen(false);
+    // Show success animation or redirect
+  };
+
+  const openModal = () => {
+    if (!isAuthenticated) {
+      navigate('/signin');
+      return;
+    }
+    setIsModalOpen(true);
+  };
+
+  const getSelectedModulesCount = () => {
+    return selectedModules.reduce((total, category) => {
+      return total + category.modules.filter(module => module.selected).length;
+    }, 0);
+  };
 
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
       {/* Background Particles */}
       <BackgroundParticles />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 relative z-10 pt-24 sm:pt-28">
-        {/* Header - Responsive */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-6 lg:mb-8"
-        >
-          <div className="flex items-center space-x-3 lg:space-x-4 mb-4 lg:mb-6">
-            <button
-              onClick={() => navigate('/dashboard')}
-              className="p-2 text-gray-400 hover:text-cyan-400 hover:bg-gray-800/50 rounded-lg transition-all"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </button>
-            <div>
-              <h1 className="text-2xl lg:text-3xl font-bold text-white mb-1 lg:mb-2 font-mono">
-                SETTINGS CONTROL PANEL
+      {/* Hero Section with Proper Top Padding */}
+      <section className="relative min-h-screen flex items-center justify-center px-4 z-10 pt-20 sm:pt-24">
+        <div className="max-w-6xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="mb-8"
+          >
+            <div className="flex items-center justify-center mb-6">
+              <motion.div
+                animate={{ 
+                  rotate: 360,
+                  scale: [1, 1.1, 1]
+                }}
+                transition={{ 
+                  rotate: { duration: 20, repeat: Infinity, ease: "linear" },
+                  scale: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+                }}
+                className="w-24 h-24 bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full flex items-center justify-center mr-6 shadow-lg shadow-cyan-500/25"
+              >
+                <Rocket className="w-12 h-12 text-white" />
+              </motion.div>
+              <h1 className="text-6xl md:text-8xl font-bold">
+                <span className="bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 text-transparent bg-clip-text">
+                  LAUNCH
+                </span>
               </h1>
-              <p className="text-cyan-400 font-mono text-sm lg:text-base">
-                > Configure your DAOVerse experience
-              </p>
             </div>
-          </div>
-        </motion.div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
-          {/* Sidebar Navigation - Responsive */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="lg:col-span-1"
-          >
-            <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-4 lg:p-6 backdrop-blur-sm lg:sticky lg:top-8">
-              <nav className="space-y-1 lg:space-y-2">
-                {tabs.map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`w-full flex items-center space-x-3 px-3 lg:px-4 py-2 lg:py-3 rounded-lg transition-all text-left ${
-                      activeTab === tab.id
-                        ? 'bg-cyan-500/20 border border-cyan-500/30 text-cyan-400'
-                        : 'text-gray-300 hover:text-cyan-400 hover:bg-gray-800/50'
-                    }`}
-                  >
-                    <tab.icon className="w-4 h-4 lg:w-5 lg:h-5" />
-                    <span className="font-medium text-sm lg:text-base">{tab.label}</span>
-                    {activeTab === tab.id && (
-                      <ChevronRight className="w-3 h-3 lg:w-4 lg:h-4 ml-auto" />
-                    )}
-                  </button>
-                ))}
-              </nav>
-            </div>
+            
+            <motion.div 
+              className="font-mono text-2xl md:text-3xl text-cyan-400 mb-8"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              <motion.span
+                animate={{ opacity: [1, 0, 1] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              >
+                >
+              </motion.span>
+              {" "}YOUR DECENTRALIZED FUTURE
+            </motion.div>
           </motion.div>
 
-          {/* Main Content - Responsive */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="lg:col-span-3"
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="text-xl md:text-2xl text-gray-300 mb-12 max-w-4xl mx-auto leading-relaxed"
           >
-            {renderTabContent()}
+            Build, fund, and govern your DAO with modular components. Choose exactly what you need.
+          </motion.p>
+
+          {/* Feature Highlights - INSTANT HOVER SCALING */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="grid md:grid-cols-3 gap-8 mb-12"
+          >
+            {[
+              { 
+                icon: Settings, 
+                title: 'Modular Design', 
+                desc: 'Pick and choose the modules you need',
+                gradient: 'from-cyan-500 to-blue-500'
+              },
+              { 
+                icon: Zap, 
+                title: 'Instant Deploy', 
+                desc: 'Launch your DAO in minutes, not months',
+                gradient: 'from-purple-500 to-pink-500'
+              },
+              { 
+                icon: TrendingUp, 
+                title: 'Scale Ready', 
+                desc: 'Built for growth from day one',
+                gradient: 'from-green-500 to-emerald-500'
+              }
+            ].map((feature, index) => (
+              <motion.div
+                key={index}
+                whileHover={{ 
+                  scale: 1.05, 
+                  rotateY: 5,
+                  boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)"
+                }}
+                transition={{ duration: 0 }}
+                className="bg-gray-900/80 border border-gray-700/50 rounded-xl p-8 backdrop-blur-sm hover:border-cyan-400/50 transition-all duration-300 relative overflow-hidden group"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-gray-800/50 to-gray-900/50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className={`w-16 h-16 bg-gradient-to-r ${feature.gradient} rounded-xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform relative z-10 shadow-lg`}>
+                  <feature.icon className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-3 font-mono relative z-10">{feature.title}</h3>
+                <p className="text-gray-200 relative z-10 leading-relaxed">{feature.desc}</p>
+              </motion.div>
+            ))}
           </motion.div>
+
+          {/* Enhanced Launch Button */}
+          <motion.button
+            onClick={openModal}
+            whileHover={{ 
+              scale: 1.05,
+              boxShadow: "0 20px 40px rgba(6, 182, 212, 0.4)"
+            }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ duration: 0 }}
+            className="group relative px-12 py-6 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-xl font-bold text-xl transition-all duration-300 overflow-hidden shadow-2xl"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <span className="relative z-10 flex items-center">
+              <motion.div
+                animate={{ rotate: [0, 360] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+              >
+                <Sparkles className="mr-3 w-6 h-6" />
+              </motion.div>
+              LAUNCH YOUR DAO
+              <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform" />
+            </span>
+            <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+          </motion.button>
         </div>
-      </div>
+      </section>
+
+      {/* Completely Redesigned Modal - Light Theme with Better Contrast */}
+      <AnimatePresence>
+        {isModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 50 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 50 }}
+              className="bg-gray-50 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] relative flex flex-col"
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="absolute top-6 right-6 text-gray-500 hover:text-gray-700 transition-colors z-10 bg-white rounded-full p-2 shadow-md"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              {/* Header with Better Contrast */}
+              <div className="text-center py-8 px-8 border-b border-gray-300 bg-white rounded-t-2xl">
+                <h2 className="text-3xl font-bold text-gray-900 mb-2">Create Your DAO</h2>
+                <p className="text-gray-700 font-medium">Step {currentStep} of 5</p>
+              </div>
+
+              {/* Progress Bar with Better Visibility */}
+              <div className="px-8 py-6 border-b border-gray-200 bg-white">
+                <div className="flex items-center justify-between">
+                  {steps.map((step, index) => (
+                    <div key={step.id} className="flex items-center">
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all font-semibold ${
+                        currentStep >= step.id 
+                          ? 'bg-blue-600 border-blue-600 text-white shadow-lg' 
+                          : 'border-gray-400 text-gray-500 bg-gray-100'
+                      }`}>
+                        <step.icon className="w-5 h-5" />
+                      </div>
+                      {index < steps.length - 1 && (
+                        <div className={`w-16 h-2 mx-3 rounded-full transition-all ${
+                          currentStep > step.id ? 'bg-blue-600' : 'bg-gray-300'
+                        }`} />
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <div className="flex justify-between mt-3">
+                  {steps.map((step) => (
+                    <div key={step.id} className="text-center">
+                      <p className={`text-sm font-medium ${
+                        currentStep >= step.id ? 'text-blue-600' : 'text-gray-500'
+                      }`}>
+                        {step.title}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Form Content with Better Contrast */}
+              <div className="flex-1 overflow-y-auto p-8 bg-gray-50">
+                {/* Step 1: Basic Info */}
+                {currentStep === 1 && (
+                  <motion.div
+                    initial={{ opacity: 0, x: 50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -50 }}
+                    className="space-y-6"
+                  >
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-800 mb-2">DAO Name *</label>
+                        <input
+                          type="text"
+                          value={formData.name}
+                          onChange={(e) => handleInputChange('name', e.target.value)}
+                          className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium bg-white ${
+                            errors.name ? 'border-red-500' : 'border-gray-300'
+                          }`}
+                          placeholder="Enter your DAO name"
+                        />
+                        {errors.name && (
+                          <p className="text-red-600 text-sm mt-1 flex items-center font-medium">
+                            <AlertCircle className="w-4 h-4 mr-1" />
+                            {errors.name}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-800 mb-2">Website (Optional)</label>
+                        <input
+                          type="url"
+                          value={formData.website}
+                          onChange={(e) => handleInputChange('website', e.target.value)}
+                          className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium bg-white"
+                          placeholder="https://your-dao-website.com"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-800 mb-2">Description *</label>
+                      <textarea
+                        value={formData.description}
+                        onChange={(e) => handleInputChange('description', e.target.value)}
+                        rows={4}
+                        className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium bg-white ${
+                          errors.description ? 'border-red-500' : 'border-gray-300'
+                        }`}
+                        placeholder="Describe your DAO's mission, goals, and vision"
+                      />
+                      {errors.description && (
+                        <p className="text-red-600 text-sm mt-1 flex items-center font-medium">
+                          <AlertCircle className="w-4 h-4 mr-1" />
+                          {errors.description}
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-800 mb-3">Category *</label>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        {categories.map((cat) => (
+                          <motion.div
+                            key={cat.value}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            transition={{ duration: 0 }}
+                            onClick={() => handleInputChange('category', cat.value)}
+                            className={`relative p-4 rounded-lg border-2 cursor-pointer transition-all bg-white ${
+                              formData.category === cat.value
+                                ? 'border-blue-500 bg-blue-50 shadow-md'
+                                : 'border-gray-300 hover:border-gray-400 hover:shadow-sm'
+                            }`}
+                          >
+                            <div className="text-center">
+                              <div className="text-2xl mb-2">{cat.icon}</div>
+                              <h3 className="font-semibold text-gray-900 text-sm">{cat.label}</h3>
+                              <p className="text-xs text-gray-600 mt-1">{cat.description}</p>
+                            </div>
+                            {formData.category === cat.value && (
+                              <motion.div
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                className="absolute top-2 right-2"
+                              >
+                                <CheckCircle className="w-5 h-5 text-blue-600" />
+                              </motion.div>
+                            )}
+                          </motion.div>
+                        ))}
+                      </div>
+                      {errors.category && (
+                        <p className="text-red-600 text-sm mt-2 flex items-center font-medium">
+                          <AlertCircle className="w-4 h-4 mr-1" />
+                          {errors.category}
+                        </p>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Step 2: Module Selection */}
+                {currentStep === 2 && (
+                  <motion.div
+                    initial={{ opacity: 0, x: 50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -50 }}
+                    className="space-y-6"
+                  >
+                    <div className="text-center mb-6">
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">Select Modules</h3>
+                      <p className="text-gray-700 font-medium">Choose the features your DAO needs. You can add more later.</p>
+                    </div>
+
+                    <div className="space-y-6">
+                      {selectedModules.map((category, categoryIndex) => (
+                        <div key={category.name} className="border-2 border-gray-300 rounded-lg p-6 bg-white">
+                          <div className="flex items-center space-x-3 mb-4">
+                            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                              <category.icon className="w-6 h-6 text-blue-600" />
+                            </div>
+                            <div>
+                              <h4 className="text-lg font-bold text-gray-900">{category.name}</h4>
+                              <p className="text-gray-700 font-medium">{category.description}</p>
+                            </div>
+                          </div>
+
+                          <div className="space-y-3">
+                            {category.modules.map((module, moduleIndex) => (
+                              <motion.div
+                                key={module.id}
+                                whileHover={{ scale: 1.01 }}
+                                transition={{ duration: 0 }}
+                                className={`flex items-center justify-between p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                                  module.selected
+                                    ? 'border-blue-500 bg-blue-50'
+                                    : 'border-gray-300 hover:border-gray-400 bg-white'
+                                }`}
+                                onClick={() => handleModuleToggle(categoryIndex, moduleIndex)}
+                              >
+                                <div className="flex items-center space-x-3">
+                                  <div className={`w-6 h-6 rounded border-2 flex items-center justify-center ${
+                                    module.selected ? 'border-blue-500 bg-blue-500' : 'border-gray-400 bg-white'
+                                  }`}>
+                                    {module.selected && <CheckCircle className="w-4 h-4 text-white" />}
+                                  </div>
+                                  <div>
+                                    <h5 className="font-semibold text-gray-900">{module.name}</h5>
+                                    <p className="text-gray-700 text-sm">{module.description}</p>
+                                  </div>
+                                </div>
+                              </motion.div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Selected Modules Summary */}
+                    <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+                      <h4 className="text-sm font-bold text-gray-900 mb-2">
+                        Selected Modules ({getSelectedModulesCount()})
+                      </h4>
+                      <div className="text-sm text-gray-700 font-medium">
+                        {getSelectedModulesCount() > 0 ? (
+                          selectedModules.map(category => 
+                            category.modules.filter(m => m.selected).map(module => module.name)
+                          ).flat().join(', ')
+                        ) : (
+                          'No modules selected yet'
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Step 3: Tokenomics */}
+                {currentStep === 3 && (
+                  <motion.div
+                    initial={{ opacity: 0, x: 50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -50 }}
+                    className="space-y-6"
+                  >
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-800 mb-2">Token Symbol *</label>
+                        <input
+                          type="text"
+                          value={formData.tokenSymbol}
+                          onChange={(e) => handleInputChange('tokenSymbol', e.target.value.toUpperCase())}
+                          className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium bg-white ${
+                            errors.tokenSymbol ? 'border-red-500' : 'border-gray-300'
+                          }`}
+                          placeholder="e.g., MYDAO"
+                          maxLength={6}
+                        />
+                        {errors.tokenSymbol && (
+                          <p className="text-red-600 text-sm mt-1 flex items-center font-medium">
+                            <AlertCircle className="w-4 h-4 mr-1" />
+                            {errors.tokenSymbol}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-800 mb-2">Total Supply *</label>
+                        <input
+                          type="number"
+                          value={formData.tokenSupply}
+                          onChange={(e) => handleInputChange('tokenSupply', e.target.value)}
+                          className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium bg-white ${
+                            errors.tokenSupply ? 'border-red-500' : 'border-gray-300'
+                          }`}
+                          placeholder="1000000"
+                        />
+                        {errors.tokenSupply && (
+                          <p className="text-red-600 text-sm mt-1 flex items-center font-medium">
+                            <AlertCircle className="w-4 h-4 mr-1" />
+                            {errors.tokenSupply}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="bg-white border-2 border-gray-300 rounded-lg p-6">
+                      <h3 className="text-lg font-bold text-gray-900 mb-4">Token Distribution</h3>
+                      <div className="space-y-3">
+                        {[
+                          { label: 'Public Sale', percentage: 40, color: 'bg-blue-500' },
+                          { label: 'Team & Advisors', percentage: 20, color: 'bg-purple-500' },
+                          { label: 'Treasury', percentage: 25, color: 'bg-green-500' },
+                          { label: 'Ecosystem', percentage: 15, color: 'bg-orange-500' }
+                        ].map((item, index) => (
+                          <div key={index} className="flex items-center justify-between">
+                            <div className="flex items-center">
+                              <div className={`w-4 h-4 ${item.color} rounded mr-3`}></div>
+                              <span className="text-gray-800 font-medium">{item.label}</span>
+                            </div>
+                            <span className="text-gray-900 font-bold">{item.percentage}%</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Step 4: Funding */}
+                {currentStep === 4 && (
+                  <motion.div
+                    initial={{ opacity: 0, x: 50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -50 }}
+                    className="space-y-6"
+                  >
+                    <div className="grid md:grid-cols-3 gap-6">
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-800 mb-2">Funding Goal (ICP) *</label>
+                        <input
+                          type="number"
+                          value={formData.fundingGoal}
+                          onChange={(e) => handleInputChange('fundingGoal', e.target.value)}
+                          className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium bg-white ${
+                            errors.fundingGoal ? 'border-red-500' : 'border-gray-300'
+                          }`}
+                          placeholder="1000"
+                        />
+                        {errors.fundingGoal && (
+                          <p className="text-red-600 text-sm mt-1 flex items-center font-medium">
+                            <AlertCircle className="w-4 h-4 mr-1" />
+                            {errors.fundingGoal}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-800 mb-2">Duration (Days) *</label>
+                        <input
+                          type="number"
+                          value={formData.duration}
+                          onChange={(e) => handleInputChange('duration', e.target.value)}
+                          className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium bg-white ${
+                            errors.duration ? 'border-red-500' : 'border-gray-300'
+                          }`}
+                          placeholder="30"
+                        />
+                        {errors.duration && (
+                          <p className="text-red-600 text-sm mt-1 flex items-center font-medium">
+                            <AlertCircle className="w-4 h-4 mr-1" />
+                            {errors.duration}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-800 mb-2">Min Investment (ICP) *</label>
+                        <input
+                          type="number"
+                          value={formData.minInvestment}
+                          onChange={(e) => handleInputChange('minInvestment', e.target.value)}
+                          className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium bg-white ${
+                            errors.minInvestment ? 'border-red-500' : 'border-gray-300'
+                          }`}
+                          placeholder="1"
+                        />
+                        {errors.minInvestment && (
+                          <p className="text-red-600 text-sm mt-1 flex items-center font-medium">
+                            <AlertCircle className="w-4 h-4 mr-1" />
+                            {errors.minInvestment}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="bg-white border-2 border-gray-300 rounded-lg p-6">
+                      <h3 className="text-lg font-bold text-gray-900 mb-4">Funding Milestones</h3>
+                      <div className="space-y-3">
+                        {[
+                          { percentage: 25, milestone: 'MVP Development & Core Team' },
+                          { percentage: 50, milestone: 'Beta Launch & Community Building' },
+                          { percentage: 75, milestone: 'Marketing & Partnership Expansion' },
+                          { percentage: 100, milestone: 'Full Launch & Ecosystem Growth' }
+                        ].map((item, index) => (
+                          <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded border-2 border-gray-200">
+                            <span className="text-gray-800 font-medium">{item.percentage}% - {item.milestone}</span>
+                            <CheckCircle className="w-5 h-5 text-green-600" />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Step 5: Review & Launch */}
+                {currentStep === 5 && (
+                  <motion.div
+                    initial={{ opacity: 0, x: 50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -50 }}
+                    className="space-y-6"
+                  >
+                    <div className="text-center mb-6">
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">Review Your DAO</h3>
+                      <p className="text-gray-700 font-medium">Please review all details before launching</p>
+                    </div>
+
+                    {/* Basic Info Review */}
+                    <div className="bg-white border-2 border-gray-300 rounded-lg p-6">
+                      <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                        <Globe className="w-5 h-5 mr-2" />
+                        Basic Information
+                      </h4>
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div className="flex justify-between">
+                          <span className="text-gray-700 font-medium">Name:</span>
+                          <span className="text-gray-900 font-bold">{formData.name || 'Not set'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-700 font-medium">Category:</span>
+                          <span className="text-gray-900 font-bold">{formData.category || 'Not set'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-700 font-medium">Website:</span>
+                          <span className="text-gray-900 font-bold">{formData.website || 'None'}</span>
+                        </div>
+                      </div>
+                      {formData.description && (
+                        <div className="mt-4">
+                          <span className="text-gray-700 font-medium">Description:</span>
+                          <p className="text-gray-900 font-medium mt-1">{formData.description}</p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Selected Modules Review */}
+                    <div className="bg-white border-2 border-gray-300 rounded-lg p-6">
+                      <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                        <Settings className="w-5 h-5 mr-2" />
+                        Selected Modules ({getSelectedModulesCount()})
+                      </h4>
+                      {getSelectedModulesCount() > 0 ? (
+                        <div className="space-y-2">
+                          {selectedModules.map(category => 
+                            category.modules.filter(module => module.selected).map(module => (
+                              <div key={module.id} className="flex items-center justify-between p-2 bg-gray-50 rounded border">
+                                <span className="text-gray-800 font-medium">{module.name}</span>
+                                <CheckCircle className="w-4 h-4 text-green-600" />
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      ) : (
+                        <p className="text-gray-700 font-medium">No modules selected</p>
+                      )}
+                    </div>
+
+                    {/* Tokenomics Review */}
+                    <div className="bg-white border-2 border-gray-300 rounded-lg p-6">
+                      <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                        <Coins className="w-5 h-5 mr-2" />
+                        Tokenomics
+                      </h4>
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div className="flex justify-between">
+                          <span className="text-gray-700 font-medium">Token Symbol:</span>
+                          <span className="text-gray-900 font-bold">{formData.tokenSymbol || 'Not set'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-700 font-medium">Total Supply:</span>
+                          <span className="text-gray-900 font-bold">{formData.tokenSupply ? Number(formData.tokenSupply).toLocaleString() : 'Not set'}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Funding Review */}
+                    <div className="bg-white border-2 border-gray-300 rounded-lg p-6">
+                      <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                        <Target className="w-5 h-5 mr-2" />
+                        Funding Details
+                      </h4>
+                      <div className="grid md:grid-cols-3 gap-4">
+                        <div className="flex justify-between">
+                          <span className="text-gray-700 font-medium">Goal:</span>
+                          <span className="text-gray-900 font-bold">{formData.fundingGoal || 'Not set'} ICP</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-700 font-medium">Duration:</span>
+                          <span className="text-gray-900 font-bold">{formData.duration || 'Not set'} days</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-700 font-medium">Min Investment:</span>
+                          <span className="text-gray-900 font-bold">{formData.minInvestment || 'Not set'} ICP</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Warning */}
+                    <div className="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-4">
+                      <p className="text-yellow-800 text-sm font-semibold flex items-center">
+                        <Star className="w-4 h-4 mr-2" />
+                        Once launched, some DAO parameters cannot be changed. Please review carefully.
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+
+              {/* Navigation Buttons with Better Contrast */}
+              <div className="flex justify-between p-6 border-t-2 border-gray-300 bg-white rounded-b-2xl">
+                <button
+                  onClick={prevStep}
+                  disabled={currentStep === 1}
+                  className="px-6 py-3 border-2 border-gray-400 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center font-semibold"
+                >
+                  <ArrowRight className="w-4 h-4 mr-2 rotate-180" />
+                  Previous
+                </button>
+
+                {currentStep < 5 ? (
+                  <button
+                    onClick={nextStep}
+                    className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center font-semibold shadow-lg"
+                  >
+                    Next
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </button>
+                ) : (
+                  <motion.button
+                    onClick={handleSubmit}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ duration: 0 }}
+                    className="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center font-semibold shadow-lg"
+                  >
+                    <Rocket className="w-5 h-5 mr-2" />
+                    Launch DAO
+                  </motion.button>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
 
-export default Settings;
+export default LaunchDAO;
