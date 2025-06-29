@@ -44,46 +44,13 @@ import {
 } from 'lucide-react';
 
 const Settings = () => {
-  const { isAuthenticated, principal, logout } = useAuth();
+  const { isAuthenticated, principal, logout, userSettings, updateUserSettings } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('profile');
   const [copied, setCopied] = useState(false);
   const [showPrincipal, setShowPrincipal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-
-  // User settings state
-  const [userSettings, setUserSettings] = useState({
-    displayName: 'Anonymous User',
-    email: '',
-    bio: '',
-    avatar: null,
-    theme: 'dark',
-    notifications: {
-      email: true,
-      push: true,
-      sms: false,
-      marketing: false
-    },
-    privacy: {
-      showProfile: true,
-      showActivity: false,
-      showInvestments: false
-    },
-    security: {
-      twoFactor: false,
-      sessionTimeout: 30,
-      loginAlerts: true
-    },
-    preferences: {
-      language: 'en',
-      currency: 'USD',
-      timezone: 'UTC',
-      soundEffects: true,
-      animations: true
-    }
-  });
-
   const [tempDisplayName, setTempDisplayName] = useState(userSettings.displayName);
 
   React.useEffect(() => {
@@ -91,6 +58,10 @@ const Settings = () => {
       navigate('/signin');
     }
   }, [isAuthenticated, navigate]);
+
+  React.useEffect(() => {
+    setTempDisplayName(userSettings.displayName);
+  }, [userSettings.displayName]);
 
   const copyPrincipal = async () => {
     await navigator.clipboard.writeText(principal);
@@ -102,19 +73,24 @@ const Settings = () => {
     setIsSaving(true);
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
-    setUserSettings(prev => ({ ...prev, displayName: tempDisplayName }));
+    
+    // Update global user settings
+    const newSettings = { ...userSettings, displayName: tempDisplayName };
+    updateUserSettings(newSettings);
+    
     setIsEditing(false);
     setIsSaving(false);
   };
 
   const handleSettingChange = (category, setting, value) => {
-    setUserSettings(prev => ({
-      ...prev,
+    const newSettings = {
+      ...userSettings,
       [category]: {
-        ...prev[category],
+        ...userSettings[category],
         [setting]: value
       }
-    }));
+    };
+    updateUserSettings(newSettings);
   };
 
   const tabs = [
@@ -127,31 +103,31 @@ const Settings = () => {
   ];
 
   const renderProfileTab = () => (
-    <div className="space-y-8">
+    <div className="space-y-6 lg:space-y-8">
       {/* Profile Header */}
-      <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-6 backdrop-blur-sm">
-        <h3 className="text-xl font-bold text-white mb-6 flex items-center">
+      <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-4 lg:p-6 backdrop-blur-sm">
+        <h3 className="text-lg lg:text-xl font-bold text-white mb-4 lg:mb-6 flex items-center">
           <User className="w-5 h-5 mr-2 text-cyan-400" />
           Profile Information
         </h3>
         
-        <div className="flex items-start space-x-6">
+        <div className="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-6">
           {/* Avatar Section */}
-          <div className="relative">
-            <div className="w-24 h-24 bg-gradient-to-br from-cyan-400 to-purple-500 rounded-xl flex items-center justify-center shadow-lg">
-              <User className="w-12 h-12 text-white" />
+          <div className="relative mx-auto sm:mx-0">
+            <div className="w-20 h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-cyan-400 to-purple-500 rounded-xl flex items-center justify-center shadow-lg">
+              <User className="w-10 h-10 lg:w-12 lg:h-12 text-white" />
             </div>
-            <button className="absolute -bottom-2 -right-2 w-8 h-8 bg-cyan-500 hover:bg-cyan-600 rounded-full flex items-center justify-center transition-colors">
-              <Camera className="w-4 h-4 text-white" />
+            <button className="absolute -bottom-2 -right-2 w-7 h-7 lg:w-8 lg:h-8 bg-cyan-500 hover:bg-cyan-600 rounded-full flex items-center justify-center transition-colors">
+              <Camera className="w-3 h-3 lg:w-4 lg:h-4 text-white" />
             </button>
           </div>
 
           {/* Profile Details */}
-          <div className="flex-1 space-y-4">
+          <div className="flex-1 w-full space-y-4">
             {/* Display Name */}
             <div>
               <label className="block text-sm font-semibold text-gray-300 mb-2">Display Name</label>
-              <div className="flex items-center space-x-3">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
                 {isEditing ? (
                   <input
                     type="text"
@@ -178,7 +154,7 @@ const Settings = () => {
                       ) : (
                         <Save className="w-4 h-4" />
                       )}
-                      <span>{isSaving ? 'Saving...' : 'Save'}</span>
+                      <span className="hidden sm:inline">{isSaving ? 'Saving...' : 'Save'}</span>
                     </button>
                     <button
                       onClick={() => {
@@ -187,7 +163,8 @@ const Settings = () => {
                       }}
                       className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
                     >
-                      Cancel
+                      <span className="hidden sm:inline">Cancel</span>
+                      <span className="sm:hidden">✕</span>
                     </button>
                   </div>
                 ) : (
@@ -196,7 +173,7 @@ const Settings = () => {
                     className="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg transition-colors flex items-center space-x-2"
                   >
                     <Edit3 className="w-4 h-4" />
-                    <span>Edit</span>
+                    <span className="hidden sm:inline">Edit</span>
                   </button>
                 )}
               </div>
@@ -205,22 +182,24 @@ const Settings = () => {
             {/* Principal ID */}
             <div>
               <label className="block text-sm font-semibold text-gray-300 mb-2">Principal ID</label>
-              <div className="flex items-center space-x-3">
-                <div className="flex-1 px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg font-mono text-cyan-400 text-sm">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
+                <div className="flex-1 px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg font-mono text-cyan-400 text-xs lg:text-sm break-all">
                   {showPrincipal ? principal : `${principal?.slice(0, 12)}...${principal?.slice(-8)}`}
                 </div>
-                <button
-                  onClick={() => setShowPrincipal(!showPrincipal)}
-                  className="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
-                >
-                  {showPrincipal ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-                <button
-                  onClick={copyPrincipal}
-                  className="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
-                >
-                  {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
-                </button>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => setShowPrincipal(!showPrincipal)}
+                    className="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+                  >
+                    {showPrincipal ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                  <button
+                    onClick={copyPrincipal}
+                    className="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+                  >
+                    {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -229,7 +208,7 @@ const Settings = () => {
               <label className="block text-sm font-semibold text-gray-300 mb-2">Bio</label>
               <textarea
                 value={userSettings.bio}
-                onChange={(e) => setUserSettings(prev => ({ ...prev, bio: e.target.value }))}
+                onChange={(e) => updateUserSettings({ ...userSettings, bio: e.target.value })}
                 rows={3}
                 className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white resize-none"
                 placeholder="Tell us about yourself..."
@@ -239,26 +218,26 @@ const Settings = () => {
         </div>
       </div>
 
-      {/* Portfolio Stats */}
-      <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-6 backdrop-blur-sm">
-        <h3 className="text-xl font-bold text-white mb-6 flex items-center">
+      {/* Portfolio Stats - Responsive Grid */}
+      <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-4 lg:p-6 backdrop-blur-sm">
+        <h3 className="text-lg lg:text-xl font-bold text-white mb-4 lg:mb-6 flex items-center">
           <TrendingUp className="w-5 h-5 mr-2 text-green-400" />
           Portfolio Overview
         </h3>
         
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
           {[
             { label: 'Total Invested', value: '$12,450', icon: DollarSign, color: 'text-green-400' },
             { label: 'Active Projects', value: '8', icon: Activity, color: 'text-blue-400' },
             { label: 'Total Returns', value: '+24.5%', icon: TrendingUp, color: 'text-green-400' },
             { label: 'DAO Tokens', value: '1,247', icon: Award, color: 'text-purple-400' }
           ].map((stat, index) => (
-            <div key={index} className="bg-gray-800/50 rounded-lg p-4 border border-gray-700/30">
-              <div className="flex items-center space-x-2 mb-2">
-                <stat.icon className={`w-4 h-4 ${stat.color}`} />
+            <div key={index} className="bg-gray-800/50 rounded-lg p-3 lg:p-4 border border-gray-700/30">
+              <div className="flex items-center space-x-1 lg:space-x-2 mb-1 lg:mb-2">
+                <stat.icon className={`w-3 h-3 lg:w-4 lg:h-4 ${stat.color}`} />
                 <span className="text-xs text-gray-400 font-mono">{stat.label.toUpperCase()}</span>
               </div>
-              <p className={`text-lg font-bold ${stat.color}`}>{stat.value}</p>
+              <p className={`text-sm lg:text-lg font-bold ${stat.color}`}>{stat.value}</p>
             </div>
           ))}
         </div>
@@ -267,12 +246,12 @@ const Settings = () => {
   );
 
   const renderSecurityTab = () => (
-    <div className="space-y-6">
+    <div className="space-y-4 lg:space-y-6">
       {/* Two-Factor Authentication */}
-      <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-6 backdrop-blur-sm">
-        <div className="flex items-center justify-between mb-4">
+      <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-4 lg:p-6 backdrop-blur-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0 mb-4">
           <div>
-            <h3 className="text-lg font-bold text-white flex items-center">
+            <h3 className="text-base lg:text-lg font-bold text-white flex items-center">
               <Shield className="w-5 h-5 mr-2 text-cyan-400" />
               Two-Factor Authentication
             </h3>
@@ -302,8 +281,8 @@ const Settings = () => {
       </div>
 
       {/* Session Management */}
-      <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-6 backdrop-blur-sm">
-        <h3 className="text-lg font-bold text-white mb-4 flex items-center">
+      <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-4 lg:p-6 backdrop-blur-sm">
+        <h3 className="text-base lg:text-lg font-bold text-white mb-4 flex items-center">
           <Key className="w-5 h-5 mr-2 text-cyan-400" />
           Session Management
         </h3>
@@ -324,7 +303,7 @@ const Settings = () => {
             </select>
           </div>
 
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
             <div>
               <h4 className="text-white font-medium">Login Alerts</h4>
               <p className="text-gray-400 text-sm">Get notified of new login attempts</p>
@@ -346,13 +325,13 @@ const Settings = () => {
       </div>
 
       {/* Danger Zone */}
-      <div className="bg-red-900/20 border border-red-500/30 rounded-xl p-6 backdrop-blur-sm">
-        <h3 className="text-lg font-bold text-red-400 mb-4 flex items-center">
+      <div className="bg-red-900/20 border border-red-500/30 rounded-xl p-4 lg:p-6 backdrop-blur-sm">
+        <h3 className="text-base lg:text-lg font-bold text-red-400 mb-4 flex items-center">
           <AlertTriangle className="w-5 h-5 mr-2" />
           Danger Zone
         </h3>
         
-        <div className="space-y-4">
+        <div className="space-y-3 lg:space-y-4">
           <button className="w-full px-4 py-3 bg-red-600/20 border border-red-500/30 text-red-400 rounded-lg hover:bg-red-600/30 transition-colors flex items-center justify-center space-x-2">
             <Trash2 className="w-4 h-4" />
             <span>Delete Account</span>
@@ -371,10 +350,10 @@ const Settings = () => {
   );
 
   const renderNotificationsTab = () => (
-    <div className="space-y-6">
+    <div className="space-y-4 lg:space-y-6">
       {/* Email Notifications */}
-      <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-6 backdrop-blur-sm">
-        <h3 className="text-lg font-bold text-white mb-6 flex items-center">
+      <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-4 lg:p-6 backdrop-blur-sm">
+        <h3 className="text-base lg:text-lg font-bold text-white mb-4 lg:mb-6 flex items-center">
           <Mail className="w-5 h-5 mr-2 text-cyan-400" />
           Email Notifications
         </h3>
@@ -384,7 +363,7 @@ const Settings = () => {
             { key: 'email', label: 'Email Notifications', desc: 'Receive notifications via email' },
             { key: 'marketing', label: 'Marketing Emails', desc: 'Receive updates about new features and promotions' }
           ].map((item) => (
-            <div key={item.key} className="flex items-center justify-between">
+            <div key={item.key} className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
               <div>
                 <h4 className="text-white font-medium">{item.label}</h4>
                 <p className="text-gray-400 text-sm">{item.desc}</p>
@@ -407,8 +386,8 @@ const Settings = () => {
       </div>
 
       {/* Push Notifications */}
-      <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-6 backdrop-blur-sm">
-        <h3 className="text-lg font-bold text-white mb-6 flex items-center">
+      <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-4 lg:p-6 backdrop-blur-sm">
+        <h3 className="text-base lg:text-lg font-bold text-white mb-4 lg:mb-6 flex items-center">
           <Smartphone className="w-5 h-5 mr-2 text-cyan-400" />
           Push Notifications
         </h3>
@@ -418,7 +397,7 @@ const Settings = () => {
             { key: 'push', label: 'Push Notifications', desc: 'Receive push notifications on your device' },
             { key: 'sms', label: 'SMS Notifications', desc: 'Receive important alerts via SMS' }
           ].map((item) => (
-            <div key={item.key} className="flex items-center justify-between">
+            <div key={item.key} className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
               <div>
                 <h4 className="text-white font-medium">{item.label}</h4>
                 <p className="text-gray-400 text-sm">{item.desc}</p>
@@ -443,10 +422,10 @@ const Settings = () => {
   );
 
   const renderPreferencesTab = () => (
-    <div className="space-y-6">
+    <div className="space-y-4 lg:space-y-6">
       {/* Appearance */}
-      <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-6 backdrop-blur-sm">
-        <h3 className="text-lg font-bold text-white mb-6 flex items-center">
+      <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-4 lg:p-6 backdrop-blur-sm">
+        <h3 className="text-base lg:text-lg font-bold text-white mb-4 lg:mb-6 flex items-center">
           <Palette className="w-5 h-5 mr-2 text-cyan-400" />
           Appearance
         </h3>
@@ -454,7 +433,7 @@ const Settings = () => {
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-semibold text-gray-300 mb-2">Theme</label>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
                 { value: 'dark', label: 'Dark', icon: Moon },
                 { value: 'light', label: 'Light', icon: Sun }
@@ -475,7 +454,7 @@ const Settings = () => {
             </div>
           </div>
 
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
             <div>
               <h4 className="text-white font-medium">Sound Effects</h4>
               <p className="text-gray-400 text-sm">Play sounds for interactions</p>
@@ -494,7 +473,7 @@ const Settings = () => {
             </button>
           </div>
 
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
             <div>
               <h4 className="text-white font-medium">Animations</h4>
               <p className="text-gray-400 text-sm">Enable smooth animations</p>
@@ -516,13 +495,13 @@ const Settings = () => {
       </div>
 
       {/* Localization */}
-      <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-6 backdrop-blur-sm">
-        <h3 className="text-lg font-bold text-white mb-6 flex items-center">
+      <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-4 lg:p-6 backdrop-blur-sm">
+        <h3 className="text-base lg:text-lg font-bold text-white mb-4 lg:mb-6 flex items-center">
           <Globe className="w-5 h-5 mr-2 text-cyan-400" />
           Localization
         </h3>
         
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-semibold text-gray-300 mb-2">Language</label>
             <select
@@ -559,9 +538,9 @@ const Settings = () => {
   );
 
   const renderPrivacyTab = () => (
-    <div className="space-y-6">
-      <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-6 backdrop-blur-sm">
-        <h3 className="text-lg font-bold text-white mb-6 flex items-center">
+    <div className="space-y-4 lg:space-y-6">
+      <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-4 lg:p-6 backdrop-blur-sm">
+        <h3 className="text-base lg:text-lg font-bold text-white mb-4 lg:mb-6 flex items-center">
           <Eye className="w-5 h-5 mr-2 text-cyan-400" />
           Privacy Settings
         </h3>
@@ -572,7 +551,7 @@ const Settings = () => {
             { key: 'showActivity', label: 'Activity Visibility', desc: 'Show your recent activity to others' },
             { key: 'showInvestments', label: 'Investment History', desc: 'Display your investment history publicly' }
           ].map((item) => (
-            <div key={item.key} className="flex items-center justify-between">
+            <div key={item.key} className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
               <div>
                 <h4 className="text-white font-medium">{item.label}</h4>
                 <p className="text-gray-400 text-sm">{item.desc}</p>
@@ -597,15 +576,15 @@ const Settings = () => {
   );
 
   const renderAdvancedTab = () => (
-    <div className="space-y-6">
+    <div className="space-y-4 lg:space-y-6">
       {/* Data Management */}
-      <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-6 backdrop-blur-sm">
-        <h3 className="text-lg font-bold text-white mb-6 flex items-center">
+      <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-4 lg:p-6 backdrop-blur-sm">
+        <h3 className="text-base lg:text-lg font-bold text-white mb-4 lg:mb-6 flex items-center">
           <Download className="w-5 h-5 mr-2 text-cyan-400" />
           Data Management
         </h3>
         
-        <div className="space-y-4">
+        <div className="space-y-3 lg:space-y-4">
           <button className="w-full px-4 py-3 bg-cyan-600/20 border border-cyan-500/30 text-cyan-400 rounded-lg hover:bg-cyan-600/30 transition-colors flex items-center justify-center space-x-2">
             <Download className="w-4 h-4" />
             <span>Export My Data</span>
@@ -619,8 +598,8 @@ const Settings = () => {
       </div>
 
       {/* Developer Options */}
-      <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-6 backdrop-blur-sm">
-        <h3 className="text-lg font-bold text-white mb-6 flex items-center">
+      <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-4 lg:p-6 backdrop-blur-sm">
+        <h3 className="text-base lg:text-lg font-bold text-white mb-4 lg:mb-6 flex items-center">
           <Zap className="w-5 h-5 mr-2 text-cyan-400" />
           Developer Options
         </h3>
@@ -629,7 +608,7 @@ const Settings = () => {
           <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-700">
             <h4 className="text-white font-medium mb-2">API Access</h4>
             <p className="text-gray-400 text-sm mb-3">Generate API keys for third-party integrations</p>
-            <button className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors flex items-center space-x-2">
+            <button className="w-full sm:w-auto px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors flex items-center justify-center space-x-2">
               <Key className="w-4 h-4" />
               <span>Generate API Key</span>
             </button>
@@ -638,7 +617,7 @@ const Settings = () => {
           <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-700">
             <h4 className="text-white font-medium mb-2">Webhook URLs</h4>
             <p className="text-gray-400 text-sm mb-3">Configure webhooks for real-time notifications</p>
-            <button className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center space-x-2">
+            <button className="w-full sm:w-auto px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center justify-center space-x-2">
               <ExternalLink className="w-4 h-4" />
               <span>Configure Webhooks</span>
             </button>
@@ -669,14 +648,14 @@ const Settings = () => {
       {/* Background Particles */}
       <BackgroundParticles />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
-        {/* Header */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 relative z-10">
+        {/* Header - Responsive */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="mb-6 lg:mb-8"
         >
-          <div className="flex items-center space-x-4 mb-6">
+          <div className="flex items-center space-x-3 lg:space-x-4 mb-4 lg:mb-6">
             <button
               onClick={() => navigate('/dashboard')}
               className="p-2 text-gray-400 hover:text-cyan-400 hover:bg-gray-800/50 rounded-lg transition-all"
@@ -684,39 +663,39 @@ const Settings = () => {
               <ArrowLeft className="w-5 h-5" />
             </button>
             <div>
-              <h1 className="text-3xl font-bold text-white mb-2 font-mono">
+              <h1 className="text-2xl lg:text-3xl font-bold text-white mb-1 lg:mb-2 font-mono">
                 SETTINGS CONTROL PANEL
               </h1>
-              <p className="text-cyan-400 font-mono">
+              <p className="text-cyan-400 font-mono text-sm lg:text-base">
                 > Configure your DAOVerse experience
               </p>
             </div>
           </div>
         </motion.div>
 
-        <div className="grid lg:grid-cols-4 gap-8">
-          {/* Sidebar Navigation */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
+          {/* Sidebar Navigation - Responsive */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             className="lg:col-span-1"
           >
-            <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-6 backdrop-blur-sm sticky top-8">
-              <nav className="space-y-2">
+            <div className="bg-gray-900/50 border border-cyan-500/30 rounded-xl p-4 lg:p-6 backdrop-blur-sm lg:sticky lg:top-8">
+              <nav className="space-y-1 lg:space-y-2">
                 {tabs.map((tab) => (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all text-left ${
+                    className={`w-full flex items-center space-x-3 px-3 lg:px-4 py-2 lg:py-3 rounded-lg transition-all text-left ${
                       activeTab === tab.id
                         ? 'bg-cyan-500/20 border border-cyan-500/30 text-cyan-400'
                         : 'text-gray-300 hover:text-cyan-400 hover:bg-gray-800/50'
                     }`}
                   >
-                    <tab.icon className="w-5 h-5" />
-                    <span className="font-medium">{tab.label}</span>
+                    <tab.icon className="w-4 h-4 lg:w-5 lg:h-5" />
+                    <span className="font-medium text-sm lg:text-base">{tab.label}</span>
                     {activeTab === tab.id && (
-                      <ChevronRight className="w-4 h-4 ml-auto" />
+                      <ChevronRight className="w-3 h-3 lg:w-4 lg:h-4 ml-auto" />
                     )}
                   </button>
                 ))}
@@ -724,7 +703,7 @@ const Settings = () => {
             </div>
           </motion.div>
 
-          {/* Main Content */}
+          {/* Main Content - Responsive */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}

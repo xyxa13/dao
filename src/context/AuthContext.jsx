@@ -16,6 +16,38 @@ export const AuthProvider = ({ children }) => {
   const [principal, setPrincipal] = useState(null);
   const [authClient, setAuthClient] = useState(null);
   const [loading, setLoading] = useState(true);
+  
+  // Global user settings state
+  const [userSettings, setUserSettings] = useState({
+    displayName: 'Anonymous User',
+    email: '',
+    bio: '',
+    avatar: null,
+    theme: 'dark',
+    notifications: {
+      email: true,
+      push: true,
+      sms: false,
+      marketing: false
+    },
+    privacy: {
+      showProfile: true,
+      showActivity: false,
+      showInvestments: false
+    },
+    security: {
+      twoFactor: false,
+      sessionTimeout: 30,
+      loginAlerts: true
+    },
+    preferences: {
+      language: 'en',
+      currency: 'USD',
+      timezone: 'UTC',
+      soundEffects: true,
+      animations: true
+    }
+  });
 
   useEffect(() => {
     initAuth();
@@ -37,6 +69,12 @@ export const AuthProvider = ({ children }) => {
         const principalId = identity.getPrincipal().toText();
         setPrincipal(principalId);
         setIsAuthenticated(true);
+        
+        // Load user settings from localStorage or API
+        const savedSettings = localStorage.getItem(`userSettings_${principalId}`);
+        if (savedSettings) {
+          setUserSettings(JSON.parse(savedSettings));
+        }
       }
     } catch (error) {
       console.error('Failed to initialize auth:', error);
@@ -69,6 +107,13 @@ export const AuthProvider = ({ children }) => {
               const principalId = identity.getPrincipal().toText();
               setPrincipal(principalId);
               setIsAuthenticated(true);
+              
+              // Load user settings for this principal
+              const savedSettings = localStorage.getItem(`userSettings_${principalId}`);
+              if (savedSettings) {
+                setUserSettings(JSON.parse(savedSettings));
+              }
+              
               resolve();
             } catch (error) {
               console.error('Error after successful login:', error);
@@ -94,9 +139,49 @@ export const AuthProvider = ({ children }) => {
       await authClient.logout();
       setIsAuthenticated(false);
       setPrincipal(null);
+      // Reset user settings to default
+      setUserSettings({
+        displayName: 'Anonymous User',
+        email: '',
+        bio: '',
+        avatar: null,
+        theme: 'dark',
+        notifications: {
+          email: true,
+          push: true,
+          sms: false,
+          marketing: false
+        },
+        privacy: {
+          showProfile: true,
+          showActivity: false,
+          showInvestments: false
+        },
+        security: {
+          twoFactor: false,
+          sessionTimeout: 30,
+          loginAlerts: true
+        },
+        preferences: {
+          language: 'en',
+          currency: 'USD',
+          timezone: 'UTC',
+          soundEffects: true,
+          animations: true
+        }
+      });
     } catch (error) {
       console.error('Logout failed:', error);
       throw error;
+    }
+  };
+
+  // Function to update user settings globally
+  const updateUserSettings = (newSettings) => {
+    setUserSettings(newSettings);
+    // Save to localStorage
+    if (principal) {
+      localStorage.setItem(`userSettings_${principal}`, JSON.stringify(newSettings));
     }
   };
 
@@ -105,7 +190,9 @@ export const AuthProvider = ({ children }) => {
     principal,
     login,
     logout,
-    loading
+    loading,
+    userSettings,
+    updateUserSettings
   };
 
   return (
