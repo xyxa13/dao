@@ -334,7 +334,7 @@ const LandingPage = () => {
               ))}
             </div>
 
-            {/* Enhanced CTA Buttons - FIXED ARROW POSITION */}
+            {/* Enhanced CTA Buttons */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -366,7 +366,7 @@ const LandingPage = () => {
               </Link>
             </motion.div>
 
-            {/* Enhanced Stats with Fixed Layout - INSTANT HOVER SCALING */}
+            {/* Enhanced Stats - INSTANT HOVER SCALING */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -377,7 +377,7 @@ const LandingPage = () => {
                 <motion.div
                   key={index}
                   whileHover={{ scale: 1.05, rotateY: 5 }}
-                  transition={{ duration: 0 }} // INSTANT SCALING - NO DELAY
+                  transition={{ duration: 0 }}
                   className="bg-gray-900/50 border border-cyan-500/30 rounded-lg p-6 backdrop-blur-sm relative overflow-hidden group"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -393,7 +393,7 @@ const LandingPage = () => {
               animate={{ y: [0, 10, 0] }}
               transition={{ duration: 2, repeat: Infinity }}
               className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-            
+            >
               <ChevronDown className="w-6 h-6 text-cyan-400" />
             </motion.div>
           </div>
@@ -545,7 +545,7 @@ const LandingPage = () => {
           </div>
         </section>
 
-        {/* Enhanced CTA Section - FIXED ARROW POSITION */}
+        {/* Enhanced CTA Section */}
         <section className="py-20 relative">
           <div className="max-w-4xl mx-auto text-center px-4">
             <motion.div

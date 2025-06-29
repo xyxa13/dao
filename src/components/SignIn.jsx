@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import BackgroundParticles from './BackgroundParticles';
 import { Wallet, Shield, Zap, ArrowRight, Loader2, CheckCircle, AlertCircle, Globe, Lock } from 'lucide-react';
 
 const SignIn = () => {
@@ -59,120 +60,8 @@ const SignIn = () => {
 
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
-      {/* Interactive Animated Background with Lighter Particles */}
-      <div className="fixed inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-cyan-900/20"></div>
-        
-        {/* Enhanced Floating Particles with Lighter Colors */}
-        {[...Array(80)].map((_, i) => (
-          <motion.div
-            key={i}
-            className={`absolute rounded-full ${
-              i % 5 === 0 ? 'w-3 h-3 bg-cyan-300/40' :
-              i % 5 === 1 ? 'w-2 h-2 bg-purple-300/40' :
-              i % 5 === 2 ? 'w-1.5 h-1.5 bg-pink-300/40' :
-              i % 5 === 3 ? 'w-2.5 h-2.5 bg-blue-300/40' :
-              'w-1 h-1 bg-green-300/40'
-            }`}
-            initial={{
-              x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
-              y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
-              opacity: Math.random() * 0.6 + 0.1,
-            }}
-            animate={{
-              x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
-              y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
-              opacity: [0.1, 0.6, 0.1],
-              scale: [1, 1.2, 1],
-            }}
-            transition={{
-              duration: Math.random() * 30 + 20,
-              repeat: Infinity,
-              ease: "linear"
-            }}
-            whileHover={{
-              scale: 2,
-              opacity: 0.8,
-              transition: { duration: 0.3 }
-            }}
-          />
-        ))}
-
-        {/* Interactive Grid Pattern */}
-        <div className="absolute inset-0 opacity-3">
-          <div className="grid grid-cols-20 grid-rows-20 h-full w-full">
-            {[...Array(400)].map((_, i) => (
-              <motion.div 
-                key={i} 
-                className="border border-cyan-500/10"
-                whileHover={{
-                  backgroundColor: 'rgba(6, 182, 212, 0.05)',
-                  transition: { duration: 0.2 }
-                }}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Floating Geometric Shapes with Lighter Colors */}
-        {[...Array(12)].map((_, i) => (
-          <motion.div
-            key={`shape-${i}`}
-            className={`absolute ${
-              i % 3 === 0 ? 'w-8 h-8 bg-gradient-to-r from-cyan-400/15 to-blue-400/15 rounded-full' :
-              i % 3 === 1 ? 'w-6 h-6 bg-gradient-to-r from-purple-400/15 to-pink-400/15 rotate-45' :
-              'w-4 h-8 bg-gradient-to-r from-green-400/15 to-emerald-400/15 rounded-full'
-            }`}
-            initial={{
-              x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
-              y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
-              rotate: 0,
-            }}
-            animate={{
-              x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
-              y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
-              rotate: 360,
-            }}
-            transition={{
-              duration: Math.random() * 40 + 30,
-              repeat: Infinity,
-              ease: "linear"
-            }}
-            whileHover={{
-              scale: 1.5,
-              rotate: 180,
-              transition: { duration: 0.5 }
-            }}
-          />
-        ))}
-
-        {/* Pulsing Orbs with Lighter Colors */}
-        {[...Array(6)].map((_, i) => (
-          <motion.div
-            key={`orb-${i}`}
-            className="absolute w-16 h-16 rounded-full bg-gradient-to-r from-cyan-400/8 to-purple-400/8 backdrop-blur-sm"
-            initial={{
-              x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
-              y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
-              scale: 0.5,
-            }}
-            animate={{
-              scale: [0.5, 1.2, 0.5],
-              opacity: [0.2, 0.6, 0.2],
-            }}
-            transition={{
-              duration: Math.random() * 6 + 4,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-            whileHover={{
-              scale: 2,
-              opacity: 0.8,
-              transition: { duration: 0.3 }
-            }}
-          />
-        ))}
-      </div>
+      {/* Background Particles */}
+      <BackgroundParticles />
 
       <div className="relative min-h-screen flex items-center justify-center px-4 z-10">
         <motion.div
@@ -253,6 +142,7 @@ const SignIn = () => {
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
+                      transition={{ duration: 0 }}
                       onClick={() => navigate('/dashboard')}
                       className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 transition-all font-semibold text-white shadow-lg flex items-center justify-center space-x-2 font-mono relative overflow-hidden group"
                     >
@@ -264,6 +154,7 @@ const SignIn = () => {
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
+                      transition={{ duration: 0 }}
                       onClick={handleLogout}
                       disabled={isLoading}
                       className="w-full py-3 rounded-xl bg-red-500/20 border border-red-500/30 hover:bg-red-500/30 transition-all font-semibold text-red-300 disabled:opacity-50 font-mono"
@@ -318,6 +209,7 @@ const SignIn = () => {
                       boxShadow: "0 0 20px rgba(59, 130, 246, 0.5)",
                     }}
                     whileTap={{ scale: 0.95 }}
+                    transition={{ duration: 0 }}
                     onClick={handleLogin}
                     disabled={isLoading}
                     className="w-full py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 transition-all font-semibold text-white shadow-lg disabled:opacity-50 flex items-center justify-center space-x-2 font-mono relative overflow-hidden group"

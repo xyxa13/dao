@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import BackgroundParticles from './BackgroundParticles';
 import { 
   Rocket, 
   Users, 
@@ -274,81 +275,8 @@ const LaunchDAO = () => {
 
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
-      {/* Fixed Particle Background - Distributed Across Entire Screen */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-cyan-900/20"></div>
-        
-        {/* Enhanced Floating Particles - Distributed Evenly */}
-        {[...Array(60)].map((_, i) => {
-          // Calculate grid positions to ensure even distribution
-          const gridSize = 8; // 8x8 grid for 64 positions
-          const row = Math.floor(i / gridSize);
-          const col = i % gridSize;
-          const baseX = (col / gridSize) * 100; // Percentage of screen width
-          const baseY = (row / gridSize) * 100; // Percentage of screen height
-          
-          return (
-            <motion.div
-              key={i}
-              className={`absolute rounded-full ${
-                i % 5 === 0 ? 'w-2 h-2 bg-cyan-300/30' :
-                i % 5 === 1 ? 'w-1.5 h-1.5 bg-purple-300/30' :
-                i % 5 === 2 ? 'w-1 h-1 bg-pink-300/30' :
-                i % 5 === 3 ? 'w-2 h-2 bg-blue-300/30' :
-                'w-1 h-1 bg-green-300/30'
-              }`}
-              style={{
-                left: `${baseX + (Math.random() - 0.5) * 10}%`, // Small random offset
-                top: `${baseY + (Math.random() - 0.5) * 10}%`,
-              }}
-              animate={{
-                x: [0, Math.random() * 40 - 20, 0], // Small movement range
-                y: [0, Math.random() * 40 - 20, 0],
-                opacity: [0.2, 0.6, 0.2],
-                scale: [1, 1.2, 1],
-              }}
-              transition={{
-                duration: Math.random() * 8 + 6,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            />
-          );
-        })}
-
-        {/* Grid Pattern */}
-        <div className="absolute inset-0 opacity-3">
-          <div className="grid grid-cols-20 grid-rows-20 h-full w-full">
-            {[...Array(400)].map((_, i) => (
-              <div key={i} className="border border-cyan-500/5" />
-            ))}
-          </div>
-        </div>
-
-        {/* Floating Geometric Shapes - Fixed Positions */}
-        {[...Array(8)].map((_, i) => (
-          <motion.div
-            key={`shape-${i}`}
-            className={`absolute ${
-              i % 3 === 0 ? 'w-6 h-6 bg-gradient-to-r from-cyan-400/10 to-blue-400/10 rounded-full' :
-              i % 3 === 1 ? 'w-4 h-4 bg-gradient-to-r from-purple-400/10 to-pink-400/10 rotate-45' :
-              'w-3 h-6 bg-gradient-to-r from-green-400/10 to-emerald-400/10 rounded-full'
-            }`}
-            style={{
-              left: `${(i * 12.5) + 10}%`, // Evenly spaced
-              top: `${20 + (i % 3) * 30}%`,
-            }}
-            animate={{
-              rotate: 360,
-              scale: [1, 1.1, 1],
-            }}
-            transition={{
-              rotate: { duration: 20, repeat: Infinity, ease: "linear" },
-              scale: { duration: 4, repeat: Infinity, ease: "easeInOut" }
-            }}
-          />
-        ))}
-      </div>
+      {/* Background Particles */}
+      <BackgroundParticles />
 
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center px-4 z-10">
@@ -405,7 +333,7 @@ const LaunchDAO = () => {
             Build, fund, and govern your DAO with modular components. Choose exactly what you need.
           </motion.p>
 
-          {/* Feature Highlights */}
+          {/* Feature Highlights - INSTANT HOVER SCALING */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -439,6 +367,7 @@ const LaunchDAO = () => {
                   rotateY: 5,
                   boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)"
                 }}
+                transition={{ duration: 0 }}
                 className="bg-gray-900/80 border border-gray-700/50 rounded-xl p-8 backdrop-blur-sm hover:border-cyan-400/50 transition-all duration-300 relative overflow-hidden group"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-gray-800/50 to-gray-900/50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -459,6 +388,7 @@ const LaunchDAO = () => {
               boxShadow: "0 20px 40px rgba(6, 182, 212, 0.4)"
             }}
             whileTap={{ scale: 0.95 }}
+            transition={{ duration: 0 }}
             className="group relative px-12 py-6 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-xl font-bold text-xl transition-all duration-300 overflow-hidden shadow-2xl"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -608,6 +538,7 @@ const LaunchDAO = () => {
                             key={cat.value}
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
+                            transition={{ duration: 0 }}
                             onClick={() => handleInputChange('category', cat.value)}
                             className={`relative p-4 rounded-lg border-2 cursor-pointer transition-all bg-white ${
                               formData.category === cat.value
@@ -673,6 +604,7 @@ const LaunchDAO = () => {
                               <motion.div
                                 key={module.id}
                                 whileHover={{ scale: 1.01 }}
+                                transition={{ duration: 0 }}
                                 className={`flex items-center justify-between p-4 rounded-lg border-2 cursor-pointer transition-all ${
                                   module.selected
                                     ? 'border-blue-500 bg-blue-50'
@@ -1011,6 +943,7 @@ const LaunchDAO = () => {
                     onClick={handleSubmit}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
+                    transition={{ duration: 0 }}
                     className="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center font-semibold shadow-lg"
                   >
                     <Rocket className="w-5 h-5 mr-2" />
