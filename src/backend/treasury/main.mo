@@ -6,6 +6,8 @@ import Result "mo:base/Result";
 import Principal "mo:base/Principal";
 import Debug "mo:base/Debug";
 import Buffer "mo:base/Buffer";
+import Float "mo:base/Float";
+import Int "mo:base/Int";
 
 import Types "../shared/types";
 
@@ -129,13 +131,33 @@ actor TreasuryCanister {
                 totalBalance -= amount;
                 availableBalance -= amount;
                 
-                let completedTransaction = transaction with { status = #completed };
+                let completedTransaction = {
+                    id = transaction.id;
+                    transactionType = transaction.transactionType;
+                    amount = transaction.amount;
+                    from = transaction.from;
+                    to = transaction.to;
+                    timestamp = transaction.timestamp;
+                    proposalId = transaction.proposalId;
+                    description = transaction.description;
+                    status = #completed;
+                };
                 transactions.put(transactionId, completedTransaction);
                 
                 #ok(transactionId)
             };
             case (#err(error)) {
-                let failedTransaction = transaction with { status = #failed };
+                let failedTransaction = {
+                    id = transaction.id;
+                    transactionType = transaction.transactionType;
+                    amount = transaction.amount;
+                    from = transaction.from;
+                    to = transaction.to;
+                    timestamp = transaction.timestamp;
+                    proposalId = transaction.proposalId;
+                    description = transaction.description;
+                    status = #failed;
+                };
                 transactions.put(transactionId, failedTransaction);
                 #err(error)
             };
