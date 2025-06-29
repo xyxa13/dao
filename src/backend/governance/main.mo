@@ -129,7 +129,7 @@ actor GovernanceCanister {
         #ok(proposalId)
     };
 
-    // Cast a vote on a proposal
+    // Cast a vote on a proposal - FIXED: Updated to use #inFavor instead of #for
     public shared(msg) func vote(
         proposalId: ProposalId,
         choice: Types.VoteChoice,
@@ -172,9 +172,9 @@ actor GovernanceCanister {
 
         votes.put(voteKey, vote);
 
-        // Update proposal vote counts
+        // Update proposal vote counts - FIXED: Updated to use #inFavor
         let updatedProposal = switch (choice) {
-            case (#for) {
+            case (#inFavor) {
                 proposal with {
                     votesFor = proposal.votesFor + votingPower;
                     totalVotingPower = proposal.totalVotingPower + votingPower;

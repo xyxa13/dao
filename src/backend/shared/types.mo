@@ -88,8 +88,12 @@ module {
         approvalThreshold: Nat; // Percentage (0-100)
     };
 
-    // Voting types
-    public type VoteChoice = { #inFavor; #against; #abstain };
+    // Voting types - FIXED: Changed #ifor to #inFavor
+    public type VoteChoice = { 
+        #inFavor; 
+        #against; 
+        #abstain 
+    };
     
     public type Vote = {
         voter: Principal;

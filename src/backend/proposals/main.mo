@@ -310,7 +310,7 @@ actor ProposalsCanister {
         #ok(proposalId)
     };
 
-    // Vote on proposal with delegation support
+    // Vote on proposal with delegation support - FIXED: Updated to use #inFavor
     public shared(msg) func voteWithDelegation(
         proposalId: ProposalId,
         choice: Types.VoteChoice,
@@ -363,9 +363,9 @@ actor ProposalsCanister {
 
         votes.put(voteKey, vote);
 
-        // Update proposal vote counts
+        // Update proposal vote counts - FIXED: Updated to use #inFavor
         let updatedProposal = switch (choice) {
-            case (#for) {
+            case (#inFavor) {
                 proposal with {
                     votesFor = proposal.votesFor + totalPower;
                     totalVotingPower = proposal.totalVotingPower + totalPower;
