@@ -95,206 +95,207 @@ const LandingPage = () => {
     }
   ];
 
+  // Separate background component to prevent re-renders
+  const BackgroundParticles = React.memo(() => (
+    <div className="fixed inset-0 z-0">
+      <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-cyan-900/20"></div>
+      
+      {/* Enhanced Floating Particles with Better Distribution - COMPLETELY INDEPENDENT */}
+      {[...Array(80)].map((_, i) => {
+        // Create better initial distribution using grid-like approach
+        const gridCols = 10;
+        const gridRows = 8;
+        const col = i % gridCols;
+        const row = Math.floor(i / gridCols);
+        
+        // Calculate initial position with some randomness but better spread
+        const baseX = (col / (gridCols - 1)) * 90 + 5; // 5% to 95% spread
+        const baseY = (row / (gridRows - 1)) * 90 + 5; // 5% to 95% spread
+        
+        // Add some randomness to avoid perfect grid
+        const randomOffsetX = (Math.random() - 0.5) * 15; // ±7.5% variation
+        const randomOffsetY = (Math.random() - 0.5) * 15; // ±7.5% variation
+        
+        const finalX = Math.max(2, Math.min(98, baseX + randomOffsetX));
+        const finalY = Math.max(2, Math.min(98, baseY + randomOffsetY));
+        
+        return (
+          <motion.div
+            key={`particle-${i}`} // Stable key that doesn't change
+            className={`absolute rounded-full ${
+              i % 5 === 0 ? 'w-3 h-3 bg-cyan-300/55' :
+              i % 5 === 1 ? 'w-2 h-2 bg-purple-300/55' :
+              i % 5 === 2 ? 'w-1.5 h-1.5 bg-pink-300/55' :
+              i % 5 === 3 ? 'w-2.5 h-2.5 bg-blue-300/55' :
+              'w-1 h-1 bg-green-300/55'
+            }`}
+            style={{
+              left: `${finalX}%`,
+              top: `${finalY}%`,
+            }}
+            animate={{
+              x: [
+                0, 
+                (Math.random() - 0.5) * 60, 
+                (Math.random() - 0.5) * 40,
+                (Math.random() - 0.5) * 50,
+                0
+              ],
+              y: [
+                0, 
+                (Math.random() - 0.5) * 60, 
+                (Math.random() - 0.5) * 40,
+                (Math.random() - 0.5) * 50,
+                0
+              ],
+              opacity: [0.2, 0.7, 0.4, 0.6, 0.2],
+              scale: [1, 1.2, 0.8, 1.1, 1],
+            }}
+            transition={{
+              duration: Math.random() * 25 + 15, // 15-40 seconds for slower movement
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: Math.random() * 10, // Random start delay
+            }}
+            whileHover={{
+              scale: 2,
+              opacity: 0.9,
+              transition: { duration: 0.3 }
+            }}
+          />
+        );
+      })}
+
+      {/* Interactive Grid Pattern */}
+      <div className="absolute inset-0 opacity-3">
+        <div className="grid grid-cols-20 grid-rows-20 h-full w-full">
+          {[...Array(400)].map((_, i) => (
+            <motion.div 
+              key={`grid-${i}`}
+              className="border border-cyan-500/10"
+              whileHover={{
+                backgroundColor: 'rgba(6, 182, 212, 0.05)',
+                transition: { duration: 0.2 }
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Floating Geometric Shapes with Better Distribution */}
+      {[...Array(12)].map((_, i) => {
+        // Better distribution for shapes
+        const shapePositions = [
+          { x: 15, y: 20 }, { x: 85, y: 25 }, { x: 25, y: 75 }, { x: 75, y: 80 },
+          { x: 35, y: 35 }, { x: 65, y: 45 }, { x: 45, y: 85 }, { x: 55, y: 15 },
+          { x: 5, y: 65 }, { x: 95, y: 35 }, { x: 25, y: 55 }, { x: 75, y: 65 }
+        ];
+        
+        return (
+          <motion.div
+            key={`shape-${i}`}
+            className={`absolute ${
+              i % 3 === 0 ? 'w-8 h-8 bg-gradient-to-r from-cyan-400/20 to-blue-400/20 rounded-full' :
+              i % 3 === 1 ? 'w-6 h-6 bg-gradient-to-r from-purple-400/20 to-pink-400/20 rotate-45' :
+              'w-4 h-8 bg-gradient-to-r from-green-400/20 to-emerald-400/20 rounded-full'
+            }`}
+            style={{
+              left: `${shapePositions[i].x}%`,
+              top: `${shapePositions[i].y}%`,
+            }}
+            animate={{
+              rotate: 360,
+              scale: [1, 1.1, 1],
+            }}
+            transition={{
+              rotate: { duration: Math.random() * 30 + 20, repeat: Infinity, ease: "linear" },
+              scale: { duration: Math.random() * 4 + 3, repeat: Infinity, ease: "easeInOut" }
+            }}
+            whileHover={{
+              scale: 1.5,
+              rotate: 180,
+              transition: { duration: 0.5 }
+            }}
+          />
+        );
+      })}
+
+      {/* Pulsing Orbs with Better Distribution */}
+      {[...Array(6)].map((_, i) => {
+        const orbPositions = [
+          { x: 20, y: 30 }, { x: 80, y: 40 }, { x: 30, y: 70 },
+          { x: 70, y: 20 }, { x: 10, y: 60 }, { x: 90, y: 75 }
+        ];
+        
+        return (
+          <motion.div
+            key={`orb-${i}`}
+            className="absolute w-16 h-16 rounded-full bg-gradient-to-r from-cyan-400/12 to-purple-400/12 backdrop-blur-sm"
+            style={{
+              left: `${orbPositions[i].x}%`,
+              top: `${orbPositions[i].y}%`,
+            }}
+            animate={{
+              scale: [0.5, 1.2, 0.5],
+              opacity: [0.3, 0.7, 0.3],
+            }}
+            transition={{
+              duration: Math.random() * 6 + 4,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            whileHover={{
+              scale: 2,
+              opacity: 0.9,
+              transition: { duration: 0.3 }
+            }}
+          />
+        );
+      })}
+    </div>
+  ));
+
   return (
     <div className="min-h-screen bg-black text-white overflow-hidden relative">
-      {/* Interactive Animated Background with Better Distributed Particles */}
-      <div className="fixed inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-cyan-900/20"></div>
-        
-        {/* Enhanced Floating Particles with Better Distribution - NO RESET */}
-        {[...Array(80)].map((_, i) => {
-          // Create better initial distribution using grid-like approach
-          const gridCols = 10;
-          const gridRows = 8;
-          const col = i % gridCols;
-          const row = Math.floor(i / gridCols);
-          
-          // Calculate initial position with some randomness but better spread
-          const baseX = (col / (gridCols - 1)) * 90 + 5; // 5% to 95% spread
-          const baseY = (row / (gridRows - 1)) * 90 + 5; // 5% to 95% spread
-          
-          // Add some randomness to avoid perfect grid
-          const randomOffsetX = (Math.random() - 0.5) * 15; // ±7.5% variation
-          const randomOffsetY = (Math.random() - 0.5) * 15; // ±7.5% variation
-          
-          const finalX = Math.max(2, Math.min(98, baseX + randomOffsetX));
-          const finalY = Math.max(2, Math.min(98, baseY + randomOffsetY));
-          
-          return (
-            <motion.div
-              key={`particle-${i}`} // Stable key that doesn't change
-              className={`absolute rounded-full ${
-                i % 5 === 0 ? 'w-3 h-3 bg-cyan-300/40' :
-                i % 5 === 1 ? 'w-2 h-2 bg-purple-300/40' :
-                i % 5 === 2 ? 'w-1.5 h-1.5 bg-pink-300/40' :
-                i % 5 === 3 ? 'w-2.5 h-2.5 bg-blue-300/40' :
-                'w-1 h-1 bg-green-300/40'
-              }`}
-              style={{
-                left: `${finalX}%`,
-                top: `${finalY}%`,
-              }}
-              animate={{
-                x: [
-                  0, 
-                  (Math.random() - 0.5) * 60, 
-                  (Math.random() - 0.5) * 40,
-                  (Math.random() - 0.5) * 50,
-                  0
-                ],
-                y: [
-                  0, 
-                  (Math.random() - 0.5) * 60, 
-                  (Math.random() - 0.5) * 40,
-                  (Math.random() - 0.5) * 50,
-                  0
-                ],
-                opacity: [0.1, 0.6, 0.3, 0.5, 0.1],
-                scale: [1, 1.2, 0.8, 1.1, 1],
-              }}
-              transition={{
-                duration: Math.random() * 25 + 15, // 15-40 seconds for slower movement
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: Math.random() * 10, // Random start delay
-              }}
-              whileHover={{
-                scale: 2,
-                opacity: 0.8,
-                transition: { duration: 0.3 }
-              }}
-            />
-          );
-        })}
-
-        {/* Interactive Grid Pattern */}
-        <div className="absolute inset-0 opacity-3">
-          <div className="grid grid-cols-20 grid-rows-20 h-full w-full">
-            {[...Array(400)].map((_, i) => (
-              <motion.div 
-                key={`grid-${i}`}
-                className="border border-cyan-500/10"
-                whileHover={{
-                  backgroundColor: 'rgba(6, 182, 212, 0.05)',
-                  transition: { duration: 0.2 }
-                }}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Floating Geometric Shapes with Better Distribution */}
-        {[...Array(12)].map((_, i) => {
-          // Better distribution for shapes
-          const shapePositions = [
-            { x: 15, y: 20 }, { x: 85, y: 25 }, { x: 25, y: 75 }, { x: 75, y: 80 },
-            { x: 35, y: 35 }, { x: 65, y: 45 }, { x: 45, y: 85 }, { x: 55, y: 15 },
-            { x: 5, y: 65 }, { x: 95, y: 35 }, { x: 25, y: 55 }, { x: 75, y: 65 }
-          ];
-          
-          return (
-            <motion.div
-              key={`shape-${i}`}
-              className={`absolute ${
-                i % 3 === 0 ? 'w-8 h-8 bg-gradient-to-r from-cyan-400/15 to-blue-400/15 rounded-full' :
-                i % 3 === 1 ? 'w-6 h-6 bg-gradient-to-r from-purple-400/15 to-pink-400/15 rotate-45' :
-                'w-4 h-8 bg-gradient-to-r from-green-400/15 to-emerald-400/15 rounded-full'
-              }`}
-              style={{
-                left: `${shapePositions[i].x}%`,
-                top: `${shapePositions[i].y}%`,
-              }}
-              animate={{
-                rotate: 360,
-                scale: [1, 1.1, 1],
-              }}
-              transition={{
-                rotate: { duration: Math.random() * 30 + 20, repeat: Infinity, ease: "linear" },
-                scale: { duration: Math.random() * 4 + 3, repeat: Infinity, ease: "easeInOut" }
-              }}
-              whileHover={{
-                scale: 1.5,
-                rotate: 180,
-                transition: { duration: 0.5 }
-              }}
-            />
-          );
-        })}
-
-        {/* Pulsing Orbs with Better Distribution */}
-        {[...Array(6)].map((_, i) => {
-          const orbPositions = [
-            { x: 20, y: 30 }, { x: 80, y: 40 }, { x: 30, y: 70 },
-            { x: 70, y: 20 }, { x: 10, y: 60 }, { x: 90, y: 75 }
-          ];
-          
-          return (
-            <motion.div
-              key={`orb-${i}`}
-              className="absolute w-16 h-16 rounded-full bg-gradient-to-r from-cyan-400/8 to-purple-400/8 backdrop-blur-sm"
-              style={{
-                left: `${orbPositions[i].x}%`,
-                top: `${orbPositions[i].y}%`,
-              }}
-              animate={{
-                scale: [0.5, 1.2, 0.5],
-                opacity: [0.2, 0.6, 0.2],
-              }}
-              transition={{
-                duration: Math.random() * 6 + 4,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-              whileHover={{
-                scale: 2,
-                opacity: 0.8,
-                transition: { duration: 0.3 }
-              }}
-            />
-          );
-        })}
-      </div>
+      {/* Background Particles - Completely Independent Component */}
+      <BackgroundParticles />
 
       {/* Content */}
       <div className="relative z-10">
-        {/* Hero Section */}
-        <section className="relative min-h-screen flex items-center justify-center px-4">
+        {/* Hero Section with Fixed Height to Prevent Layout Shift */}
+        <section className="relative h-screen flex items-center justify-center px-4">
           <div className="max-w-6xl mx-auto text-center">
-            {/* Dynamic Hero Content */}
-            <motion.div
-              key={currentSlide}
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -50 }}
-              transition={{ duration: 0.8 }}
-              className="relative mb-8"
-            >
-              <h1 className="text-6xl md:text-8xl font-bold mb-4 relative">
-                <span className="bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 text-transparent bg-clip-text">
-                  {heroSlides[currentSlide].title}
-                </span>
-              </h1>
-              
-              <div className="font-mono text-xl md:text-2xl text-cyan-400 mb-8">
-                <motion.span
-                  animate={{ opacity: [1, 0, 1] }}
-                  transition={{ duration: 1, repeat: Infinity }}
-                >
+            {/* Dynamic Hero Content with Fixed Container Height */}
+            <div className="relative mb-8 h-80 flex flex-col justify-center">
+              <motion.div
+                key={currentSlide}
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -50 }}
+                transition={{ duration: 0.8 }}
+                className="absolute inset-0 flex flex-col justify-center"
+              >
+                <h1 className="text-6xl md:text-8xl font-bold mb-4 relative">
+                  <span className="bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 text-transparent bg-clip-text">
+                    {heroSlides[currentSlide].title}
+                  </span>
+                </h1>
+                
+                <div className="font-mono text-xl md:text-2xl text-cyan-400 mb-8">
+                  <motion.span
+                    animate={{ opacity: [1, 0, 1] }}
+                    transition={{ duration: 1, repeat: Infinity }}
                   >
-                </motion.span>
-                {" "}{heroSlides[currentSlide].subtitle}
-              </div>
-            </motion.div>
+                    >
+                  </motion.span>
+                  {" "}{heroSlides[currentSlide].subtitle}
+                </div>
 
-            <motion.p
-              key={`desc-${currentSlide}`}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="text-xl md:text-2xl text-gray-300 mb-12 max-w-4xl mx-auto leading-relaxed"
-            >
-              {heroSlides[currentSlide].description}
-            </motion.p>
+                <p className="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
+                  {heroSlides[currentSlide].description}
+                </p>
+              </motion.div>
+            </div>
 
             {/* Slide Indicators */}
             <div className="flex justify-center space-x-2 mb-12">
@@ -343,7 +344,7 @@ const LandingPage = () => {
               </Link>
             </motion.div>
 
-            {/* Enhanced Stats */}
+            {/* Enhanced Stats with Fixed Layout */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
