@@ -54,7 +54,7 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="bg-gradient-to-r from-gray-900/95 via-black/95 to-gray-900/95 backdrop-blur-xl border-b border-cyan-500/20 sticky top-0 z-50 shadow-lg shadow-cyan-500/10">
+      <nav className="bg-gradient-to-r from-gray-900/95 via-black/95 to-gray-900/95 backdrop-blur-xl border-b border-cyan-500/20 fixed top-0 left-0 right-0 z-50 shadow-lg shadow-cyan-500/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 sm:h-20">
             {/* Enhanced Logo - Responsive */}
@@ -304,7 +304,7 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Enhanced Mobile menu - Fully Responsive */}
+        {/* Enhanced Mobile menu - OVERLAY INSTEAD OF PUSHING CONTENT */}
         <AnimatePresence>
           {mobileMenuOpen && (
             <motion.div
@@ -312,7 +312,7 @@ const Navbar = () => {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="md:hidden bg-gray-900/95 backdrop-blur-xl border-t border-cyan-500/20"
+              className="md:hidden absolute top-full left-0 right-0 bg-gray-900/95 backdrop-blur-xl border-t border-cyan-500/20 shadow-lg"
             >
               <div className="px-4 pt-4 pb-6 space-y-3">
                 {/* Mobile Navigation Links */}

@@ -278,8 +278,8 @@ const LaunchDAO = () => {
       {/* Background Particles */}
       <BackgroundParticles />
 
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center px-4 z-10">
+      {/* Hero Section with Proper Top Padding */}
+      <section className="relative min-h-screen flex items-center justify-center px-4 z-10 pt-20 sm:pt-24">
         <div className="max-w-6xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
