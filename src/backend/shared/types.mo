@@ -89,7 +89,7 @@ module {
     };
 
     // Voting types
-    public type VoteChoice = { #for; #against; #abstain };
+    public type VoteChoice = { #inFavor; #against; #abstain };
     
     public type Vote = {
         voter: Principal;
