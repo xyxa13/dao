@@ -83,6 +83,37 @@ actor ProposalsCanister {
         };
     };
 
+    // Helper function to parse Nat from Text
+    private func parseNat(text: Text) : ?Nat {
+        var result : Nat = 0;
+        var multiplier : Nat = 1;
+        let chars = Text.toIter(text);
+        let charArray = Iter.toArray(chars);
+        
+        if (charArray.size() == 0) return null;
+        
+        var i = charArray.size();
+        while (i > 0) {
+            i -= 1;
+            let char = charArray[i];
+            switch (char) {
+                case ('0') { result += 0 * multiplier; };
+                case ('1') { result += 1 * multiplier; };
+                case ('2') { result += 2 * multiplier; };
+                case ('3') { result += 3 * multiplier; };
+                case ('4') { result += 4 * multiplier; };
+                case ('5') { result += 5 * multiplier; };
+                case ('6') { result += 6 * multiplier; };
+                case ('7') { result += 7 * multiplier; };
+                case ('8') { result += 8 * multiplier; };
+                case ('9') { result += 9 * multiplier; };
+                case (_) { return null; };
+            };
+            multiplier *= 10;
+        };
+        ?result
+    };
+
     // Initialize default proposal templates
     private func initializeTemplates() {
         let templates = [
@@ -192,7 +223,7 @@ actor ProposalsCanister {
                     case null return #err("Missing recipient");
                 };
                 let amount = switch (dataMap.get("amount")) {
-                    case (?a) switch (Nat.fromText(a)) {
+                    case (?a) switch (parseNat(a)) {
                         case (?n) n;
                         case null return #err("Invalid amount");
                     };
@@ -359,12 +390,12 @@ actor ProposalsCanister {
 
     // Batch vote on multiple proposals
     public shared(msg) func batchVote(
-        votes: [(ProposalId, Types.VoteChoice, Nat, ?Text)]
+        votesToCast: [(ProposalId, Types.VoteChoice, Nat, ?Text)]
     ) : async Result<[Result<(), Text>], Text> {
         let caller = msg.caller;
-        let results = Buffer.Buffer<Result<(), Text>>(votes.size());
+        let results = Buffer.Buffer<Result<(), Text>>(votesToCast.size());
 
-        for ((proposalId, choice, votingPower, reason) in votes.vals()) {
+        for ((proposalId, choice, votingPower, reason) in votesToCast.vals()) {
             let result = await voteWithDelegation(proposalId, choice, votingPower, null, reason);
             results.add(result);
         };
