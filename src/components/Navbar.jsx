@@ -31,11 +31,14 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [notificationCount] = useState(3);
+  
+  // User display name - in a real app, this would come from user settings/profile
+  const [userDisplayName] = useState('Anonymous User');
 
   const navigation = [
     { name: 'Home', href: '/', icon: Globe },
     { name: 'Dashboard', href: '/dashboard', icon: Activity },
-    { name: 'Launch DAO', href: '/launch', icon: Rocket, highlight: true },
+    { name: 'Launch DAO', href: '/launch', icon: Rocket }, // Removed highlight
   ];
 
   const isActive = (path) => location.pathname === path;
@@ -95,20 +98,11 @@ const Navbar = () => {
                   className={`group relative px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 flex items-center space-x-2 ${
                     isActive(item.href)
                       ? 'text-cyan-400 bg-cyan-500/10 border border-cyan-500/30 shadow-lg shadow-cyan-500/20'
-                      : item.highlight
-                      ? 'text-white bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/30 hover:from-orange-500/30 hover:to-red-500/30 hover:shadow-lg hover:shadow-orange-500/20'
                       : 'text-gray-300 hover:text-cyan-400 hover:bg-gray-800/50 border border-transparent hover:border-gray-700/50'
                   }`}
                 >
-                  <item.icon className={`w-4 h-4 ${item.highlight ? 'text-orange-400' : ''}`} />
+                  <item.icon className="w-4 h-4" />
                   <span>{item.name}</span>
-                  {item.highlight && (
-                    <motion.div
-                      animate={{ scale: [1, 1.2, 1] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                      className="w-2 h-2 bg-orange-400 rounded-full"
-                    />
-                  )}
                   {isActive(item.href) && (
                     <motion.div
                       layoutId="activeTab"
@@ -156,7 +150,7 @@ const Navbar = () => {
                       </div>
                       <div className="flex flex-col items-start">
                         <span className="text-sm font-medium text-white">
-                          {principal?.slice(0, 6)}...{principal?.slice(-4)}
+                          {userDisplayName}
                         </span>
                         <span className="text-xs text-cyan-400 font-mono">Connected</span>
                       </div>
@@ -180,7 +174,7 @@ const Navbar = () => {
                                 <User className="w-8 h-8 text-white" />
                               </div>
                               <div className="flex-1">
-                                <h3 className="text-lg font-bold text-white font-mono">Your Profile</h3>
+                                <h3 className="text-lg font-bold text-white font-mono">{userDisplayName}</h3>
                                 <div className="flex items-center space-x-2 mt-1">
                                   <code className="text-sm text-cyan-400 font-mono bg-gray-800/50 px-2 py-1 rounded">
                                     {principal?.slice(0, 12)}...{principal?.slice(-8)}
@@ -243,11 +237,15 @@ const Navbar = () => {
                               <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity ml-auto" />
                             </Link>
                             
-                            <button className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:text-cyan-400 hover:bg-gray-800/50 rounded-lg transition-all w-full group">
+                            <Link
+                              to="/settings"
+                              onClick={() => setProfileDropdownOpen(false)}
+                              className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:text-cyan-400 hover:bg-gray-800/50 rounded-lg transition-all w-full group"
+                            >
                               <Settings className="w-5 h-5" />
                               <span className="font-medium">Settings</span>
-                              <ChevronDown className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity ml-auto" />
-                            </button>
+                              <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity ml-auto" />
+                            </Link>
 
                             <button className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:text-cyan-400 hover:bg-gray-800/50 rounded-lg transition-all w-full group">
                               <Shield className="w-5 h-5" />
@@ -327,16 +325,11 @@ const Navbar = () => {
                     className={`flex items-center space-x-3 px-4 py-3 rounded-xl text-base font-medium transition-all ${
                       isActive(item.href)
                         ? 'text-cyan-400 bg-cyan-500/10 border border-cyan-500/30'
-                        : item.highlight
-                        ? 'text-white bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/30'
                         : 'text-gray-300 hover:text-cyan-400 hover:bg-gray-800/50 border border-transparent'
                     }`}
                   >
-                    <item.icon className={`w-5 h-5 ${item.highlight ? 'text-orange-400' : ''}`} />
+                    <item.icon className="w-5 h-5" />
                     <span>{item.name}</span>
-                    {item.highlight && (
-                      <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse" />
-                    )}
                   </Link>
                 ))}
                 
@@ -349,7 +342,7 @@ const Navbar = () => {
                       </div>
                       <div className="flex-1">
                         <div className="text-sm font-medium text-white">
-                          {principal?.slice(0, 8)}...{principal?.slice(-6)}
+                          {userDisplayName}
                         </div>
                         <div className="text-xs text-cyan-400 font-mono">Connected</div>
                       </div>
@@ -372,6 +365,16 @@ const Navbar = () => {
                         <div className="text-lg font-bold text-green-400">{userStats.totalReturns}</div>
                       </div>
                     </div>
+
+                    {/* Mobile Settings Link */}
+                    <Link
+                      to="/settings"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center space-x-3 w-full px-4 py-3 text-gray-300 hover:text-cyan-400 hover:bg-gray-800/50 rounded-xl transition-all mb-2"
+                    >
+                      <Settings className="w-5 h-5" />
+                      <span className="font-medium">Settings</span>
+                    </Link>
 
                     <button
                       onClick={() => {
