@@ -100,14 +100,14 @@ module {
         reason: ?Text;
     };
 
-    // Staking types
+    // Staking types - FIXED: Proper syntax for variant types
     public type StakeId = Nat;
     public type StakingPeriod = {
-        #flexible; // No lock period
-        #locked30; // 30 days
-        #locked90; // 90 days
-        #locked180; // 180 days
-        #locked365; // 365 days
+        #flexible;
+        #locked30;
+        #locked90;
+        #locked180;
+        #locked365;
     };
 
     public type Stake = {
