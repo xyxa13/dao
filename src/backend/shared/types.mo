@@ -88,7 +88,7 @@ module {
         approvalThreshold: Nat; // Percentage (0-100)
     };
 
-    // Voting types - FIXED: Using #inFavor instead of #for
+    // Voting types
     public type VoteChoice = { #inFavor; #against; #abstain };
     
     public type Vote = {
@@ -100,8 +100,9 @@ module {
         reason: ?Text;
     };
 
-    // Staking types - FIXED: Proper syntax for variant types
+    // Staking types
     public type StakeId = Nat;
+    
     public type StakingPeriod = {
         #flexible;
         #locked30;
