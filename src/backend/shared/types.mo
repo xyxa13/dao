@@ -1,6 +1,8 @@
 import Time "mo:base/Time";
 import Principal "mo:base/Principal";
 import Result "mo:base/Result";
+import Float "mo:base/Float";
+import Int "mo:base/Int";
 
 module {
     // Common types used across all modules
