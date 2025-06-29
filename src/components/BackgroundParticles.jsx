@@ -96,7 +96,7 @@ const BackgroundParticles = React.memo(() => {
               (Math.random() - 0.5) * 70,
               0
             ],
-            opacity: [0.2, 0.7, 0.4, 0.6, 0.2],
+            opacity: [0.2, 0.5, 0.3, 0.4, 0.2],
             scale: [1, 1.3, 0.8, 1.2, 1],
           }}
           transition={{
@@ -165,7 +165,7 @@ const BackgroundParticles = React.memo(() => {
           }}
           animate={{
             scale: [0.5, 1.2, 0.5],
-            opacity: [0.3, 0.7, 0.3],
+            opacity: [0.3, 0.5, 0.3],
           }}
           transition={{
             duration: orb.duration,
