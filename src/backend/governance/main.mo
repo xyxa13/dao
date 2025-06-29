@@ -115,7 +115,7 @@ actor GovernanceCanister {
             description = description;
             proposalType = proposalType;
             status = #active;
-            votesInFavor = 0;
+            votesFor = 0;
             votesAgainst = 0;
             totalVotingPower = 0;
             createdAt = Time.now();
@@ -174,9 +174,9 @@ actor GovernanceCanister {
 
         // Update proposal vote counts
         let updatedProposal = switch (choice) {
-            case (#inFavor) {
+            case (#for) {
                 proposal with {
-                    votesInFavor = proposal.votesInFavor + votingPower;
+                    votesFor = proposal.votesFor + votingPower;
                     totalVotingPower = proposal.totalVotingPower + votingPower;
                 }
             };
@@ -222,7 +222,7 @@ actor GovernanceCanister {
 
         // Check approval threshold
         let approvalRate = if (proposal.totalVotingPower > 0) {
-            (proposal.votesInFavor * 100) / proposal.totalVotingPower
+            (proposal.votesFor * 100) / proposal.totalVotingPower
         } else { 0 };
 
         let newStatus = if (approvalRate >= proposal.approvalThreshold) {
@@ -236,7 +236,7 @@ actor GovernanceCanister {
 
         if (newStatus == #succeeded) {
             // Here you would implement the actual execution logic
-            // Now we just mark it as executed
+            // For now, we just mark it as executed
             let executedProposal = updatedProposal with { status = #executed };
             proposals.put(proposalId, executedProposal);
         };
