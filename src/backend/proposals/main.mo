@@ -172,7 +172,7 @@ actor ProposalsCanister {
 
         votes.put(voteKey, vote);
 
-        // Update proposal vote counts
+        // Update proposal vote counts - FIXED: Using #inFavor instead of #for
         let updatedProposal = switch (choice) {
             case (#inFavor) {
                 proposal with {

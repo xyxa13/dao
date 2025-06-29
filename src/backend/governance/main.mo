@@ -115,7 +115,7 @@ actor GovernanceCanister {
             description = description;
             proposalType = proposalType;
             status = #active;
-            votesFor = 0;
+            votesInFavor = 0;
             votesAgainst = 0;
             totalVotingPower = 0;
             createdAt = Time.now();
@@ -172,11 +172,11 @@ actor GovernanceCanister {
 
         votes.put(voteKey, vote);
 
-        // Update proposal vote counts
+        // Update proposal vote counts - FIXED: Using #inFavor instead of #for
         let updatedProposal = switch (choice) {
-            case (#for) {
+            case (#inFavor) {
                 proposal with {
-                    votesFor = proposal.votesFor + votingPower;
+                    votesInFavor = proposal.votesInFavor + votingPower;
                     totalVotingPower = proposal.totalVotingPower + votingPower;
                 }
             };
@@ -222,7 +222,7 @@ actor GovernanceCanister {
 
         // Check approval threshold
         let approvalRate = if (proposal.totalVotingPower > 0) {
-            (proposal.votesFor * 100) / proposal.totalVotingPower
+            (proposal.votesInFavor * 100) / proposal.totalVotingPower
         } else { 0 };
 
         let newStatus = if (approvalRate >= proposal.approvalThreshold) {
