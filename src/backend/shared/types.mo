@@ -78,7 +78,7 @@ module {
         description: Text;
         proposalType: ProposalType;
         status: ProposalStatus;
-        votesFor: Nat;
+        votesInFavor: Nat;
         votesAgainst: Nat;
         totalVotingPower: Nat;
         createdAt: Time;
@@ -88,7 +88,7 @@ module {
         approvalThreshold: Nat; // Percentage (0-100)
     };
 
-    // Voting types - FIXED: Changed #ifor to #inFavor
+    // Voting types - COMPLETELY FIXED: No 'for' keyword anywhere
     public type VoteChoice = { 
         #inFavor; 
         #against; 

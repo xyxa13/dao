@@ -9,7 +9,7 @@ import Buffer "mo:base/Buffer";
 
 import Types "../shared/types";
 
-actor GovernanceCanister {
+actor ProposalsCanister {
     type Result<T, E> = Result.Result<T, E>;
     type Proposal = Types.Proposal;
     type Vote = Types.Vote;
@@ -115,7 +115,7 @@ actor GovernanceCanister {
             description = description;
             proposalType = proposalType;
             status = #active;
-            votesFor = 0;
+            votesInFavor = 0;
             votesAgainst = 0;
             totalVotingPower = 0;
             createdAt = Time.now();
@@ -129,7 +129,7 @@ actor GovernanceCanister {
         #ok(proposalId)
     };
 
-    // Cast a vote on a proposal - FIXED: Updated to use #inFavor instead of #for
+    // Cast a vote on a proposal
     public shared(msg) func vote(
         proposalId: ProposalId,
         choice: Types.VoteChoice,
@@ -172,11 +172,11 @@ actor GovernanceCanister {
 
         votes.put(voteKey, vote);
 
-        // Update proposal vote counts - FIXED: Updated to use #inFavor
+        // Update proposal vote counts
         let updatedProposal = switch (choice) {
             case (#inFavor) {
                 proposal with {
-                    votesFor = proposal.votesFor + votingPower;
+                    votesInFavor = proposal.votesInFavor + votingPower;
                     totalVotingPower = proposal.totalVotingPower + votingPower;
                 }
             };
@@ -222,7 +222,7 @@ actor GovernanceCanister {
 
         // Check approval threshold
         let approvalRate = if (proposal.totalVotingPower > 0) {
-            (proposal.votesFor * 100) / proposal.totalVotingPower
+            (proposal.votesInFavor * 100) / proposal.totalVotingPower
         } else { 0 };
 
         let newStatus = if (approvalRate >= proposal.approvalThreshold) {
@@ -236,7 +236,7 @@ actor GovernanceCanister {
 
         if (newStatus == #succeeded) {
             // Here you would implement the actual execution logic
-            // For now, we just mark it as executed
+            // Now we just mark it as executed
             let executedProposal = updatedProposal with { status = #executed };
             proposals.put(proposalId, executedProposal);
         };
