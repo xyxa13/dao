@@ -1,978 +1,416 @@
 import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
-import BackgroundParticles from './BackgroundParticles';
 import { 
+  Wallet, 
+  User, 
+  LogOut, 
+  Menu, 
+  X, 
   Rocket, 
-  Users, 
-  Coins, 
-  Target, 
-  Calendar,
-  ArrowRight,
-  CheckCircle,
-  Upload,
-  Globe,
+  Settings, 
+  Bell,
+  ChevronDown,
   Shield,
   Zap,
   TrendingUp,
-  X,
-  Plus,
-  Sparkles,
-  Star,
-  Settings,
-  Vote,
+  Copy,
+  ExternalLink,
+  Activity,
   DollarSign,
-  Lock,
-  Unlock,
-  BarChart3,
-  FileText,
-  MessageSquare,
-  Gavel,
-  Trophy,
-  Gift,
-  AlertCircle,
-  ChevronDown,
-  Loader2
+  Award,
+  Star,
+  Globe,
+  Sparkles
 } from 'lucide-react';
 
-const LaunchDAO = () => {
-  const { isAuthenticated, loading } = useAuth();
-  const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState(1);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [errors, setErrors] = useState({});
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    category: '',
-    fundingGoal: '',
-    duration: '',
-    tokenSymbol: '',
-    tokenSupply: '',
-    minInvestment: '',
-    website: '',
-    whitepaper: null,
-    logo: null,
-    modules: []
-  });
+const Navbar = () => {
+  const { isAuthenticated, logout, principal, userSettings } = useAuth();
+  const location = useLocation();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const [notificationCount] = useState(3);
 
-  const steps = [
-    { id: 1, title: 'Basic Info', icon: Globe },
-    { id: 2, title: 'Module Selection', icon: Settings },
-    { id: 3, title: 'Tokenomics', icon: Coins },
-    { id: 4, title: 'Funding', icon: Target },
-    { id: 5, title: 'Review & Launch', icon: CheckCircle }
+  const navigation = [
+    { name: 'Home', href: '/', icon: Globe },
+    { name: 'Dashboard', href: '/dashboard', icon: Activity },
+    { name: 'Launch DAO', href: '/launch', icon: Rocket }, // NO HIGHLIGHTING
   ];
 
-  const categories = [
-    { value: 'DeFi', label: 'DeFi', icon: '💰', description: 'Decentralized Finance protocols', gradient: 'from-green-400 to-emerald-500' },
-    { value: 'NFT', label: 'NFT', icon: '🎨', description: 'Non-Fungible Token projects', gradient: 'from-purple-400 to-pink-500' },
-    { value: 'Gaming', label: 'Gaming', icon: '🎮', description: 'Blockchain gaming platforms', gradient: 'from-blue-400 to-cyan-500' },
-    { value: 'Infrastructure', label: 'Infrastructure', icon: '🏗️', description: 'Blockchain infrastructure', gradient: 'from-orange-400 to-red-500' },
-    { value: 'Social', label: 'Social', icon: '👥', description: 'Social and community platforms', gradient: 'from-indigo-400 to-purple-500' },
-    { value: 'Metaverse', label: 'Metaverse', icon: '🌐', description: 'Virtual world experiences', gradient: 'from-cyan-400 to-blue-500' },
-    { value: 'AI/ML', label: 'AI/ML', icon: '🤖', description: 'Artificial Intelligence & ML', gradient: 'from-pink-400 to-rose-500' },
-    { value: 'Other', label: 'Other', icon: '📦', description: 'Other innovative projects', gradient: 'from-gray-400 to-gray-600' }
-  ];
+  const isActive = (path) => location.pathname === path;
 
-  // Exact modules from DAO Maker example - NO AUTO SELECTION
-  const moduleCategories = [
-    {
-      name: 'Governance',
-      description: 'Voting mechanisms and proposal systems',
-      icon: Vote,
-      modules: [
-        {
-          id: 'token-weighted-voting',
-          name: 'Token-Weighted Voting',
-          description: 'Traditional token-based voting power',
-          selected: false,
-          disabled: false
-        },
-        {
-          id: 'quadratic-voting',
-          name: 'Quadratic Voting',
-          description: 'Quadratic voting to prevent whale dominance',
-          selected: false,
-          disabled: false
-        },
-        {
-          id: 'delegated-voting',
-          name: 'Delegated Voting',
-          description: 'Allow token holders to delegate their votes',
-          selected: false,
-          disabled: false
-        }
-      ]
-    },
-    {
-      name: 'Treasury',
-      description: 'Fund management and financial operations',
-      icon: DollarSign,
-      modules: [
-        {
-          id: 'multi-signature-wallet',
-          name: 'Multi-Signature Wallet',
-          description: 'Secure treasury with multiple approvals',
-          selected: false,
-          disabled: false
-        },
-        {
-          id: 'streaming-payments',
-          name: 'Streaming Payments',
-          description: 'Continuous payment streams for contributors',
-          selected: false,
-          disabled: false
-        },
-        {
-          id: 'token-vesting',
-          name: 'Token Vesting',
-          description: 'Time-locked token distribution',
-          selected: false,
-          disabled: false
-        }
-      ]
-    },
-    {
-      name: 'Staking',
-      description: 'Token staking and reward mechanisms',
-      icon: Zap,
-      modules: [
-        {
-          id: 'simple-staking',
-          name: 'Simple Staking',
-          description: 'Basic staking with fixed rewards',
-          selected: false,
-          disabled: false
-        },
-        {
-          id: 'liquidity-mining',
-          name: 'Liquidity Mining',
-          description: 'Rewards for providing liquidity',
-          selected: false,
-          disabled: false
-        },
-        {
-          id: 'governance-staking',
-          name: 'Governance Staking',
-          description: 'Stake tokens for voting power',
-          selected: false,
-          disabled: false
-        }
-      ]
-    },
-    {
-      name: 'Analytics',
-      description: 'Monitoring and reporting tools',
-      icon: BarChart3,
-      modules: [
-        {
-          id: 'analytics-dashboard',
-          name: 'Analytics Dashboard',
-          description: 'Real-time DAO metrics and KPIs',
-          selected: false,
-          disabled: false
-        },
-        {
-          id: 'alert-system',
-          name: 'Alert System',
-          description: 'Automated notifications for key events',
-          selected: false,
-          disabled: false
-        },
-        {
-          id: 'financial-reports',
-          name: 'Financial Reports',
-          description: 'Comprehensive financial reporting',
-          selected: false,
-          disabled: false
-        }
-      ]
-    }
-  ];
-
-  const [selectedModules, setSelectedModules] = useState(moduleCategories);
-
-  const validateStep = (step) => {
-    const newErrors = {};
-    
-    switch (step) {
-      case 1:
-        if (!formData.name.trim()) newErrors.name = 'DAO name is required';
-        if (!formData.description.trim()) newErrors.description = 'Description is required';
-        if (!formData.category) newErrors.category = 'Category is required';
-        break;
-      case 3:
-        if (!formData.tokenSymbol.trim()) newErrors.tokenSymbol = 'Token symbol is required';
-        if (!formData.tokenSupply || formData.tokenSupply <= 0) newErrors.tokenSupply = 'Valid token supply is required';
-        break;
-      case 4:
-        if (!formData.fundingGoal || formData.fundingGoal <= 0) newErrors.fundingGoal = 'Valid funding goal is required';
-        if (!formData.duration || formData.duration <= 0) newErrors.duration = 'Valid duration is required';
-        if (!formData.minInvestment || formData.minInvestment <= 0) newErrors.minInvestment = 'Valid minimum investment is required';
-        break;
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const copyPrincipal = () => {
+    navigator.clipboard.writeText(principal);
+    // You could add a toast notification here
   };
 
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    // Clear error when user starts typing
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
-    }
+  const userStats = {
+    totalInvested: '$12,450',
+    activeProjects: 8,
+    totalReturns: '+24.5%',
+    daoTokens: '1,247'
   };
-
-  const handleModuleToggle = (categoryIndex, moduleIndex) => {
-    const newCategories = [...selectedModules];
-    const module = newCategories[categoryIndex].modules[moduleIndex];
-    
-    if (!module.disabled) {
-      module.selected = !module.selected;
-      setSelectedModules(newCategories);
-    }
-  };
-
-  const nextStep = () => {
-    if (validateStep(currentStep)) {
-      if (currentStep === 2) {
-        setFormData(prev => ({ ...prev, modules: selectedModules }));
-      }
-      if (currentStep < 5) {
-        setCurrentStep(currentStep + 1);
-      }
-    }
-  };
-
-  const prevStep = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
-
-  const handleSubmit = () => {
-    const finalData = { ...formData, modules: selectedModules };
-    console.log('Creating DAO with data:', finalData);
-    setIsModalOpen(false);
-    // Show success animation or redirect
-  };
-
-  const openModal = () => {
-    if (!loading && !isAuthenticated) {
-      navigate('/signin');
-      return;
-    }
-    setIsModalOpen(true);
-  };
-
-  const getSelectedModulesCount = () => {
-    return selectedModules.reduce((total, category) => {
-      return total + category.modules.filter(module => module.selected).length;
-    }, 0);
-  };
-
-  // Show loading spinner while auth is initializing
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-black text-white relative overflow-hidden">
-        <BackgroundParticles />
-        <div className="relative min-h-screen flex items-center justify-center px-4 z-10">
-          <div className="text-center">
-            <Loader2 className="w-12 h-12 animate-spin text-cyan-400 mx-auto mb-4" />
-            <p className="text-cyan-400 font-mono">Loading...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="min-h-screen bg-black text-white relative overflow-hidden">
-      {/* Background Particles */}
-      <BackgroundParticles />
-
-      {/* Hero Section with Proper Top Padding */}
-      <section className="relative min-h-screen flex items-center justify-center px-4 z-10 pt-20 sm:pt-24">
-        <div className="max-w-6xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="mb-8"
-          >
-            <div className="flex items-center justify-center mb-6">
-              <motion.div
-                animate={{ 
-                  rotate: 360,
-                  scale: [1, 1.1, 1]
-                }}
-                transition={{ 
-                  rotate: { duration: 20, repeat: Infinity, ease: "linear" },
-                  scale: { duration: 2, repeat: Infinity, ease: "easeInOut" }
-                }}
-                className="w-24 h-24 bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full flex items-center justify-center mr-6 shadow-lg shadow-cyan-500/25"
-              >
-                <Rocket className="w-12 h-12 text-white" />
-              </motion.div>
-              <h1 className="text-6xl md:text-8xl font-bold">
-                <span className="bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 text-transparent bg-clip-text">
-                  LAUNCH
-                </span>
-              </h1>
+    <>
+      <nav className="bg-gradient-to-r from-gray-900/95 via-black/95 to-gray-900/95 backdrop-blur-xl border-b border-cyan-500/20 fixed top-0 left-0 right-0 z-50 shadow-lg shadow-cyan-500/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16 sm:h-20">
+            {/* Enhanced Logo - Responsive */}
+            <div className="flex items-center">
+              <Link to="/" className="flex items-center space-x-2 sm:space-x-3 group">
+                <motion.div 
+                  className="relative"
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0 }}
+                >
+                  <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/25 relative overflow-hidden">
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                      className="absolute inset-0 bg-gradient-to-r from-cyan-400/20 to-purple-500/20 rounded-lg sm:rounded-xl"
+                    />
+                    <Sparkles className="w-4 h-4 sm:w-6 sm:h-6 text-white relative z-10" />
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-400 to-purple-600 rounded-lg sm:rounded-xl opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                </motion.div>
+                <div className="flex flex-col">
+                  <span className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 text-transparent bg-clip-text font-mono">
+                    DAOVerse
+                  </span>
+                  <span className="text-xs text-cyan-400/70 font-mono -mt-1 hidden sm:block">
+                    > Decentralized Future
+                  </span>
+                </div>
+              </Link>
             </div>
-            
-            <motion.div 
-              className="font-mono text-2xl md:text-3xl text-cyan-400 mb-8"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-            >
-              <motion.span
-                animate={{ opacity: [1, 0, 1] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
-              >
+
+            {/* Enhanced Desktop Navigation - NO HIGHLIGHTING */}
+            <div className="hidden md:flex items-center space-x-2">
+              {navigation.map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className={`group relative px-3 lg:px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 flex items-center space-x-2 ${
+                    isActive(item.href)
+                      ? 'text-cyan-400 bg-cyan-500/10 border border-cyan-500/30'
+                      : 'text-gray-300 hover:text-cyan-400 hover:bg-gray-800/50 border border-transparent hover:border-gray-700/50'
+                  }`}
                 >
-              </motion.span>
-              {" "}YOUR DECENTRALIZED FUTURE
-            </motion.div>
-          </motion.div>
+                  <item.icon className="w-4 h-4" />
+                  <span className="hidden lg:inline">{item.name}</span>
+                  <span className="lg:hidden">{item.name.split(' ')[0]}</span>
+                  {isActive(item.href) && (
+                    <motion.div
+                      layoutId="activeTab"
+                      className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-xl border border-cyan-500/30"
+                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                    />
+                  )}
+                </Link>
+              ))}
+            </div>
 
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="text-xl md:text-2xl text-gray-300 mb-12 max-w-4xl mx-auto leading-relaxed"
-          >
-            Build, fund, and govern your DAO with modular components. Choose exactly what you need.
-          </motion.p>
-
-          {/* Feature Highlights - INSTANT HOVER SCALING */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="grid md:grid-cols-3 gap-8 mb-12"
-          >
-            {[
-              { 
-                icon: Settings, 
-                title: 'Modular Design', 
-                desc: 'Pick and choose the modules you need',
-                gradient: 'from-cyan-500 to-blue-500'
-              },
-              { 
-                icon: Zap, 
-                title: 'Instant Deploy', 
-                desc: 'Launch your DAO in minutes, not months',
-                gradient: 'from-purple-500 to-pink-500'
-              },
-              { 
-                icon: TrendingUp, 
-                title: 'Scale Ready', 
-                desc: 'Built for growth from day one',
-                gradient: 'from-green-500 to-emerald-500'
-              }
-            ].map((feature, index) => (
-              <motion.div
-                key={index}
-                whileHover={{ 
-                  scale: 1.05, 
-                  rotateY: 5,
-                  boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)"
-                }}
-                transition={{ duration: 0 }}
-                className="bg-gray-900/80 border border-gray-700/50 rounded-xl p-8 backdrop-blur-sm hover:border-cyan-400/50 transition-all duration-300 relative overflow-hidden group"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-gray-800/50 to-gray-900/50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div className={`w-16 h-16 bg-gradient-to-r ${feature.gradient} rounded-xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform relative z-10 shadow-lg`}>
-                  <feature.icon className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-white mb-3 font-mono relative z-10">{feature.title}</h3>
-                <p className="text-gray-200 relative z-10 leading-relaxed">{feature.desc}</p>
-              </motion.div>
-            ))}
-          </motion.div>
-
-          {/* Enhanced Launch Button */}
-          <motion.button
-            onClick={openModal}
-            whileHover={{ 
-              scale: 1.05,
-              boxShadow: "0 20px 40px rgba(6, 182, 212, 0.4)"
-            }}
-            whileTap={{ scale: 0.95 }}
-            transition={{ duration: 0 }}
-            className="group relative px-12 py-6 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-xl font-bold text-xl transition-all duration-300 overflow-hidden shadow-2xl"
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <span className="relative z-10 flex items-center">
-              <motion.div
-                animate={{ rotate: [0, 360] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-              >
-                <Sparkles className="mr-3 w-6 h-6" />
-              </motion.div>
-              LAUNCH YOUR DAO
-              <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform" />
-            </span>
-            <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-          </motion.button>
-        </div>
-      </section>
-
-      {/* Completely Redesigned Modal - Light Theme with Better Contrast */}
-      <AnimatePresence>
-        {isModalOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 50 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 50 }}
-              className="bg-gray-50 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] relative flex flex-col"
-            >
-              {/* Close Button */}
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="absolute top-6 right-6 text-gray-500 hover:text-gray-700 transition-colors z-10 bg-white rounded-full p-2 shadow-md"
-              >
-                <X className="w-5 h-5" />
-              </button>
-
-              {/* Header with Better Contrast */}
-              <div className="text-center py-8 px-8 border-b border-gray-300 bg-white rounded-t-2xl">
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">Create Your DAO</h2>
-                <p className="text-gray-700 font-medium">Step {currentStep} of 5</p>
-              </div>
-
-              {/* Progress Bar with Better Visibility */}
-              <div className="px-8 py-6 border-b border-gray-200 bg-white">
-                <div className="flex items-center justify-between">
-                  {steps.map((step, index) => (
-                    <div key={step.id} className="flex items-center">
-                      <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all font-semibold ${
-                        currentStep >= step.id 
-                          ? 'bg-blue-600 border-blue-600 text-white shadow-lg' 
-                          : 'border-gray-400 text-gray-500 bg-gray-100'
-                      }`}>
-                        <step.icon className="w-5 h-5" />
-                      </div>
-                      {index < steps.length - 1 && (
-                        <div className={`w-16 h-2 mx-3 rounded-full transition-all ${
-                          currentStep > step.id ? 'bg-blue-600' : 'bg-gray-300'
-                        }`} />
-                      )}
-                    </div>
-                  ))}
-                </div>
-                <div className="flex justify-between mt-3">
-                  {steps.map((step) => (
-                    <div key={step.id} className="text-center">
-                      <p className={`text-sm font-medium ${
-                        currentStep >= step.id ? 'text-blue-600' : 'text-gray-500'
-                      }`}>
-                        {step.title}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Form Content with Better Contrast */}
-              <div className="flex-1 overflow-y-auto p-8 bg-gray-50">
-                {/* Step 1: Basic Info */}
-                {currentStep === 1 && (
-                  <motion.div
-                    initial={{ opacity: 0, x: 50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -50 }}
-                    className="space-y-6"
-                  >
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-800 mb-2">DAO Name *</label>
-                        <input
-                          type="text"
-                          value={formData.name}
-                          onChange={(e) => handleInputChange('name', e.target.value)}
-                          className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium bg-white ${
-                            errors.name ? 'border-red-500' : 'border-gray-300'
-                          }`}
-                          placeholder="Enter your DAO name"
-                        />
-                        {errors.name && (
-                          <p className="text-red-600 text-sm mt-1 flex items-center font-medium">
-                            <AlertCircle className="w-4 h-4 mr-1" />
-                            {errors.name}
-                          </p>
-                        )}
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-800 mb-2">Website (Optional)</label>
-                        <input
-                          type="url"
-                          value={formData.website}
-                          onChange={(e) => handleInputChange('website', e.target.value)}
-                          className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium bg-white"
-                          placeholder="https://your-dao-website.com"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-800 mb-2">Description *</label>
-                      <textarea
-                        value={formData.description}
-                        onChange={(e) => handleInputChange('description', e.target.value)}
-                        rows={4}
-                        className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium bg-white ${
-                          errors.description ? 'border-red-500' : 'border-gray-300'
-                        }`}
-                        placeholder="Describe your DAO's mission, goals, and vision"
-                      />
-                      {errors.description && (
-                        <p className="text-red-600 text-sm mt-1 flex items-center font-medium">
-                          <AlertCircle className="w-4 h-4 mr-1" />
-                          {errors.description}
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-800 mb-3">Category *</label>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        {categories.map((cat) => (
-                          <motion.div
-                            key={cat.value}
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            transition={{ duration: 0 }}
-                            onClick={() => handleInputChange('category', cat.value)}
-                            className={`relative p-4 rounded-lg border-2 cursor-pointer transition-all bg-white ${
-                              formData.category === cat.value
-                                ? 'border-blue-500 bg-blue-50 shadow-md'
-                                : 'border-gray-300 hover:border-gray-400 hover:shadow-sm'
-                            }`}
-                          >
-                            <div className="text-center">
-                              <div className="text-2xl mb-2">{cat.icon}</div>
-                              <h3 className="font-semibold text-gray-900 text-sm">{cat.label}</h3>
-                              <p className="text-xs text-gray-600 mt-1">{cat.description}</p>
-                            </div>
-                            {formData.category === cat.value && (
-                              <motion.div
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                className="absolute top-2 right-2"
-                              >
-                                <CheckCircle className="w-5 h-5 text-blue-600" />
-                              </motion.div>
-                            )}
-                          </motion.div>
-                        ))}
-                      </div>
-                      {errors.category && (
-                        <p className="text-red-600 text-sm mt-2 flex items-center font-medium">
-                          <AlertCircle className="w-4 h-4 mr-1" />
-                          {errors.category}
-                        </p>
-                      )}
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* Step 2: Module Selection */}
-                {currentStep === 2 && (
-                  <motion.div
-                    initial={{ opacity: 0, x: 50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -50 }}
-                    className="space-y-6"
-                  >
-                    <div className="text-center mb-6">
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">Select Modules</h3>
-                      <p className="text-gray-700 font-medium">Choose the features your DAO needs. You can add more later.</p>
-                    </div>
-
-                    <div className="space-y-6">
-                      {selectedModules.map((category, categoryIndex) => (
-                        <div key={category.name} className="border-2 border-gray-300 rounded-lg p-6 bg-white">
-                          <div className="flex items-center space-x-3 mb-4">
-                            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                              <category.icon className="w-6 h-6 text-blue-600" />
-                            </div>
-                            <div>
-                              <h4 className="text-lg font-bold text-gray-900">{category.name}</h4>
-                              <p className="text-gray-700 font-medium">{category.description}</p>
-                            </div>
-                          </div>
-
-                          <div className="space-y-3">
-                            {category.modules.map((module, moduleIndex) => (
-                              <motion.div
-                                key={module.id}
-                                whileHover={{ scale: 1.01 }}
-                                transition={{ duration: 0 }}
-                                className={`flex items-center justify-between p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                                  module.selected
-                                    ? 'border-blue-500 bg-blue-50'
-                                    : 'border-gray-300 hover:border-gray-400 bg-white'
-                                }`}
-                                onClick={() => handleModuleToggle(categoryIndex, moduleIndex)}
-                              >
-                                <div className="flex items-center space-x-3">
-                                  <div className={`w-6 h-6 rounded border-2 flex items-center justify-center ${
-                                    module.selected ? 'border-blue-500 bg-blue-500' : 'border-gray-400 bg-white'
-                                  }`}>
-                                    {module.selected && <CheckCircle className="w-4 h-4 text-white" />}
-                                  </div>
-                                  <div>
-                                    <h5 className="font-semibold text-gray-900">{module.name}</h5>
-                                    <p className="text-gray-700 text-sm">{module.description}</p>
-                                  </div>
-                                </div>
-                              </motion.div>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Selected Modules Summary */}
-                    <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
-                      <h4 className="text-sm font-bold text-gray-900 mb-2">
-                        Selected Modules ({getSelectedModulesCount()})
-                      </h4>
-                      <div className="text-sm text-gray-700 font-medium">
-                        {getSelectedModulesCount() > 0 ? (
-                          selectedModules.map(category => 
-                            category.modules.filter(m => m.selected).map(module => module.name)
-                          ).flat().join(', ')
-                        ) : (
-                          'No modules selected yet'
-                        )}
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* Step 3: Tokenomics */}
-                {currentStep === 3 && (
-                  <motion.div
-                    initial={{ opacity: 0, x: 50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -50 }}
-                    className="space-y-6"
-                  >
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-800 mb-2">Token Symbol *</label>
-                        <input
-                          type="text"
-                          value={formData.tokenSymbol}
-                          onChange={(e) => handleInputChange('tokenSymbol', e.target.value.toUpperCase())}
-                          className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium bg-white ${
-                            errors.tokenSymbol ? 'border-red-500' : 'border-gray-300'
-                          }`}
-                          placeholder="e.g., MYDAO"
-                          maxLength={6}
-                        />
-                        {errors.tokenSymbol && (
-                          <p className="text-red-600 text-sm mt-1 flex items-center font-medium">
-                            <AlertCircle className="w-4 h-4 mr-1" />
-                            {errors.tokenSymbol}
-                          </p>
-                        )}
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-800 mb-2">Total Supply *</label>
-                        <input
-                          type="number"
-                          value={formData.tokenSupply}
-                          onChange={(e) => handleInputChange('tokenSupply', e.target.value)}
-                          className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium bg-white ${
-                            errors.tokenSupply ? 'border-red-500' : 'border-gray-300'
-                          }`}
-                          placeholder="1000000"
-                        />
-                        {errors.tokenSupply && (
-                          <p className="text-red-600 text-sm mt-1 flex items-center font-medium">
-                            <AlertCircle className="w-4 h-4 mr-1" />
-                            {errors.tokenSupply}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="bg-white border-2 border-gray-300 rounded-lg p-6">
-                      <h3 className="text-lg font-bold text-gray-900 mb-4">Token Distribution</h3>
-                      <div className="space-y-3">
-                        {[
-                          { label: 'Public Sale', percentage: 40, color: 'bg-blue-500' },
-                          { label: 'Team & Advisors', percentage: 20, color: 'bg-purple-500' },
-                          { label: 'Treasury', percentage: 25, color: 'bg-green-500' },
-                          { label: 'Ecosystem', percentage: 15, color: 'bg-orange-500' }
-                        ].map((item, index) => (
-                          <div key={index} className="flex items-center justify-between">
-                            <div className="flex items-center">
-                              <div className={`w-4 h-4 ${item.color} rounded mr-3`}></div>
-                              <span className="text-gray-800 font-medium">{item.label}</span>
-                            </div>
-                            <span className="text-gray-900 font-bold">{item.percentage}%</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* Step 4: Funding */}
-                {currentStep === 4 && (
-                  <motion.div
-                    initial={{ opacity: 0, x: 50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -50 }}
-                    className="space-y-6"
-                  >
-                    <div className="grid md:grid-cols-3 gap-6">
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-800 mb-2">Funding Goal (ICP) *</label>
-                        <input
-                          type="number"
-                          value={formData.fundingGoal}
-                          onChange={(e) => handleInputChange('fundingGoal', e.target.value)}
-                          className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium bg-white ${
-                            errors.fundingGoal ? 'border-red-500' : 'border-gray-300'
-                          }`}
-                          placeholder="1000"
-                        />
-                        {errors.fundingGoal && (
-                          <p className="text-red-600 text-sm mt-1 flex items-center font-medium">
-                            <AlertCircle className="w-4 h-4 mr-1" />
-                            {errors.fundingGoal}
-                          </p>
-                        )}
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-800 mb-2">Duration (Days) *</label>
-                        <input
-                          type="number"
-                          value={formData.duration}
-                          onChange={(e) => handleInputChange('duration', e.target.value)}
-                          className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium bg-white ${
-                            errors.duration ? 'border-red-500' : 'border-gray-300'
-                          }`}
-                          placeholder="30"
-                        />
-                        {errors.duration && (
-                          <p className="text-red-600 text-sm mt-1 flex items-center font-medium">
-                            <AlertCircle className="w-4 h-4 mr-1" />
-                            {errors.duration}
-                          </p>
-                        )}
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-800 mb-2">Min Investment (ICP) *</label>
-                        <input
-                          type="number"
-                          value={formData.minInvestment}
-                          onChange={(e) => handleInputChange('minInvestment', e.target.value)}
-                          className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium bg-white ${
-                            errors.minInvestment ? 'border-red-500' : 'border-gray-300'
-                          }`}
-                          placeholder="1"
-                        />
-                        {errors.minInvestment && (
-                          <p className="text-red-600 text-sm mt-1 flex items-center font-medium">
-                            <AlertCircle className="w-4 h-4 mr-1" />
-                            {errors.minInvestment}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="bg-white border-2 border-gray-300 rounded-lg p-6">
-                      <h3 className="text-lg font-bold text-gray-900 mb-4">Funding Milestones</h3>
-                      <div className="space-y-3">
-                        {[
-                          { percentage: 25, milestone: 'MVP Development & Core Team' },
-                          { percentage: 50, milestone: 'Beta Launch & Community Building' },
-                          { percentage: 75, milestone: 'Marketing & Partnership Expansion' },
-                          { percentage: 100, milestone: 'Full Launch & Ecosystem Growth' }
-                        ].map((item, index) => (
-                          <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded border-2 border-gray-200">
-                            <span className="text-gray-800 font-medium">{item.percentage}% - {item.milestone}</span>
-                            <CheckCircle className="w-5 h-5 text-green-600" />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* Step 5: Review & Launch */}
-                {currentStep === 5 && (
-                  <motion.div
-                    initial={{ opacity: 0, x: 50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -50 }}
-                    className="space-y-6"
-                  >
-                    <div className="text-center mb-6">
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">Review Your DAO</h3>
-                      <p className="text-gray-700 font-medium">Please review all details before launching</p>
-                    </div>
-
-                    {/* Basic Info Review */}
-                    <div className="bg-white border-2 border-gray-300 rounded-lg p-6">
-                      <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
-                        <Globe className="w-5 h-5 mr-2" />
-                        Basic Information
-                      </h4>
-                      <div className="grid md:grid-cols-2 gap-4">
-                        <div className="flex justify-between">
-                          <span className="text-gray-700 font-medium">Name:</span>
-                          <span className="text-gray-900 font-bold">{formData.name || 'Not set'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-700 font-medium">Category:</span>
-                          <span className="text-gray-900 font-bold">{formData.category || 'Not set'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-700 font-medium">Website:</span>
-                          <span className="text-gray-900 font-bold">{formData.website || 'None'}</span>
-                        </div>
-                      </div>
-                      {formData.description && (
-                        <div className="mt-4">
-                          <span className="text-gray-700 font-medium">Description:</span>
-                          <p className="text-gray-900 font-medium mt-1">{formData.description}</p>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Selected Modules Review */}
-                    <div className="bg-white border-2 border-gray-300 rounded-lg p-6">
-                      <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
-                        <Settings className="w-5 h-5 mr-2" />
-                        Selected Modules ({getSelectedModulesCount()})
-                      </h4>
-                      {getSelectedModulesCount() > 0 ? (
-                        <div className="space-y-2">
-                          {selectedModules.map(category => 
-                            category.modules.filter(module => module.selected).map(module => (
-                              <div key={module.id} className="flex items-center justify-between p-2 bg-gray-50 rounded border">
-                                <span className="text-gray-800 font-medium">{module.name}</span>
-                                <CheckCircle className="w-4 h-4 text-green-600" />
-                              </div>
-                            ))
-                          )}
-                        </div>
-                      ) : (
-                        <p className="text-gray-700 font-medium">No modules selected</p>
-                      )}
-                    </div>
-
-                    {/* Tokenomics Review */}
-                    <div className="bg-white border-2 border-gray-300 rounded-lg p-6">
-                      <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
-                        <Coins className="w-5 h-5 mr-2" />
-                        Tokenomics
-                      </h4>
-                      <div className="grid md:grid-cols-2 gap-4">
-                        <div className="flex justify-between">
-                          <span className="text-gray-700 font-medium">Token Symbol:</span>
-                          <span className="text-gray-900 font-bold">{formData.tokenSymbol || 'Not set'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-700 font-medium">Total Supply:</span>
-                          <span className="text-gray-900 font-bold">{formData.tokenSupply ? Number(formData.tokenSupply).toLocaleString() : 'Not set'}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Funding Review */}
-                    <div className="bg-white border-2 border-gray-300 rounded-lg p-6">
-                      <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
-                        <Target className="w-5 h-5 mr-2" />
-                        Funding Details
-                      </h4>
-                      <div className="grid md:grid-cols-3 gap-4">
-                        <div className="flex justify-between">
-                          <span className="text-gray-700 font-medium">Goal:</span>
-                          <span className="text-gray-900 font-bold">{formData.fundingGoal || 'Not set'} ICP</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-700 font-medium">Duration:</span>
-                          <span className="text-gray-900 font-bold">{formData.duration || 'Not set'} days</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-700 font-medium">Min Investment:</span>
-                          <span className="text-gray-900 font-bold">{formData.minInvestment || 'Not set'} ICP</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Warning */}
-                    <div className="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-4">
-                      <p className="text-yellow-800 text-sm font-semibold flex items-center">
-                        <Star className="w-4 h-4 mr-2" />
-                        Once launched, some DAO parameters cannot be changed. Please review carefully.
-                      </p>
-                    </div>
-                  </motion.div>
-                )}
-              </div>
-
-              {/* Navigation Buttons with Better Contrast */}
-              <div className="flex justify-between p-6 border-t-2 border-gray-300 bg-white rounded-b-2xl">
-                <button
-                  onClick={prevStep}
-                  disabled={currentStep === 1}
-                  className="px-6 py-3 border-2 border-gray-400 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center font-semibold"
-                >
-                  <ArrowRight className="w-4 h-4 mr-2 rotate-180" />
-                  Previous
-                </button>
-
-                {currentStep < 5 ? (
-                  <button
-                    onClick={nextStep}
-                    className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center font-semibold shadow-lg"
-                  >
-                    Next
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </button>
-                ) : (
+            {/* Enhanced User Actions - Responsive */}
+            <div className="hidden md:flex items-center space-x-2 lg:space-x-4">
+              {isAuthenticated ? (
+                <div className="flex items-center space-x-2 lg:space-x-4">
+                  {/* Notifications - Responsive */}
                   <motion.button
-                    onClick={handleSubmit}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     transition={{ duration: 0 }}
-                    className="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center font-semibold shadow-lg"
+                    className="relative p-2 lg:p-3 text-gray-400 hover:text-cyan-400 hover:bg-gray-800/50 rounded-xl transition-all border border-transparent hover:border-gray-700/50"
                   >
-                    <Rocket className="w-5 h-5 mr-2" />
-                    Launch DAO
+                    <Bell className="w-4 h-4 lg:w-5 lg:h-5" />
+                    {notificationCount > 0 && (
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="absolute -top-1 -right-1 w-4 h-4 lg:w-5 lg:h-5 bg-gradient-to-r from-red-500 to-pink-500 rounded-full flex items-center justify-center"
+                      >
+                        <span className="text-xs font-bold text-white">{notificationCount}</span>
+                      </motion.div>
+                    )}
                   </motion.button>
+
+                  {/* Enhanced Profile Dropdown - Responsive */}
+                  <div className="relative">
+                    <motion.button
+                      onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                      whileHover={{ scale: 1.02 }}
+                      transition={{ duration: 0 }}
+                      className="flex items-center space-x-2 lg:space-x-3 px-2 lg:px-4 py-2 bg-gradient-to-r from-gray-800/80 to-gray-900/80 border border-cyan-500/30 rounded-xl hover:border-cyan-400/50 transition-all shadow-lg backdrop-blur-sm"
+                    >
+                      <div className="w-6 h-6 lg:w-8 lg:h-8 bg-gradient-to-br from-cyan-400 to-purple-500 rounded-lg flex items-center justify-center">
+                        <User className="w-3 h-3 lg:w-4 lg:h-4 text-white" />
+                      </div>
+                      <div className="hidden lg:flex flex-col items-start">
+                        <span className="text-sm font-medium text-white truncate max-w-24">
+                          {userSettings.displayName}
+                        </span>
+                        <span className="text-xs text-cyan-400 font-mono">Connected</span>
+                      </div>
+                      <ChevronDown className={`w-3 h-3 lg:w-4 lg:h-4 text-gray-400 transition-transform ${profileDropdownOpen ? 'rotate-180' : ''}`} />
+                    </motion.button>
+
+                    {/* Enhanced Profile Dropdown Menu - Responsive */}
+                    <AnimatePresence>
+                      {profileDropdownOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                          transition={{ duration: 0.2 }}
+                          className="absolute right-0 mt-2 w-72 lg:w-80 bg-gray-900/95 backdrop-blur-xl border border-cyan-500/30 rounded-2xl shadow-2xl shadow-cyan-500/20 overflow-hidden z-50"
+                        >
+                          {/* Profile Header */}
+                          <div className="p-4 lg:p-6 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border-b border-gray-700/50">
+                            <div className="flex items-center space-x-3 lg:space-x-4">
+                              <div className="w-12 h-12 lg:w-16 lg:h-16 bg-gradient-to-br from-cyan-400 to-purple-500 rounded-xl flex items-center justify-center shadow-lg">
+                                <User className="w-6 h-6 lg:w-8 lg:h-8 text-white" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <h3 className="text-base lg:text-lg font-bold text-white font-mono truncate">{userSettings.displayName}</h3>
+                                <div className="flex items-center space-x-2 mt-1">
+                                  <code className="text-xs lg:text-sm text-cyan-400 font-mono bg-gray-800/50 px-2 py-1 rounded truncate">
+                                    {principal?.slice(0, 8)}...{principal?.slice(-6)}
+                                  </code>
+                                  <button
+                                    onClick={copyPrincipal}
+                                    className="p-1 text-gray-400 hover:text-cyan-400 transition-colors"
+                                  >
+                                    <Copy className="w-3 h-3 lg:w-4 lg:h-4" />
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* User Stats - Responsive Grid */}
+                          <div className="p-3 lg:p-4 border-b border-gray-700/50">
+                            <h4 className="text-xs lg:text-sm font-semibold text-gray-400 mb-2 lg:mb-3 font-mono">PORTFOLIO OVERVIEW</h4>
+                            <div className="grid grid-cols-2 gap-2 lg:gap-3">
+                              <div className="bg-gray-800/50 rounded-lg p-2 lg:p-3 border border-gray-700/30">
+                                <div className="flex items-center space-x-1 lg:space-x-2 mb-1">
+                                  <DollarSign className="w-3 h-3 lg:w-4 lg:h-4 text-green-400" />
+                                  <span className="text-xs text-gray-400 font-mono">INVESTED</span>
+                                </div>
+                                <p className="text-sm lg:text-lg font-bold text-white">{userStats.totalInvested}</p>
+                              </div>
+                              <div className="bg-gray-800/50 rounded-lg p-2 lg:p-3 border border-gray-700/30">
+                                <div className="flex items-center space-x-1 lg:space-x-2 mb-1">
+                                  <Activity className="w-3 h-3 lg:w-4 lg:h-4 text-blue-400" />
+                                  <span className="text-xs text-gray-400 font-mono">PROJECTS</span>
+                                </div>
+                                <p className="text-sm lg:text-lg font-bold text-white">{userStats.activeProjects}</p>
+                              </div>
+                              <div className="bg-gray-800/50 rounded-lg p-2 lg:p-3 border border-gray-700/30">
+                                <div className="flex items-center space-x-1 lg:space-x-2 mb-1">
+                                  <TrendingUp className="w-3 h-3 lg:w-4 lg:h-4 text-green-400" />
+                                  <span className="text-xs text-gray-400 font-mono">RETURNS</span>
+                                </div>
+                                <p className="text-sm lg:text-lg font-bold text-green-400">{userStats.totalReturns}</p>
+                              </div>
+                              <div className="bg-gray-800/50 rounded-lg p-2 lg:p-3 border border-gray-700/30">
+                                <div className="flex items-center space-x-1 lg:space-x-2 mb-1">
+                                  <Award className="w-3 h-3 lg:w-4 lg:h-4 text-purple-400" />
+                                  <span className="text-xs text-gray-400 font-mono">TOKENS</span>
+                                </div>
+                                <p className="text-sm lg:text-lg font-bold text-white">{userStats.daoTokens}</p>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Menu Items */}
+                          <div className="p-2">
+                            <Link
+                              to="/dashboard"
+                              onClick={() => setProfileDropdownOpen(false)}
+                              className="flex items-center space-x-3 px-3 lg:px-4 py-2 lg:py-3 text-gray-300 hover:text-cyan-400 hover:bg-gray-800/50 rounded-lg transition-all group"
+                            >
+                              <Activity className="w-4 h-4 lg:w-5 lg:h-5" />
+                              <span className="font-medium">Dashboard</span>
+                              <ExternalLink className="w-3 h-3 lg:w-4 lg:h-4 opacity-0 group-hover:opacity-100 transition-opacity ml-auto" />
+                            </Link>
+                            
+                            <Link
+                              to="/settings"
+                              onClick={() => setProfileDropdownOpen(false)}
+                              className="flex items-center space-x-3 px-3 lg:px-4 py-2 lg:py-3 text-gray-300 hover:text-cyan-400 hover:bg-gray-800/50 rounded-lg transition-all w-full group"
+                            >
+                              <Settings className="w-4 h-4 lg:w-5 lg:h-5" />
+                              <span className="font-medium">Settings</span>
+                              <ExternalLink className="w-3 h-3 lg:w-4 lg:h-4 opacity-0 group-hover:opacity-100 transition-opacity ml-auto" />
+                            </Link>
+
+                            <button className="flex items-center space-x-3 px-3 lg:px-4 py-2 lg:py-3 text-gray-300 hover:text-cyan-400 hover:bg-gray-800/50 rounded-lg transition-all w-full group">
+                              <Shield className="w-4 h-4 lg:w-5 lg:h-5" />
+                              <span className="font-medium">Security</span>
+                              <Star className="w-3 h-3 lg:w-4 lg:h-4 text-yellow-400 ml-auto" />
+                            </button>
+
+                            <div className="border-t border-gray-700/50 my-2"></div>
+
+                            <button
+                              onClick={() => {
+                                logout();
+                                setProfileDropdownOpen(false);
+                              }}
+                              className="flex items-center space-x-3 px-3 lg:px-4 py-2 lg:py-3 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all w-full group"
+                            >
+                              <LogOut className="w-4 h-4 lg:w-5 lg:h-5" />
+                              <span className="font-medium">Disconnect</span>
+                            </button>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </div>
+              ) : (
+                <Link
+                  to="/signin"
+                  className="group relative px-4 lg:px-6 py-2 lg:py-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white rounded-xl transition-all duration-300 flex items-center space-x-2 shadow-lg shadow-cyan-500/25 overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                  <Wallet className="w-4 h-4 lg:w-5 lg:h-5 relative z-10" />
+                  <span className="font-semibold relative z-10 hidden sm:inline">Connect Wallet</span>
+                  <span className="font-semibold relative z-10 sm:hidden">Connect</span>
+                </Link>
+              )}
+            </div>
+
+            {/* Enhanced Mobile menu button */}
+            <div className="md:hidden flex items-center space-x-2">
+              {isAuthenticated && (
+                <button className="relative p-2 text-gray-400 hover:text-cyan-400 transition-colors">
+                  <Bell className="w-5 h-5" />
+                  {notificationCount > 0 && (
+                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
+                      <span className="text-xs font-bold text-white">{notificationCount}</span>
+                    </div>
+                  )}
+                </button>
+              )}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="p-2 text-gray-400 hover:text-cyan-400 hover:bg-gray-800/50 rounded-lg transition-all"
+              >
+                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Enhanced Mobile menu - OVERLAY INSTEAD OF PUSHING CONTENT */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="md:hidden absolute top-full left-0 right-0 bg-gray-900/95 backdrop-blur-xl border-t border-cyan-500/20 shadow-lg"
+            >
+              <div className="px-4 pt-4 pb-6 space-y-3">
+                {/* Mobile Navigation Links */}
+                {navigation.map((item) => (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-xl text-base font-medium transition-all ${
+                      isActive(item.href)
+                        ? 'text-cyan-400 bg-cyan-500/10 border border-cyan-500/30'
+                        : 'text-gray-300 hover:text-cyan-400 hover:bg-gray-800/50 border border-transparent'
+                    }`}
+                  >
+                    <item.icon className="w-5 h-5" />
+                    <span>{item.name}</span>
+                  </Link>
+                ))}
+                
+                {/* Mobile User Section */}
+                {isAuthenticated ? (
+                  <div className="border-t border-gray-700/50 pt-4 mt-4">
+                    <div className="flex items-center space-x-3 px-4 py-3 bg-gray-800/50 rounded-xl border border-gray-700/30 mb-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-purple-500 rounded-lg flex items-center justify-center">
+                        <User className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium text-white truncate">
+                          {userSettings.displayName}
+                        </div>
+                        <div className="text-xs text-cyan-400 font-mono">Connected</div>
+                      </div>
+                      <button
+                        onClick={copyPrincipal}
+                        className="p-2 text-gray-400 hover:text-cyan-400 transition-colors"
+                      >
+                        <Copy className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    {/* Mobile Stats - 2x2 Grid */}
+                    <div className="grid grid-cols-2 gap-2 mb-4">
+                      <div className="bg-gray-800/50 rounded-lg p-3 border border-gray-700/30">
+                        <div className="text-xs text-gray-400 font-mono mb-1">INVESTED</div>
+                        <div className="text-base font-bold text-white">{userStats.totalInvested}</div>
+                      </div>
+                      <div className="bg-gray-800/50 rounded-lg p-3 border border-gray-700/30">
+                        <div className="text-xs text-gray-400 font-mono mb-1">RETURNS</div>
+                        <div className="text-base font-bold text-green-400">{userStats.totalReturns}</div>
+                      </div>
+                    </div>
+
+                    {/* Mobile Settings Link */}
+                    <Link
+                      to="/settings"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center space-x-3 w-full px-4 py-3 text-gray-300 hover:text-cyan-400 hover:bg-gray-800/50 rounded-xl transition-all mb-2"
+                    >
+                      <Settings className="w-5 h-5" />
+                      <span className="font-medium">Settings</span>
+                    </Link>
+
+                    <button
+                      onClick={() => {
+                        logout();
+                        setMobileMenuOpen(false);
+                      }}
+                      className="flex items-center space-x-3 w-full px-4 py-3 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl transition-all"
+                    >
+                      <LogOut className="w-5 h-5" />
+                      <span className="font-medium">Disconnect</span>
+                    </button>
+                  </div>
+                ) : (
+                  <Link
+                    to="/signin"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center justify-center space-x-2 w-full px-4 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl font-semibold shadow-lg"
+                  >
+                    <Wallet className="w-5 h-5" />
+                    <span>Connect Wallet</span>
+                  </Link>
                 )}
               </div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+          )}
+        </AnimatePresence>
+      </nav>
+
+      {/* Backdrop for profile dropdown */}
+      {profileDropdownOpen && (
+        <div
+          className="fixed inset-0 z-40"
+          onClick={() => setProfileDropdownOpen(false)}
+        />
+      )}
+    </>
   );
 };
 
-export default LaunchDAO;
+export default Navbar;
