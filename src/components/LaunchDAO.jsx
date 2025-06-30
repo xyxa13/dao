@@ -32,11 +32,12 @@ import {
   Trophy,
   Gift,
   AlertCircle,
-  ChevronDown
+  ChevronDown,
+  Loader2
 } from 'lucide-react';
 
 const LaunchDAO = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -260,7 +261,7 @@ const LaunchDAO = () => {
   };
 
   const openModal = () => {
-    if (!isAuthenticated) {
+    if (!loading && !isAuthenticated) {
       navigate('/signin');
       return;
     }
@@ -272,6 +273,21 @@ const LaunchDAO = () => {
       return total + category.modules.filter(module => module.selected).length;
     }, 0);
   };
+
+  // Show loading spinner while auth is initializing
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black text-white relative overflow-hidden">
+        <BackgroundParticles />
+        <div className="relative min-h-screen flex items-center justify-center px-4 z-10">
+          <div className="text-center">
+            <Loader2 className="w-12 h-12 animate-spin text-cyan-400 mx-auto mb-4" />
+            <p className="text-cyan-400 font-mono">Loading...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">

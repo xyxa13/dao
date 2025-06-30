@@ -6,7 +6,7 @@ import BackgroundParticles from './BackgroundParticles';
 import { Wallet, Shield, Zap, ArrowRight, Loader2, CheckCircle, AlertCircle, Globe, Lock } from 'lucide-react';
 
 const SignIn = () => {
-  const { isAuthenticated, principal, login, logout } = useAuth();
+  const { isAuthenticated, principal, login, logout, loading } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -57,6 +57,21 @@ const SignIn = () => {
       transition: { duration: 0.4 },
     }),
   };
+
+  // Show loading spinner while auth is initializing
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black text-white relative overflow-hidden">
+        <BackgroundParticles />
+        <div className="relative min-h-screen flex items-center justify-center px-4 z-10">
+          <div className="text-center">
+            <Loader2 className="w-12 h-12 animate-spin text-cyan-400 mx-auto mb-4" />
+            <p className="text-cyan-400 font-mono">Initializing authentication...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">

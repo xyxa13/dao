@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { AuthClient } from '@dfinity/auth-client';
 
 // Create the AuthContext
 const AuthContext = createContext();
@@ -11,40 +12,60 @@ export const AuthProvider = ({ children }) => {
     displayName: 'Anonymous User'
   });
   const [loading, setLoading] = useState(true);
+  const [authClient, setAuthClient] = useState(null);
 
-  // Initialize auth state on component mount
+  // Initialize auth client and check authentication status
   useEffect(() => {
-    // Check if user was previously authenticated (e.g., from localStorage)
-    const savedAuth = localStorage.getItem('isAuthenticated');
-    const savedPrincipal = localStorage.getItem('principal');
-    const savedUserSettings = localStorage.getItem('userSettings');
-    
-    if (savedAuth === 'true' && savedPrincipal) {
-      setIsAuthenticated(true);
-      setPrincipal(savedPrincipal);
-      
-      if (savedUserSettings) {
-        try {
-          setUserSettings(JSON.parse(savedUserSettings));
-        } catch (error) {
-          console.error('Failed to parse saved user settings:', error);
+    const initAuth = async () => {
+      try {
+        const client = await AuthClient.create();
+        setAuthClient(client);
+
+        // Check if user is already authenticated
+        const isAuthenticated = await client.isAuthenticated();
+        
+        if (isAuthenticated) {
+          const identity = client.getIdentity();
+          const principalId = identity.getPrincipal().toString();
+          
+          setIsAuthenticated(true);
+          setPrincipal(principalId);
           setUserSettings({
-            displayName: `User ${savedPrincipal.slice(0, 8)}`
+            displayName: `User ${principalId.slice(0, 8)}`
           });
         }
-      } else {
-        setUserSettings({
-          displayName: `User ${savedPrincipal.slice(0, 8)}`
-        });
+      } catch (error) {
+        console.error('Failed to initialize auth client:', error);
+      } finally {
+        setLoading(false);
       }
-    }
-    
-    setLoading(false);
+    };
+
+    initAuth();
   }, []);
 
-  // Login function
-  const login = async (principalId) => {
+  // Login function with Internet Identity
+  const login = async () => {
+    if (!authClient) {
+      throw new Error('Auth client not initialized');
+    }
+
     try {
+      setLoading(true);
+      
+      await new Promise((resolve, reject) => {
+        authClient.login({
+          identityProvider: process.env.DFX_NETWORK === "ic" 
+            ? "https://identity.ic0.app/#authorize"
+            : `http://localhost:4943/?canisterId=${process.env.CANISTER_ID_INTERNET_IDENTITY}#authorize`,
+          onSuccess: resolve,
+          onError: reject,
+        });
+      });
+
+      const identity = authClient.getIdentity();
+      const principalId = identity.getPrincipal().toString();
+      
       setIsAuthenticated(true);
       setPrincipal(principalId);
       
@@ -54,30 +75,36 @@ export const AuthProvider = ({ children }) => {
       };
       setUserSettings(newUserSettings);
       
-      // Persist auth state
-      localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('principal', principalId);
-      localStorage.setItem('userSettings', JSON.stringify(newUserSettings));
-      
       return true;
     } catch (error) {
       console.error('Login failed:', error);
-      return false;
+      throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
   // Logout function
-  const logout = () => {
-    setIsAuthenticated(false);
-    setPrincipal(null);
-    setUserSettings({
-      displayName: 'Anonymous User'
-    });
-    
-    // Clear persisted auth state
-    localStorage.removeItem('isAuthenticated');
-    localStorage.removeItem('principal');
-    localStorage.removeItem('userSettings');
+  const logout = async () => {
+    if (!authClient) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await authClient.logout();
+      
+      setIsAuthenticated(false);
+      setPrincipal(null);
+      setUserSettings({
+        displayName: 'Anonymous User'
+      });
+    } catch (error) {
+      console.error('Logout failed:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Auth context value
@@ -87,7 +114,8 @@ export const AuthProvider = ({ children }) => {
     userSettings,
     loading,
     login,
-    logout
+    logout,
+    authClient
   };
 
   return (

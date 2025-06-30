@@ -23,21 +23,22 @@ import {
   Rocket,
   Zap,
   Globe,
-  Settings
+  Settings,
+  Loader2
 } from 'lucide-react';
 
 const Dashboard = () => {
-  const { isAuthenticated, principal } = useAuth();
+  const { isAuthenticated, principal, loading } = useAuth();
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
   const [walletConnected, setWalletConnected] = useState(false);
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!loading && !isAuthenticated) {
       navigate('/signin');
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, loading, navigate]);
 
   const connectWallet = async () => {
     // Simulate wallet connection
@@ -154,6 +155,22 @@ const Dashboard = () => {
     return matchesCategory && matchesSearch;
   });
 
+  // Show loading spinner while auth is initializing
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black text-white relative overflow-hidden">
+        <BackgroundParticles />
+        <div className="relative min-h-screen flex items-center justify-center px-4 z-10">
+          <div className="text-center">
+            <Loader2 className="w-12 h-12 animate-spin text-cyan-400 mx-auto mb-4" />
+            <p className="text-cyan-400 font-mono">Loading dashboard...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Redirect to signin if not authenticated
   if (!isAuthenticated) {
     return null;
   }
