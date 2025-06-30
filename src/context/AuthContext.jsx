@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }) => {
     initAuth();
   }, []);
 
-  // Login function with Internet Identity
+  // Login function with Internet Identity using popup
   const login = async () => {
     if (!authClient) {
       throw new Error('Auth client not initialized');
@@ -55,8 +55,10 @@ export const AuthProvider = ({ children }) => {
       
       await new Promise((resolve, reject) => {
         authClient.login({
-          // Always use the live Internet Identity service for development
+          // Always use the live Internet Identity service
           identityProvider: "https://identity.ic0.app",
+          // Configure to use popup window instead of redirect
+          windowOpenerFeatures: "toolbar=0,location=0,menubar=0,width=500,height=500,left=100,top=100",
           onSuccess: resolve,
           onError: reject,
         });
