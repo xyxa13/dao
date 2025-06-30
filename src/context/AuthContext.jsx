@@ -55,9 +55,8 @@ export const AuthProvider = ({ children }) => {
       
       await new Promise((resolve, reject) => {
         authClient.login({
-          identityProvider: import.meta.env.VITE_DFX_NETWORK === "ic" 
-            ? "https://identity.ic0.app/#authorize"
-            : `http://localhost:4943/?canisterId=${import.meta.env.VITE_CANISTER_ID_INTERNET_IDENTITY}#authorize`,
+          // Always use the live Internet Identity service for development
+          identityProvider: "https://identity.ic0.app",
           onSuccess: resolve,
           onError: reject,
         });
