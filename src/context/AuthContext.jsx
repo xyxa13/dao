@@ -7,6 +7,9 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [principal, setPrincipal] = useState(null);
+  const [userSettings, setUserSettings] = useState({
+    displayName: 'Anonymous User'
+  });
   const [loading, setLoading] = useState(true);
 
   // Initialize auth state on component mount
@@ -14,10 +17,26 @@ export const AuthProvider = ({ children }) => {
     // Check if user was previously authenticated (e.g., from localStorage)
     const savedAuth = localStorage.getItem('isAuthenticated');
     const savedPrincipal = localStorage.getItem('principal');
+    const savedUserSettings = localStorage.getItem('userSettings');
     
     if (savedAuth === 'true' && savedPrincipal) {
       setIsAuthenticated(true);
       setPrincipal(savedPrincipal);
+      
+      if (savedUserSettings) {
+        try {
+          setUserSettings(JSON.parse(savedUserSettings));
+        } catch (error) {
+          console.error('Failed to parse saved user settings:', error);
+          setUserSettings({
+            displayName: `User ${savedPrincipal.slice(0, 8)}`
+          });
+        }
+      } else {
+        setUserSettings({
+          displayName: `User ${savedPrincipal.slice(0, 8)}`
+        });
+      }
     }
     
     setLoading(false);
@@ -29,9 +48,16 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(true);
       setPrincipal(principalId);
       
+      // Create user settings with display name derived from principal
+      const newUserSettings = {
+        displayName: `User ${principalId.slice(0, 8)}`
+      };
+      setUserSettings(newUserSettings);
+      
       // Persist auth state
       localStorage.setItem('isAuthenticated', 'true');
       localStorage.setItem('principal', principalId);
+      localStorage.setItem('userSettings', JSON.stringify(newUserSettings));
       
       return true;
     } catch (error) {
@@ -44,16 +70,21 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setIsAuthenticated(false);
     setPrincipal(null);
+    setUserSettings({
+      displayName: 'Anonymous User'
+    });
     
     // Clear persisted auth state
     localStorage.removeItem('isAuthenticated');
     localStorage.removeItem('principal');
+    localStorage.removeItem('userSettings');
   };
 
   // Auth context value
   const value = {
     isAuthenticated,
     principal,
+    userSettings,
     loading,
     login,
     logout
