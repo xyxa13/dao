@@ -55,9 +55,9 @@ export const AuthProvider = ({ children }) => {
       
       await new Promise((resolve, reject) => {
         authClient.login({
-          identityProvider: process.env.DFX_NETWORK === "ic" 
+          identityProvider: import.meta.env.VITE_DFX_NETWORK === "ic" 
             ? "https://identity.ic0.app/#authorize"
-            : `http://localhost:4943/?canisterId=${process.env.CANISTER_ID_INTERNET_IDENTITY}#authorize`,
+            : `http://localhost:4943/?canisterId=${import.meta.env.VITE_CANISTER_ID_INTERNET_IDENTITY}#authorize`,
           onSuccess: resolve,
           onError: reject,
         });
