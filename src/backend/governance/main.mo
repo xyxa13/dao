@@ -6,6 +6,8 @@ import Result "mo:base/Result";
 import Principal "mo:base/Principal";
 import Debug "mo:base/Debug";
 import Buffer "mo:base/Buffer";
+import Nat "mo:base/Nat";
+import Text "mo:base/Text";
 
 import Types "../shared/types";
 
@@ -172,23 +174,60 @@ actor GovernanceCanister {
 
         votes.put(voteKey, vote);
 
-        // Update proposal vote counts - FIXED: Using #inFavor instead of #for
+        // Update proposal vote counts
         let updatedProposal = switch (choice) {
             case (#inFavor) {
-                proposal with {
+                {
+                    id = proposal.id;
+                    proposer = proposal.proposer;
+                    title = proposal.title;
+                    description = proposal.description;
+                    proposalType = proposal.proposalType;
+                    status = proposal.status;
                     votesInFavor = proposal.votesInFavor + votingPower;
+                    votesAgainst = proposal.votesAgainst;
                     totalVotingPower = proposal.totalVotingPower + votingPower;
+                    createdAt = proposal.createdAt;
+                    votingDeadline = proposal.votingDeadline;
+                    executionDeadline = proposal.executionDeadline;
+                    quorumThreshold = proposal.quorumThreshold;
+                    approvalThreshold = proposal.approvalThreshold;
                 }
             };
             case (#against) {
-                proposal with {
+                {
+                    id = proposal.id;
+                    proposer = proposal.proposer;
+                    title = proposal.title;
+                    description = proposal.description;
+                    proposalType = proposal.proposalType;
+                    status = proposal.status;
+                    votesInFavor = proposal.votesInFavor;
                     votesAgainst = proposal.votesAgainst + votingPower;
                     totalVotingPower = proposal.totalVotingPower + votingPower;
+                    createdAt = proposal.createdAt;
+                    votingDeadline = proposal.votingDeadline;
+                    executionDeadline = proposal.executionDeadline;
+                    quorumThreshold = proposal.quorumThreshold;
+                    approvalThreshold = proposal.approvalThreshold;
                 }
             };
             case (#abstain) {
-                proposal with {
+                {
+                    id = proposal.id;
+                    proposer = proposal.proposer;
+                    title = proposal.title;
+                    description = proposal.description;
+                    proposalType = proposal.proposalType;
+                    status = proposal.status;
+                    votesInFavor = proposal.votesInFavor;
+                    votesAgainst = proposal.votesAgainst;
                     totalVotingPower = proposal.totalVotingPower + votingPower;
+                    createdAt = proposal.createdAt;
+                    votingDeadline = proposal.votingDeadline;
+                    executionDeadline = proposal.executionDeadline;
+                    quorumThreshold = proposal.quorumThreshold;
+                    approvalThreshold = proposal.approvalThreshold;
                 }
             };
         };
@@ -215,7 +254,22 @@ actor GovernanceCanister {
 
         // Check quorum
         if (proposal.totalVotingPower < proposal.quorumThreshold) {
-            let failedProposal = proposal with { status = #failed };
+            let failedProposal = {
+                id = proposal.id;
+                proposer = proposal.proposer;
+                title = proposal.title;
+                description = proposal.description;
+                proposalType = proposal.proposalType;
+                status = #failed;
+                votesInFavor = proposal.votesInFavor;
+                votesAgainst = proposal.votesAgainst;
+                totalVotingPower = proposal.totalVotingPower;
+                createdAt = proposal.createdAt;
+                votingDeadline = proposal.votingDeadline;
+                executionDeadline = proposal.executionDeadline;
+                quorumThreshold = proposal.quorumThreshold;
+                approvalThreshold = proposal.approvalThreshold;
+            };
             proposals.put(proposalId, failedProposal);
             return #err("Quorum not met");
         };
@@ -231,13 +285,43 @@ actor GovernanceCanister {
             #failed
         };
 
-        let updatedProposal = proposal with { status = newStatus };
+        let updatedProposal = {
+            id = proposal.id;
+            proposer = proposal.proposer;
+            title = proposal.title;
+            description = proposal.description;
+            proposalType = proposal.proposalType;
+            status = newStatus;
+            votesInFavor = proposal.votesInFavor;
+            votesAgainst = proposal.votesAgainst;
+            totalVotingPower = proposal.totalVotingPower;
+            createdAt = proposal.createdAt;
+            votingDeadline = proposal.votingDeadline;
+            executionDeadline = proposal.executionDeadline;
+            quorumThreshold = proposal.quorumThreshold;
+            approvalThreshold = proposal.approvalThreshold;
+        };
         proposals.put(proposalId, updatedProposal);
 
         if (newStatus == #succeeded) {
             // Here you would implement the actual execution logic
             // For now, we just mark it as executed
-            let executedProposal = updatedProposal with { status = #executed };
+            let executedProposal = {
+                id = updatedProposal.id;
+                proposer = updatedProposal.proposer;
+                title = updatedProposal.title;
+                description = updatedProposal.description;
+                proposalType = updatedProposal.proposalType;
+                status = #executed;
+                votesInFavor = updatedProposal.votesInFavor;
+                votesAgainst = updatedProposal.votesAgainst;
+                totalVotingPower = updatedProposal.totalVotingPower;
+                createdAt = updatedProposal.createdAt;
+                votingDeadline = updatedProposal.votingDeadline;
+                executionDeadline = updatedProposal.executionDeadline;
+                quorumThreshold = updatedProposal.quorumThreshold;
+                approvalThreshold = updatedProposal.approvalThreshold;
+            };
             proposals.put(proposalId, executedProposal);
         };
 
@@ -333,7 +417,8 @@ actor GovernanceCanister {
         for (proposal in proposals.vals()) {
             switch (proposal.status) {
                 case (#active) activeCount += 1;
-                case (#succeeded or #executed) succeededCount += 1;
+                case (#succeeded) succeededCount += 1;
+                case (#executed) succeededCount += 1;
                 case (#failed) failedCount += 1;
                 case (_) {};
             };

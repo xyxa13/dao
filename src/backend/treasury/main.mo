@@ -8,6 +8,8 @@ import Debug "mo:base/Debug";
 import Buffer "mo:base/Buffer";
 import Float "mo:base/Float";
 import Int "mo:base/Int";
+import Nat "mo:base/Nat";
+import Text "mo:base/Text";
 
 import Types "../shared/types";
 

@@ -6,6 +6,10 @@ import Result "mo:base/Result";
 import Principal "mo:base/Principal";
 import Debug "mo:base/Debug";
 import Buffer "mo:base/Buffer";
+import Nat "mo:base/Nat";
+import Text "mo:base/Text";
+import Float "mo:base/Float";
+import Int "mo:base/Int";
 
 import Types "../shared/types";
 
@@ -131,7 +135,7 @@ actor StakingCanister {
                     return #err("Stake is still locked");
                 };
             };
-            case null {}; // Unlocked staking, always unlocked
+            case null {}; // Flexible staking, always unlocked
         };
 
         // Calculate final rewards
@@ -139,9 +143,15 @@ actor StakingCanister {
         let totalAmount = stake.amount + finalRewards;
 
         // Deactivate stake
-        let updatedStake = stake with { 
-            isActive = false;
+        let updatedStake = {
+            id = stake.id;
+            staker = stake.staker;
+            amount = stake.amount;
+            stakingPeriod = stake.stakingPeriod;
+            stakedAt = stake.stakedAt;
+            unlocksAt = stake.unlocksAt;
             rewards = finalRewards;
+            isActive = false;
         };
         stakes.put(stakeId, updatedStake);
 
@@ -152,7 +162,7 @@ actor StakingCanister {
         #ok(totalAmount)
     };
 
-    // Claim rewards without unstaking (for unlocked staking)
+    // Claim rewards without unstaking (for flexible staking)
     public shared(msg) func claimRewards(stakeId: StakeId) : async Result<TokenAmount, Text> {
         let caller = msg.caller;
 
@@ -169,9 +179,9 @@ actor StakingCanister {
             return #err("Stake is not active");
         };
 
-        // Only unlocked staking allows reward claiming
-        if (stake.stakingPeriod != #unlocked) {
-            return #err("Rewards can only be claimed for unlocked staking");
+        // Only flexible staking allows reward claiming
+        if (stake.stakingPeriod != #flexible) {
+            return #err("Rewards can only be claimed for flexible staking");
         };
 
         let currentRewards = calculateRewards(stake);
@@ -182,7 +192,16 @@ actor StakingCanister {
         };
 
         // Update stake with claimed rewards
-        let updatedStake = stake with { rewards = currentRewards };
+        let updatedStake = {
+            id = stake.id;
+            staker = stake.staker;
+            amount = stake.amount;
+            stakingPeriod = stake.stakingPeriod;
+            stakedAt = stake.stakedAt;
+            unlocksAt = stake.unlocksAt;
+            rewards = currentRewards;
+            isActive = stake.isActive;
+        };
         stakes.put(stakeId, updatedStake);
 
         totalRewardsDistributed += claimableRewards;
@@ -213,9 +232,15 @@ actor StakingCanister {
         };
 
         let newUnlockTime = calculateUnlockTime(Time.now(), newPeriod);
-        let updatedStake = stake with { 
+        let updatedStake = {
+            id = stake.id;
+            staker = stake.staker;
+            amount = stake.amount;
             stakingPeriod = newPeriod;
+            stakedAt = stake.stakedAt;
             unlocksAt = newUnlockTime;
+            rewards = stake.rewards;
+            isActive = stake.isActive;
         };
         stakes.put(stakeId, updatedStake);
 
@@ -257,7 +282,7 @@ actor StakingCanister {
         switch (stakes.get(stakeId)) {
             case (?stake) {
                 let totalRewards = calculateRewards(stake);
-                let claimableRewards = if (stake.stakingPeriod == #unlocked) {
+                let claimableRewards = if (stake.stakingPeriod == #flexible) {
                     totalRewards - stake.rewards
                 } else { 0 };
 
@@ -312,7 +337,7 @@ actor StakingCanister {
         stakingPeriodDistribution: [(StakingPeriod, Nat)];
     } {
         var activeStakes : Nat = 0;
-        var unlockedCount : Nat = 0;
+        var flexibleCount : Nat = 0;
         var locked30Count : Nat = 0;
         var locked90Count : Nat = 0;
         var locked180Count : Nat = 0;
@@ -322,7 +347,7 @@ actor StakingCanister {
             if (stake.isActive) {
                 activeStakes += 1;
                 switch (stake.stakingPeriod) {
-                    case (#unlocked) unlockedCount += 1;
+                    case (#flexible) flexibleCount += 1;
                     case (#locked30) locked30Count += 1;
                     case (#locked90) locked90Count += 1;
                     case (#locked180) locked180Count += 1;
@@ -342,7 +367,7 @@ actor StakingCanister {
             totalRewardsDistributed = totalRewardsDistributed;
             averageStakeAmount = averageAmount;
             stakingPeriodDistribution = [
-                (#unlocked, unlockedCount),
+                (#flexible, flexibleCount),
                 (#locked30, locked30Count),
                 (#locked90, locked90Count),
                 (#locked180, locked180Count),
@@ -377,7 +402,7 @@ actor StakingCanister {
     // Helper functions
     private func calculateUnlockTime(stakedAt: Time.Time, period: StakingPeriod) : ?Time.Time {
         switch (period) {
-            case (#unlocked) null;
+            case (#flexible) null;
             case (#locked30) ?(stakedAt + 30 * 24 * 60 * 60 * 1_000_000_000);
             case (#locked90) ?(stakedAt + 90 * 24 * 60 * 60 * 1_000_000_000);
             case (#locked180) ?(stakedAt + 180 * 24 * 60 * 60 * 1_000_000_000);
@@ -392,7 +417,7 @@ actor StakingCanister {
 
     private func getAPRForPeriod(period: StakingPeriod) : Float {
         switch (period) {
-            case (#unlocked) 0.05; // 5% APR
+            case (#flexible) 0.05; // 5% APR
             case (#locked30) 0.08; // 8% APR
             case (#locked90) 0.12; // 12% APR
             case (#locked180) 0.18; // 18% APR
@@ -402,7 +427,7 @@ actor StakingCanister {
 
     private func isLongerPeriod(current: StakingPeriod, new: StakingPeriod) : Bool {
         let currentValue = switch (current) {
-            case (#unlocked) 0;
+            case (#flexible) 0;
             case (#locked30) 30;
             case (#locked90) 90;
             case (#locked180) 180;
@@ -410,7 +435,7 @@ actor StakingCanister {
         };
 
         let newValue = switch (new) {
-            case (#unlocked) 0;
+            case (#flexible) 0;
             case (#locked30) 30;
             case (#locked90) 90;
             case (#locked180) 180;
