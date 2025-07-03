@@ -180,306 +180,295 @@ const Dashboard = () => {
       {/* Background Particles */}
       <BackgroundParticles />
 
-      {/* Main Content Container with proper spacing */}
-      <div className="relative z-10 pt-20 sm:pt-24 pb-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-6 sm:mb-8"
-          >
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
-              <div className="flex-1 min-w-0">
-                <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2 font-mono">
-                  WELCOME TO DAOVERSE! 🚀
-                </h1>
-                <p className="text-cyan-400 font-mono text-sm sm:text-base truncate">
-                  > Principal: {principal?.slice(0, 12)}...{principal?.slice(-8)}
-                </p>
-              </div>
-              <div className="flex flex-wrap items-center gap-2 sm:gap-4">
-                {!walletConnected ? (
-                  <button 
-                    onClick={connectWallet}
-                    className="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-gradient-to-r from-cyan-500 to-purple-600 text-white rounded-lg hover:from-cyan-600 hover:to-purple-700 transition-all font-mono text-sm"
-                  >
-                    <Wallet className="w-4 h-4" />
-                    <span className="hidden sm:inline">CONNECT WALLET</span>
-                    <span className="sm:hidden">WALLET</span>
-                  </button>
-                ) : (
-                  <div className="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-green-500/20 border border-green-500/30 text-green-400 rounded-lg font-mono text-sm">
-                    <Shield className="w-4 h-4" />
-                    <span className="hidden sm:inline">WALLET CONNECTED</span>
-                    <span className="sm:hidden">CONNECTED</span>
-                  </div>
-                )}
-                <button 
-                  onClick={() => navigate('/launch')}
-                  className="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-lg hover:from-orange-600 hover:to-red-700 transition-all font-mono text-sm"
-                >
-                  <Rocket className="w-4 h-4" />
-                  <span className="hidden sm:inline">LAUNCH DAO</span>
-                  <span className="sm:hidden">LAUNCH</span>
-                </button>
-                <button className="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-gray-800 border border-cyan-500/30 text-cyan-400 rounded-lg hover:bg-gray-700 transition-colors font-mono text-sm">
-                  <Plus className="w-4 h-4" />
-                  <span className="hidden sm:inline">ADD FUNDS</span>
-                  <span className="sm:hidden">FUNDS</span>
-                </button>
-              </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10 pt-24 sm:pt-28">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+            <div>
+              <h1 className="text-3xl font-bold text-white mb-2 font-mono">
+                WELCOME TO DAOVERSE! 🚀
+              </h1>
+              <p className="text-cyan-400 font-mono">
+                > Principal: {principal?.slice(0, 12)}...{principal?.slice(-8)}
+              </p>
             </div>
-          </motion.div>
-
-          {/* Portfolio Stats - Responsive Grid */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8"
-          >
-            {portfolioStats.map((stat, index) => (
-              <motion.div 
-                key={index} 
-                className="bg-gray-900/50 border border-cyan-500/30 p-3 sm:p-6 rounded-xl backdrop-blur-sm relative overflow-hidden group"
-                whileHover={{ 
-                  scale: 1.02,
-                  boxShadow: "0 20px 40px rgba(6, 182, 212, 0.2)"
-                }}
-                transition={{ duration: 0 }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between relative z-10">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs sm:text-sm text-gray-400 mb-1 font-mono truncate">{stat.label}</p>
-                    <p className="text-lg sm:text-2xl font-bold text-white font-mono">{stat.value}</p>
-                  </div>
-                  <div className={`flex items-center space-x-1 text-xs sm:text-sm font-mono mt-1 sm:mt-0 ${
-                    stat.trend === 'up' ? 'text-green-400' : 'text-red-400'
-                  }`}>
-                    <span>{stat.change}</span>
-                    <ArrowUpRight className={`w-3 h-3 sm:w-4 sm:h-4 ${stat.trend === 'down' ? 'rotate-180' : ''}`} />
-                  </div>
+            <div className="flex items-center space-x-4 mt-4 md:mt-0">
+              {!walletConnected ? (
+                <button 
+                  onClick={connectWallet}
+                  className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-cyan-500 to-purple-600 text-white rounded-lg hover:from-cyan-600 hover:to-purple-700 transition-all font-mono"
+                >
+                  <Wallet className="w-4 h-4" />
+                  <span>CONNECT WALLET</span>
+                </button>
+              ) : (
+                <div className="flex items-center space-x-2 px-4 py-2 bg-green-500/20 border border-green-500/30 text-green-400 rounded-lg font-mono">
+                  <Shield className="w-4 h-4" />
+                  <span>WALLET CONNECTED</span>
                 </div>
-              </motion.div>
-            ))}
-          </motion.div>
+              )}
+              <button 
+                onClick={() => navigate('/launch')}
+                className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-lg hover:from-orange-600 hover:to-red-700 transition-all font-mono"
+              >
+                <Rocket className="w-4 h-4" />
+                <span>LAUNCH DAO</span>
+              </button>
+              <button className="flex items-center space-x-2 px-4 py-2 bg-gray-800 border border-cyan-500/30 text-cyan-400 rounded-lg hover:bg-gray-700 transition-colors font-mono">
+                <Plus className="w-4 h-4" />
+                <span>ADD FUNDS</span>
+              </button>
+            </div>
+          </div>
+        </motion.div>
 
-          {/* Filters and Search - Responsive */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="bg-gray-900/50 border border-cyan-500/30 p-4 sm:p-6 rounded-xl backdrop-blur-sm mb-6 sm:mb-8"
-          >
-            <div className="flex flex-col gap-4">
-              {/* Categories - Horizontal scroll on mobile */}
-              <div className="overflow-x-auto">
-                <div className="flex gap-2 min-w-max sm:min-w-0 sm:flex-wrap">
-                  {categories.map((category) => (
-                    <motion.button
-                      key={category}
-                      onClick={() => setSelectedCategory(category)}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      transition={{ duration: 0 }}
-                      className={`px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-colors font-mono whitespace-nowrap ${
-                        selectedCategory === category
-                          ? 'bg-gradient-to-r from-cyan-500 to-purple-600 text-white'
-                          : 'bg-gray-800 text-gray-300 hover:bg-gray-700 border border-gray-600'
-                      }`}
+        {/* Portfolio Stats - INSTANT HOVER SCALING */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+        >
+          {portfolioStats.map((stat, index) => (
+            <motion.div 
+              key={index} 
+              className="bg-gray-900/50 border border-cyan-500/30 p-6 rounded-xl backdrop-blur-sm relative overflow-hidden group"
+              whileHover={{ 
+                scale: 1.02,
+                boxShadow: "0 20px 40px rgba(6, 182, 212, 0.2)"
+              }}
+              transition={{ duration: 0 }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div className="flex items-center justify-between relative z-10">
+                <div>
+                  <p className="text-sm text-gray-400 mb-1 font-mono">{stat.label}</p>
+                  <p className="text-2xl font-bold text-white font-mono">{stat.value}</p>
+                </div>
+                <div className={`flex items-center space-x-1 text-sm font-mono ${
+                  stat.trend === 'up' ? 'text-green-400' : 'text-red-400'
+                }`}>
+                  <span>{stat.change}</span>
+                  <ArrowUpRight className={`w-4 h-4 ${stat.trend === 'down' ? 'rotate-180' : ''}`} />
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Filters and Search */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-gray-900/50 border border-cyan-500/30 p-6 rounded-xl backdrop-blur-sm mb-8"
+        >
+          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+            <div className="flex flex-wrap gap-2">
+              {categories.map((category) => (
+                <motion.button
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ duration: 0 }}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors font-mono ${
+                    selectedCategory === category
+                      ? 'bg-gradient-to-r from-cyan-500 to-purple-600 text-white'
+                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700 border border-gray-600'
+                  }`}
+                >
+                  {category}
+                </motion.button>
+              ))}
+            </div>
+            
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <input
+                type="text"
+                placeholder="Search projects..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 pr-4 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono"
+              />
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Projects Grid - INSTANT HOVER SCALING */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
+          {filteredProjects.map((project, index) => (
+            <motion.div
+              key={project.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 * index }}
+              whileHover={{ 
+                scale: 1.02, 
+                y: -5,
+                boxShadow: "0 25px 50px rgba(139, 92, 246, 0.2)"
+              }}
+              className="bg-gray-900/50 border border-purple-500/30 rounded-xl backdrop-blur-sm overflow-hidden hover:border-purple-400/50 transition-all group relative"
+            >
+              {/* Project Header */}
+              <div className="h-48 bg-gradient-to-br from-cyan-500/20 to-purple-600/20 relative overflow-hidden">
+                <div className="absolute inset-0 bg-black/20"></div>
+                <div className="absolute top-4 left-4">
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium font-mono ${
+                    project.status === 'Live' 
+                      ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
+                      : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+                  }`}>
+                    {project.status}
+                  </span>
+                </div>
+                <div className="absolute top-4 right-4 flex items-center space-x-1 bg-black/30 backdrop-blur-sm rounded-lg px-2 py-1">
+                  <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                  <span className="text-white text-sm font-medium font-mono">{project.rating}</span>
+                </div>
+                
+                {/* Floating Icons */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <motion.div
+                    animate={{ 
+                      rotate: 360,
+                      scale: [1, 1.1, 1]
+                    }}
+                    transition={{ 
+                      rotate: { duration: 20, repeat: Infinity, ease: "linear" },
+                      scale: { duration: 3, repeat: Infinity, ease: "easeInOut" }
+                    }}
+                    className="w-16 h-16 bg-gradient-to-r from-cyan-400/30 to-purple-500/30 rounded-full flex items-center justify-center backdrop-blur-sm"
+                  >
+                    {project.category === 'DeFi' && <DollarSign className="w-8 h-8 text-cyan-400" />}
+                    {project.category === 'Gaming' && <Target className="w-8 h-8 text-purple-400" />}
+                    {project.category === 'NFT' && <Award className="w-8 h-8 text-pink-400" />}
+                    {project.category === 'Social' && <Users className="w-8 h-8 text-green-400" />}
+                    {project.category === 'Infrastructure' && <Settings className="w-8 h-8 text-blue-400" />}
+                  </motion.div>
+                </div>
+              </div>
+
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-xl font-semibold text-white group-hover:text-cyan-400 transition-colors font-mono">
+                    {project.name}
+                  </h3>
+                  <span className="text-sm text-gray-400 bg-gray-800 px-2 py-1 rounded font-mono">
+                    {project.category}
+                  </span>
+                </div>
+
+                <p className="text-gray-400 text-sm mb-4 line-clamp-2">
+                  {project.description}
+                </p>
+
+                {/* Tags */}
+                <div className="flex flex-wrap gap-1 mb-4">
+                  {project.tags.map((tag, tagIndex) => (
+                    <span
+                      key={tagIndex}
+                      className="text-xs px-2 py-1 bg-cyan-500/20 text-cyan-400 rounded-md border border-cyan-500/30 font-mono"
                     >
-                      {category}
-                    </motion.button>
+                      {tag}
+                    </span>
                   ))}
                 </div>
-              </div>
-              
-              {/* Search */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <input
-                  type="text"
-                  placeholder="Search projects..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 sm:py-3 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono text-sm sm:text-base"
-                />
-              </div>
-            </div>
-          </motion.div>
 
-          {/* Projects Grid - Responsive */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6"
-          >
-            {filteredProjects.map((project, index) => (
-              <motion.div
-                key={project.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 * index }}
-                whileHover={{ 
-                  scale: 1.02, 
-                  y: -5,
-                  boxShadow: "0 25px 50px rgba(139, 92, 246, 0.2)"
-                }}
-                className="bg-gray-900/50 border border-purple-500/30 rounded-xl backdrop-blur-sm overflow-hidden hover:border-purple-400/50 transition-all group relative"
-              >
-                {/* Project Header */}
-                <div className="h-32 sm:h-48 bg-gradient-to-br from-cyan-500/20 to-purple-600/20 relative overflow-hidden">
-                  <div className="absolute inset-0 bg-black/20"></div>
-                  <div className="absolute top-3 sm:top-4 left-3 sm:left-4">
-                    <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-medium font-mono ${
-                      project.status === 'Live' 
-                        ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
-                        : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
-                    }`}>
-                      {project.status}
-                    </span>
+                {/* Stats */}
+                <div className="space-y-3 mb-4">
+                  <div className="flex justify-between text-sm font-mono">
+                    <span className="text-gray-400">PROGRESS</span>
+                    <span className="font-medium text-cyan-400">{project.progress}%</span>
                   </div>
-                  <div className="absolute top-3 sm:top-4 right-3 sm:right-4 flex items-center space-x-1 bg-black/30 backdrop-blur-sm rounded-lg px-2 py-1">
-                    <Star className="w-3 sm:w-4 h-3 sm:h-4 text-yellow-400 fill-current" />
-                    <span className="text-white text-xs sm:text-sm font-medium font-mono">{project.rating}</span>
+                  <div className="w-full bg-gray-800 rounded-full h-2">
+                    <motion.div 
+                      className="bg-gradient-to-r from-cyan-500 to-purple-600 h-2 rounded-full transition-all duration-300"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${project.progress}%` }}
+                      transition={{ duration: 1, delay: 0.5 }}
+                    ></motion.div>
                   </div>
                   
-                  {/* Floating Icons */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <motion.div
-                      animate={{ 
-                        rotate: 360,
-                        scale: [1, 1.1, 1]
-                      }}
-                      transition={{ 
-                        rotate: { duration: 20, repeat: Infinity, ease: "linear" },
-                        scale: { duration: 3, repeat: Infinity, ease: "easeInOut" }
-                      }}
-                      className="w-12 sm:w-16 h-12 sm:h-16 bg-gradient-to-r from-cyan-400/30 to-purple-500/30 rounded-full flex items-center justify-center backdrop-blur-sm"
-                    >
-                      {project.category === 'DeFi' && <DollarSign className="w-6 sm:w-8 h-6 sm:h-8 text-cyan-400" />}
-                      {project.category === 'Gaming' && <Target className="w-6 sm:w-8 h-6 sm:h-8 text-purple-400" />}
-                      {project.category === 'NFT' && <Award className="w-6 sm:w-8 h-6 sm:h-8 text-pink-400" />}
-                      {project.category === 'Social' && <Users className="w-6 sm:w-8 h-6 sm:h-8 text-green-400" />}
-                      {project.category === 'Infrastructure' && <Settings className="w-6 sm:w-8 h-6 sm:h-8 text-blue-400" />}
-                    </motion.div>
+                  <div className="grid grid-cols-2 gap-4 text-sm font-mono">
+                    <div>
+                      <p className="text-gray-400">RAISED</p>
+                      <p className="font-semibold text-green-400">{project.raised}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400">TARGET</p>
+                      <p className="font-semibold text-white">{project.target}</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 text-sm font-mono">
+                    <div>
+                      <p className="text-gray-400">APY</p>
+                      <p className="font-semibold text-green-400">{project.apy}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400">TIME LEFT</p>
+                      <p className="font-semibold text-orange-400">{project.timeLeft}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between text-sm font-mono">
+                    <span className="text-gray-400">PARTICIPANTS</span>
+                    <div className="flex items-center space-x-1">
+                      <Users className="w-4 h-4 text-gray-400" />
+                      <span className="font-medium text-purple-400">{project.participants.toLocaleString()}</span>
+                    </div>
                   </div>
                 </div>
 
-                <div className="p-4 sm:p-6">
-                  <div className="flex items-start justify-between mb-3">
-                    <h3 className="text-lg sm:text-xl font-semibold text-white group-hover:text-cyan-400 transition-colors font-mono flex-1 min-w-0 pr-2">
-                      <span className="truncate block">{project.name}</span>
-                    </h3>
-                    <span className="text-xs sm:text-sm text-gray-400 bg-gray-800 px-2 py-1 rounded font-mono whitespace-nowrap">
-                      {project.category}
-                    </span>
-                  </div>
-
-                  <p className="text-gray-400 text-sm mb-4 line-clamp-2">
-                    {project.description}
-                  </p>
-
-                  {/* Tags - Responsive */}
-                  <div className="flex flex-wrap gap-1 mb-4">
-                    {project.tags.slice(0, 3).map((tag, tagIndex) => (
-                      <span
-                        key={tagIndex}
-                        className="text-xs px-2 py-1 bg-cyan-500/20 text-cyan-400 rounded-md border border-cyan-500/30 font-mono"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Stats */}
-                  <div className="space-y-3 mb-4">
-                    <div className="flex justify-between text-sm font-mono">
-                      <span className="text-gray-400">PROGRESS</span>
-                      <span className="font-medium text-cyan-400">{project.progress}%</span>
-                    </div>
-                    <div className="w-full bg-gray-800 rounded-full h-2">
-                      <motion.div 
-                        className="bg-gradient-to-r from-cyan-500 to-purple-600 h-2 rounded-full transition-all duration-300"
-                        initial={{ width: 0 }}
-                        animate={{ width: `${project.progress}%` }}
-                        transition={{ duration: 1, delay: 0.5 }}
-                      ></motion.div>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-2 sm:gap-4 text-sm font-mono">
-                      <div>
-                        <p className="text-gray-400 text-xs">RAISED</p>
-                        <p className="font-semibold text-green-400 truncate">{project.raised}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-400 text-xs">TARGET</p>
-                        <p className="font-semibold text-white truncate">{project.target}</p>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2 sm:gap-4 text-sm font-mono">
-                      <div>
-                        <p className="text-gray-400 text-xs">APY</p>
-                        <p className="font-semibold text-green-400">{project.apy}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-400 text-xs">TIME LEFT</p>
-                        <p className="font-semibold text-orange-400">{project.timeLeft}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between text-sm font-mono">
-                      <span className="text-gray-400 text-xs">PARTICIPANTS</span>
-                      <div className="flex items-center space-x-1">
-                        <Users className="w-3 sm:w-4 h-3 sm:h-4 text-gray-400" />
-                        <span className="font-medium text-purple-400 text-xs sm:text-sm">{project.participants.toLocaleString()}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Action Buttons - Responsive */}
-                  <div className="flex space-x-2 sm:space-x-3">
-                    <motion.button 
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      transition={{ duration: 0 }}
-                      className="flex-1 bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 text-white py-2 px-3 sm:px-4 rounded-lg transition-all text-xs sm:text-sm font-medium font-mono"
-                    >
-                      INVEST NOW
-                    </motion.button>
-                    <motion.button 
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      transition={{ duration: 0 }}
-                      className="px-3 sm:px-4 py-2 border border-gray-600 text-gray-300 hover:bg-gray-800 rounded-lg transition-colors text-xs sm:text-sm font-mono"
-                    >
-                      DETAILS
-                    </motion.button>
-                  </div>
+                {/* Action Buttons */}
+                <div className="flex space-x-3">
+                  <motion.button 
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ duration: 0 }}
+                    className="flex-1 bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 text-white py-2 px-4 rounded-lg transition-all text-sm font-medium font-mono"
+                  >
+                    INVEST NOW
+                  </motion.button>
+                  <motion.button 
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ duration: 0 }}
+                    className="px-4 py-2 border border-gray-600 text-gray-300 hover:bg-gray-800 rounded-lg transition-colors text-sm font-mono"
+                  >
+                    DETAILS
+                  </motion.button>
                 </div>
-              </motion.div>
-            ))}
-          </motion.div>
-
-          {/* No Results */}
-          {filteredProjects.length === 0 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center py-12"
-            >
-              <div className="text-gray-400 mb-4">
-                <Search className="w-12 h-12 mx-auto" />
               </div>
-              <h3 className="text-lg font-medium text-white mb-2 font-mono">NO PROJECTS FOUND</h3>
-              <p className="text-gray-400 font-mono">> Try adjusting your filters or search terms</p>
             </motion.div>
-          )}
-        </div>
+          ))}
+        </motion.div>
+
+        {/* No Results */}
+        {filteredProjects.length === 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-12"
+          >
+            <div className="text-gray-400 mb-4">
+              <Search className="w-12 h-12 mx-auto" />
+            </div>
+            <h3 className="text-lg font-medium text-white mb-2 font-mono">NO PROJECTS FOUND</h3>
+            <p className="text-gray-400 font-mono">> Try adjusting your filters or search terms</p>
+          </motion.div>
+        )}
       </div>
     </div>
   );
