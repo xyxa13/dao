@@ -182,7 +182,7 @@ const SignIn = () => {
                       ) : (
                         'DISCONNECT IDENTITY'
                       )}
-                    </button>
+                    </motion.button>
                   </div>
                 </motion.div>
               ) : (
