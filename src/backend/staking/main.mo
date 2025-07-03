@@ -135,7 +135,7 @@ actor StakingCanister {
                     return #err("Stake is still locked");
                 };
             };
-            case null {}; // Flexible staking, always unlocked
+            case null {}; // Instant staking, always unlocked
         };
 
         // Calculate final rewards
@@ -162,7 +162,7 @@ actor StakingCanister {
         #ok(totalAmount)
     };
 
-    // Claim rewards without unstaking (for flexible staking)
+    // Claim rewards without unstaking (for instant staking)
     public shared(msg) func claimRewards(stakeId: StakeId) : async Result<TokenAmount, Text> {
         let caller = msg.caller;
 
@@ -179,9 +179,9 @@ actor StakingCanister {
             return #err("Stake is not active");
         };
 
-        // Only flexible staking allows reward claiming
-        if (stake.stakingPeriod != #flexible) {
-            return #err("Rewards can only be claimed for flexible staking");
+        // Only instant staking allows reward claiming
+        if (stake.stakingPeriod != #instant) {
+            return #err("Rewards can only be claimed for instant staking");
         };
 
         let currentRewards = calculateRewards(stake);
@@ -282,7 +282,7 @@ actor StakingCanister {
         switch (stakes.get(stakeId)) {
             case (?stake) {
                 let totalRewards = calculateRewards(stake);
-                let claimableRewards = if (stake.stakingPeriod == #flexible) {
+                let claimableRewards = if (stake.stakingPeriod == #instant) {
                     totalRewards - stake.rewards
                 } else { 0 };
 
@@ -337,7 +337,7 @@ actor StakingCanister {
         stakingPeriodDistribution: [(StakingPeriod, Nat)];
     } {
         var activeStakes : Nat = 0;
-        var flexibleCount : Nat = 0;
+        var instantCount : Nat = 0;
         var locked30Count : Nat = 0;
         var locked90Count : Nat = 0;
         var locked180Count : Nat = 0;
@@ -347,7 +347,7 @@ actor StakingCanister {
             if (stake.isActive) {
                 activeStakes += 1;
                 switch (stake.stakingPeriod) {
-                    case (#flexible) flexibleCount += 1;
+                    case (#instant) instantCount += 1;
                     case (#locked30) locked30Count += 1;
                     case (#locked90) locked90Count += 1;
                     case (#locked180) locked180Count += 1;
@@ -367,7 +367,7 @@ actor StakingCanister {
             totalRewardsDistributed = totalRewardsDistributed;
             averageStakeAmount = averageAmount;
             stakingPeriodDistribution = [
-                (#flexible, flexibleCount),
+                (#instant, instantCount),
                 (#locked30, locked30Count),
                 (#locked90, locked90Count),
                 (#locked180, locked180Count),
@@ -402,7 +402,7 @@ actor StakingCanister {
     // Helper functions
     private func calculateUnlockTime(stakedAt: Time.Time, period: StakingPeriod) : ?Time.Time {
         switch (period) {
-            case (#flexible) null;
+            case (#instant) null;
             case (#locked30) ?(stakedAt + 30 * 24 * 60 * 60 * 1_000_000_000);
             case (#locked90) ?(stakedAt + 90 * 24 * 60 * 60 * 1_000_000_000);
             case (#locked180) ?(stakedAt + 180 * 24 * 60 * 60 * 1_000_000_000);
@@ -417,7 +417,7 @@ actor StakingCanister {
 
     private func getAPRForPeriod(period: StakingPeriod) : Float {
         switch (period) {
-            case (#flexible) 0.05; // 5% APR
+            case (#instant) 0.05; // 5% APR
             case (#locked30) 0.08; // 8% APR
             case (#locked90) 0.12; // 12% APR
             case (#locked180) 0.18; // 18% APR
@@ -427,7 +427,7 @@ actor StakingCanister {
 
     private func isLongerPeriod(current: StakingPeriod, new: StakingPeriod) : Bool {
         let currentValue = switch (current) {
-            case (#flexible) 0;
+            case (#instant) 0;
             case (#locked30) 30;
             case (#locked90) 90;
             case (#locked180) 180;
@@ -435,7 +435,7 @@ actor StakingCanister {
         };
 
         let newValue = switch (new) {
-            case (#flexible) 0;
+            case (#instant) 0;
             case (#locked30) 30;
             case (#locked90) 90;
             case (#locked180) 180;

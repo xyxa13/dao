@@ -104,7 +104,7 @@ module {
     public type StakeId = Nat;
     
     public type StakingPeriod = {
-        #flexible;
+        #instant;
         #locked30;
         #locked90;
         #locked180;
@@ -218,7 +218,7 @@ module {
 
     public func calculateVotingPower(stakedAmount: TokenAmount, stakingPeriod: StakingPeriod) : Nat {
         let multiplier = switch (stakingPeriod) {
-            case (#flexible) 1.0;
+            case (#instant) 1.0;
             case (#locked30) 1.1;
             case (#locked90) 1.25;
             case (#locked180) 1.5;
@@ -231,7 +231,7 @@ module {
 
     public func calculateStakingRewards(amount: TokenAmount, period: StakingPeriod, duration: Nat) : TokenAmount {
         let baseAPR = switch (period) {
-            case (#flexible) 0.05; // 5% APR
+            case (#instant) 0.05; // 5% APR
             case (#locked30) 0.08; // 8% APR
             case (#locked90) 0.12; // 12% APR
             case (#locked180) 0.18; // 18% APR

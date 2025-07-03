@@ -27,11 +27,11 @@ The backend consists of four main canister modules:
 ### 3. **Staking Canister** (`staking/main.mo`)
 - **Purpose**: Handles token staking and reward distribution
 - **Key Features**:
-  - Multiple staking periods (flexible, 30d, 90d, 180d, 365d)
+  - Multiple staking periods (instant, 30d, 90d, 180d, 365d)
   - Automatic reward calculation based on staking period
   - Voting power calculation for governance
   - Stake extension and early withdrawal (with penalties)
-  - Reward claiming for flexible staking
+  - Reward claiming for instant staking
 
 ### 4. **Proposals Canister** (`proposals/main.mo`)
 - **Purpose**: Advanced proposal management with templates and categorization
@@ -79,7 +79,7 @@ Contains common type definitions and utility functions used across all canisters
 ### 🎯 **Staking System**
 - Multiple lock periods with different APRs
 - Voting power multipliers
-- Flexible reward claiming
+- Instant reward claiming
 - Stake extension capabilities
 - Comprehensive staking statistics
 
@@ -94,7 +94,7 @@ Contains common type definitions and utility functions used across all canisters
 
 | Period | APR | Voting Power Multiplier |
 |--------|-----|------------------------|
-| Flexible | 5% | 1.0x |
+| Instant | 5% | 1.0x |
 | 30 Days | 8% | 1.1x |
 | 90 Days | 12% | 1.25x |
 | 180 Days | 18% | 1.5x |
