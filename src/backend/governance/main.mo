@@ -8,6 +8,7 @@ import Debug "mo:base/Debug";
 import Buffer "mo:base/Buffer";
 import Nat "mo:base/Nat";
 import Text "mo:base/Text";
+import Nat32 "mo:base/Nat32";
 
 import Types "../shared/types";
 
