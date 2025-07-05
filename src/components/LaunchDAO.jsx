@@ -27,13 +27,13 @@ import {
   Save,
   Eye,
   EyeOff,
-  Coins,
-  Code,
-  Database,
   Vote,
   TrendingUp,
+  BarChart3,
   Lock,
-  Layers
+  Coins,
+  Award,
+  Activity
 } from 'lucide-react';
 
 const LaunchDAO = () => {
@@ -53,12 +53,13 @@ const LaunchDAO = () => {
     
     // Module Selection
     selectedModules: {
-      governance: true,
-      treasury: true,
+      governance: true, // Required
+      treasury: true, // Required
       staking: false,
-      proposals: false,
-      voting: false,
-      membership: false
+      advancedProposals: false,
+      votingExtensions: false,
+      membership: false,
+      analytics: false
     },
     
     // Tokenomics
@@ -98,65 +99,75 @@ const LaunchDAO = () => {
   }, [isAuthenticated, loading, navigate]);
 
   const steps = [
-    { id: 1, title: 'Basic Info', icon: FileText, color: 'from-cyan-400 to-blue-500' },
-    { id: 2, title: 'Module Selection', icon: Layers, color: 'from-green-400 to-emerald-500' },
-    { id: 3, title: 'Tokenomics', icon: DollarSign, color: 'from-purple-400 to-pink-500' },
-    { id: 4, title: 'Governance', icon: Users, color: 'from-orange-400 to-red-500' },
-    { id: 5, title: 'Funding', icon: Target, color: 'from-blue-400 to-indigo-500' },
-    { id: 6, title: 'Team', icon: Users, color: 'from-pink-400 to-rose-500' },
-    { id: 7, title: 'Review', icon: CheckCircle, color: 'from-green-400 to-teal-500' }
+    { id: 1, title: 'Basic Info', icon: FileText },
+    { id: 2, title: 'Module Selection', icon: Settings },
+    { id: 3, title: 'Tokenomics', icon: DollarSign },
+    { id: 4, title: 'Governance', icon: Users },
+    { id: 5, title: 'Funding', icon: Target },
+    { id: 6, title: 'Team', icon: Users },
+    { id: 7, title: 'Review', icon: CheckCircle }
   ];
 
   const categories = ['DeFi', 'NFT', 'Gaming', 'Infrastructure', 'Social', 'Other'];
 
-  const moduleOptions = [
+  const moduleCategories = [
     {
-      id: 'governance',
-      name: 'Governance',
-      description: 'Core governance functionality for proposals and voting',
-      icon: Vote,
-      required: true,
-      color: 'from-blue-400 to-cyan-500'
+      title: 'Core Modules',
+      modules: [
+        {
+          id: 'governance',
+          name: 'Governance',
+          description: 'Voting mechanisms and proposal systems',
+          icon: Vote,
+          required: true,
+          subModules: [
+            { id: 'tokenWeightedVoting', name: 'Token Weighted Voting', description: 'Traditional token-based voting power', selected: true },
+            { id: 'quadraticVoting', name: 'Quadratic Voting', description: 'Quadratic voting to prevent whale dominance', selected: false },
+            { id: 'delegatedVoting', name: 'Delegated Voting', description: 'Allow token holders to delegate their votes', selected: false }
+          ]
+        },
+        {
+          id: 'treasury',
+          name: 'Treasury',
+          description: 'Fund management and financial operations',
+          icon: DollarSign,
+          required: true,
+          subModules: [
+            { id: 'multiSigWallet', name: 'Multi-Signature Wallet', description: 'Secure treasury with multiple approvers', selected: true },
+            { id: 'streamingPayments', name: 'Streaming Payments', description: 'Continuous payment streams for contributors', selected: false },
+            { id: 'tokenVesting', name: 'Token Vesting', description: 'Time-locked token distribution', selected: false }
+          ]
+        }
+      ]
     },
     {
-      id: 'treasury',
-      name: 'Treasury',
-      description: 'Manage DAO funds and financial operations',
-      icon: DollarSign,
-      required: true,
-      color: 'from-green-400 to-emerald-500'
-    },
-    {
-      id: 'staking',
-      name: 'Staking',
-      description: 'Token staking and reward distribution system',
-      icon: Coins,
-      required: false,
-      color: 'from-purple-400 to-pink-500'
-    },
-    {
-      id: 'proposals',
-      name: 'Advanced Proposals',
-      description: 'Enhanced proposal templates and categorization',
-      icon: FileText,
-      required: false,
-      color: 'from-orange-400 to-red-500'
-    },
-    {
-      id: 'voting',
-      name: 'Voting Extensions',
-      description: 'Advanced voting mechanisms and delegation',
-      icon: TrendingUp,
-      required: false,
-      color: 'from-indigo-400 to-blue-500'
-    },
-    {
-      id: 'membership',
-      name: 'Membership',
-      description: 'Member management and role-based permissions',
-      icon: Users,
-      required: false,
-      color: 'from-pink-400 to-rose-500'
+      title: 'Optional Modules',
+      modules: [
+        {
+          id: 'staking',
+          name: 'Staking',
+          description: 'Token staking and reward mechanisms',
+          icon: Coins,
+          required: false,
+          subModules: [
+            { id: 'simpleStaking', name: 'Simple Staking', description: 'Basic staking with fixed rewards', selected: true },
+            { id: 'liquidityMining', name: 'Liquidity Mining', description: 'Rewards for providing liquidity', selected: false },
+            { id: 'governanceStaking', name: 'Governance Staking', description: 'Stake tokens for voting power', selected: false }
+          ]
+        },
+        {
+          id: 'analytics',
+          name: 'Analytics',
+          description: 'Monitoring and reporting tools',
+          icon: BarChart3,
+          required: false,
+          subModules: [
+            { id: 'analyticsDashboard', name: 'Analytics Dashboard', description: 'Real-time DAO metrics and KPIs', selected: true },
+            { id: 'alertSystem', name: 'Alert System', description: 'Automated notifications for key events', selected: false },
+            { id: 'financialReports', name: 'Financial Reports', description: 'Comprehensive financial reporting', selected: false }
+          ]
+        }
+      ]
     }
   ];
 
@@ -169,7 +180,7 @@ const LaunchDAO = () => {
   };
 
   const handleModuleToggle = (moduleId) => {
-    const module = moduleOptions.find(m => m.id === moduleId);
+    const module = moduleCategories.flatMap(cat => cat.modules).find(m => m.id === moduleId);
     if (module?.required) return; // Can't toggle required modules
     
     setFormData(prev => ({
@@ -179,6 +190,32 @@ const LaunchDAO = () => {
         [moduleId]: !prev.selectedModules[moduleId]
       }
     }));
+  };
+
+  const handleSubModuleToggle = (moduleId, subModuleId) => {
+    setFormData(prev => {
+      const updatedModules = moduleCategories.map(category => ({
+        ...category,
+        modules: category.modules.map(module => {
+          if (module.id === moduleId) {
+            return {
+              ...module,
+              subModules: module.subModules.map(subModule => 
+                subModule.id === subModuleId 
+                  ? { ...subModule, selected: !subModule.selected }
+                  : subModule
+              )
+            };
+          }
+          return module;
+        })
+      }));
+      
+      return {
+        ...prev,
+        moduleCategories: updatedModules
+      };
+    });
   };
 
   const handleTeamMemberChange = (index, field, value) => {
@@ -208,11 +245,6 @@ const LaunchDAO = () => {
       case 1:
         if (!formData.name.trim()) newErrors.name = 'DAO name is required';
         if (!formData.description.trim()) newErrors.description = 'Description is required';
-        break;
-      case 2:
-        // Module selection validation - at least governance and treasury must be selected
-        const selectedCount = Object.values(formData.selectedModules).filter(Boolean).length;
-        if (selectedCount < 2) newErrors.modules = 'At least governance and treasury modules are required';
         break;
       case 3:
         if (!formData.tokenName.trim()) newErrors.tokenName = 'Token name is required';
@@ -298,7 +330,7 @@ const LaunchDAO = () => {
               <div className="flex items-center mb-4">
                 <button
                   onClick={() => navigate('/dashboard')}
-                  className="flex items-center space-x-2 text-gray-400 hover:text-cyan-400 transition-colors mr-4"
+                  className="flex items-center space-x-2 text-gray-300 hover:text-cyan-400 transition-colors mr-4"
                 >
                   <ArrowLeft className="w-4 h-4" />
                   <span className="font-mono text-sm">Back</span>
@@ -306,18 +338,12 @@ const LaunchDAO = () => {
               </div>
               
               <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
-                <motion.div 
-                  className="w-12 h-12 bg-gradient-to-br from-orange-400 to-red-500 rounded-xl flex items-center justify-center shadow-lg"
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                >
+                <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-red-500 rounded-xl flex items-center justify-center shadow-lg">
                   <Rocket className="w-6 h-6 text-white" />
-                </motion.div>
+                </div>
                 <div className="flex-1 min-w-0">
                   <h1 className="text-xl sm:text-2xl font-bold text-white mb-1 font-mono">
-                    <span className="bg-gradient-to-r from-orange-400 via-red-500 to-pink-500 text-transparent bg-clip-text">
-                      LAUNCH YOUR DAO
-                    </span>
+                    LAUNCH YOUR DAO
                   </h1>
                   <p className="text-cyan-400 font-mono text-sm">
                     > Create your decentralized organization
@@ -359,7 +385,7 @@ const LaunchDAO = () => {
                     <div key={step.id} className="flex items-center">
                       <div className={`flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all ${
                         currentStep >= step.id
-                          ? `bg-gradient-to-r ${step.color} border-transparent text-white`
+                          ? 'bg-cyan-500 border-cyan-500 text-white'
                           : 'border-gray-600 text-gray-400'
                       }`}>
                         {currentStep > step.id ? (
@@ -377,7 +403,7 @@ const LaunchDAO = () => {
                       </div>
                       {index < steps.length - 1 && (
                         <div className={`w-8 lg:w-16 h-0.5 mx-3 ${
-                          currentStep > step.id ? 'bg-gradient-to-r from-cyan-500 to-purple-500' : 'bg-gray-600'
+                          currentStep > step.id ? 'bg-cyan-500' : 'bg-gray-600'
                         }`} />
                       )}
                     </div>
@@ -391,7 +417,7 @@ const LaunchDAO = () => {
                       <div
                         key={step.id}
                         className={`w-2 h-2 rounded-full transition-all ${
-                          currentStep >= step.id ? 'bg-gradient-to-r from-cyan-500 to-purple-500' : 'bg-gray-600'
+                          currentStep >= step.id ? 'bg-cyan-500' : 'bg-gray-600'
                         }`}
                       />
                     ))}
@@ -425,16 +451,11 @@ const LaunchDAO = () => {
                         exit={{ opacity: 0, x: -20 }}
                         className="space-y-4"
                       >
-                        <div className="flex items-center space-x-3 mb-6">
-                          <div className="w-10 h-10 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-lg flex items-center justify-center">
-                            <FileText className="w-5 h-5 text-white" />
-                          </div>
-                          <h2 className="text-lg font-bold text-white font-mono">Basic Information</h2>
-                        </div>
+                        <h2 className="text-lg font-bold text-white mb-4 font-mono">Basic Information</h2>
                         
                         <div className="grid sm:grid-cols-2 gap-4">
                           <div className="sm:col-span-2">
-                            <label className="block text-sm font-semibold text-gray-300 mb-2 font-mono">DAO Name *</label>
+                            <label className="block text-sm font-semibold text-white mb-2 font-mono">DAO Name *</label>
                             <input
                               type="text"
                               value={formData.name}
@@ -448,7 +469,7 @@ const LaunchDAO = () => {
                           </div>
 
                           <div>
-                            <label className="block text-sm font-semibold text-gray-300 mb-2 font-mono">Category</label>
+                            <label className="block text-sm font-semibold text-white mb-2 font-mono">Category</label>
                             <select
                               value={formData.category}
                               onChange={(e) => handleInputChange('category', e.target.value)}
@@ -461,7 +482,7 @@ const LaunchDAO = () => {
                           </div>
 
                           <div>
-                            <label className="block text-sm font-semibold text-gray-300 mb-2 font-mono">Website</label>
+                            <label className="block text-sm font-semibold text-white mb-2 font-mono">Website</label>
                             <input
                               type="url"
                               value={formData.website}
@@ -472,7 +493,7 @@ const LaunchDAO = () => {
                           </div>
 
                           <div className="sm:col-span-2">
-                            <label className="block text-sm font-semibold text-gray-300 mb-2 font-mono">Description *</label>
+                            <label className="block text-sm font-semibold text-white mb-2 font-mono">Description *</label>
                             <textarea
                               value={formData.description}
                               onChange={(e) => handleInputChange('description', e.target.value)}
@@ -495,80 +516,92 @@ const LaunchDAO = () => {
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -20 }}
-                        className="space-y-4"
+                        className="space-y-6"
                       >
-                        <div className="flex items-center space-x-3 mb-6">
-                          <div className="w-10 h-10 bg-gradient-to-r from-green-400 to-emerald-500 rounded-lg flex items-center justify-center">
-                            <Layers className="w-5 h-5 text-white" />
-                          </div>
-                          <h2 className="text-lg font-bold text-white font-mono">Module Selection</h2>
+                        <div>
+                          <h2 className="text-lg font-bold text-white mb-2 font-mono">Module Selection</h2>
+                          <p className="text-gray-300 text-sm font-mono mb-6">Select DAO modules</p>
                         </div>
                         
-                        {errors.modules && (
-                          <div className="mb-4 p-3 bg-red-500/20 border border-red-500/30 rounded-lg">
-                            <p className="text-red-400 text-sm font-mono">{errors.modules}</p>
-                          </div>
-                        )}
+                        <div className="space-y-8">
+                          {moduleCategories.map((category, categoryIndex) => (
+                            <div key={categoryIndex}>
+                              <h3 className="text-base font-semibold text-white mb-4 font-mono">{category.title}</h3>
+                              
+                              <div className="grid gap-4">
+                                {category.modules.map((module) => (
+                                  <div key={module.id} className="space-y-3">
+                                    {/* Main Module Card */}
+                                    <div 
+                                      className={`p-4 rounded-lg border transition-all cursor-pointer ${
+                                        formData.selectedModules[module.id] || module.required
+                                          ? 'bg-gray-800/70 border-cyan-500/50' 
+                                          : 'bg-gray-800/30 border-gray-600 hover:border-gray-500'
+                                      }`}
+                                      onClick={() => handleModuleToggle(module.id)}
+                                    >
+                                      <div className="flex items-start justify-between">
+                                        <div className="flex items-start space-x-3">
+                                          <div className="p-2 bg-gray-700 rounded-lg">
+                                            <module.icon className="w-5 h-5 text-cyan-400" />
+                                          </div>
+                                          <div>
+                                            <div className="flex items-center space-x-2">
+                                              <h4 className="text-white font-semibold">{module.name}</h4>
+                                              {module.required && (
+                                                <span className="px-2 py-1 bg-orange-500/20 text-orange-400 text-xs rounded font-mono">
+                                                  Required
+                                                </span>
+                                              )}
+                                            </div>
+                                            <p className="text-gray-400 text-sm mt-1">{module.description}</p>
+                                          </div>
+                                        </div>
+                                        <div className="flex-shrink-0">
+                                          <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
+                                            formData.selectedModules[module.id] || module.required
+                                              ? 'bg-cyan-500 border-cyan-500' 
+                                              : 'border-gray-500'
+                                          }`}>
+                                            {(formData.selectedModules[module.id] || module.required) && (
+                                              <CheckCircle className="w-3 h-3 text-white" />
+                                            )}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
 
-                        <div className="grid sm:grid-cols-2 gap-4">
-                          {moduleOptions.map((module) => (
-                            <motion.div
-                              key={module.id}
-                              whileHover={{ scale: 1.02 }}
-                              className={`relative p-4 rounded-lg border-2 transition-all cursor-pointer ${
-                                formData.selectedModules[module.id]
-                                  ? `border-transparent bg-gradient-to-r ${module.color} bg-opacity-20`
-                                  : 'border-gray-600 bg-gray-800/50 hover:border-gray-500'
-                              } ${module.required ? 'opacity-75' : ''}`}
-                              onClick={() => handleModuleToggle(module.id)}
-                            >
-                              <div className="flex items-start space-x-3">
-                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                                  formData.selectedModules[module.id]
-                                    ? `bg-gradient-to-r ${module.color}`
-                                    : 'bg-gray-700'
-                                }`}>
-                                  <module.icon className="w-4 h-4 text-white" />
-                                </div>
-                                <div className="flex-1">
-                                  <div className="flex items-center justify-between mb-1">
-                                    <h3 className="text-sm font-semibold text-white font-mono">
-                                      {module.name}
-                                    </h3>
-                                    {module.required && (
-                                      <span className="text-xs px-2 py-1 bg-orange-500/20 text-orange-400 rounded font-mono">
-                                        Required
-                                      </span>
+                                    {/* Sub-modules */}
+                                    {(formData.selectedModules[module.id] || module.required) && module.subModules && (
+                                      <div className="ml-6 space-y-2">
+                                        {module.subModules.map((subModule) => (
+                                          <div 
+                                            key={subModule.id}
+                                            className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg border border-gray-700 hover:border-gray-600 transition-colors cursor-pointer"
+                                            onClick={() => handleSubModuleToggle(module.id, subModule.id)}
+                                          >
+                                            <div>
+                                              <h5 className="text-white text-sm font-medium">{subModule.name}</h5>
+                                              <p className="text-gray-400 text-xs">{subModule.description}</p>
+                                            </div>
+                                            <div className={`w-4 h-4 rounded border flex items-center justify-center ${
+                                              subModule.selected 
+                                                ? 'bg-cyan-500 border-cyan-500' 
+                                                : 'border-gray-500'
+                                            }`}>
+                                              {subModule.selected && (
+                                                <CheckCircle className="w-2.5 h-2.5 text-white" />
+                                              )}
+                                            </div>
+                                          </div>
+                                        ))}
+                                      </div>
                                     )}
                                   </div>
-                                  <p className="text-xs text-gray-400 leading-relaxed">
-                                    {module.description}
-                                  </p>
-                                </div>
-                                <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${
-                                  formData.selectedModules[module.id]
-                                    ? 'bg-white border-white'
-                                    : 'border-gray-500'
-                                }`}>
-                                  {formData.selectedModules[module.id] && (
-                                    <CheckCircle className="w-3 h-3 text-gray-800" />
-                                  )}
-                                </div>
+                                ))}
                               </div>
-                            </motion.div>
-                          ))}
-                        </div>
-
-                        <div className="mt-6 p-4 bg-blue-500/20 border border-blue-500/30 rounded-lg">
-                          <div className="flex items-start space-x-2">
-                            <Info className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
-                            <div>
-                              <p className="text-blue-400 text-sm font-mono mb-1">Module Information</p>
-                              <p className="text-blue-200 text-xs">
-                                Governance and Treasury modules are required for all DAOs. Additional modules can be enabled to extend functionality.
-                              </p>
                             </div>
-                          </div>
+                          ))}
                         </div>
                       </motion.div>
                     )}
@@ -582,21 +615,16 @@ const LaunchDAO = () => {
                         exit={{ opacity: 0, x: -20 }}
                         className="space-y-4"
                       >
-                        <div className="flex items-center space-x-3 mb-6">
-                          <div className="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-500 rounded-lg flex items-center justify-center">
-                            <DollarSign className="w-5 h-5 text-white" />
-                          </div>
-                          <h2 className="text-lg font-bold text-white font-mono">Tokenomics</h2>
-                        </div>
+                        <h2 className="text-lg font-bold text-white mb-4 font-mono">Tokenomics</h2>
                         
                         <div className="grid sm:grid-cols-2 gap-4">
                           <div>
-                            <label className="block text-sm font-semibold text-gray-300 mb-2 font-mono">Token Name *</label>
+                            <label className="block text-sm font-semibold text-white mb-2 font-mono">Token Name *</label>
                             <input
                               type="text"
                               value={formData.tokenName}
                               onChange={(e) => handleInputChange('tokenName', e.target.value)}
-                              className={`w-full px-3 py-2 bg-gray-800 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white font-mono text-sm ${
+                              className={`w-full px-3 py-2 bg-gray-800 border rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono text-sm ${
                                 errors.tokenName ? 'border-red-500' : 'border-gray-600'
                               }`}
                               placeholder="e.g., MyDAO Token"
@@ -605,12 +633,12 @@ const LaunchDAO = () => {
                           </div>
 
                           <div>
-                            <label className="block text-sm font-semibold text-gray-300 mb-2 font-mono">Token Symbol *</label>
+                            <label className="block text-sm font-semibold text-white mb-2 font-mono">Token Symbol *</label>
                             <input
                               type="text"
                               value={formData.tokenSymbol}
                               onChange={(e) => handleInputChange('tokenSymbol', e.target.value.toUpperCase())}
-                              className={`w-full px-3 py-2 bg-gray-800 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white font-mono text-sm ${
+                              className={`w-full px-3 py-2 bg-gray-800 border rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono text-sm ${
                                 errors.tokenSymbol ? 'border-red-500' : 'border-gray-600'
                               }`}
                               placeholder="e.g., MYDAO"
@@ -620,12 +648,12 @@ const LaunchDAO = () => {
                           </div>
 
                           <div>
-                            <label className="block text-sm font-semibold text-gray-300 mb-2 font-mono">Total Supply *</label>
+                            <label className="block text-sm font-semibold text-white mb-2 font-mono">Total Supply *</label>
                             <input
                               type="number"
                               value={formData.totalSupply}
                               onChange={(e) => handleInputChange('totalSupply', e.target.value)}
-                              className={`w-full px-3 py-2 bg-gray-800 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white font-mono text-sm ${
+                              className={`w-full px-3 py-2 bg-gray-800 border rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono text-sm ${
                                 errors.totalSupply ? 'border-red-500' : 'border-gray-600'
                               }`}
                               placeholder="1000000"
@@ -634,13 +662,13 @@ const LaunchDAO = () => {
                           </div>
 
                           <div>
-                            <label className="block text-sm font-semibold text-gray-300 mb-2 font-mono">Initial Price (USD) *</label>
+                            <label className="block text-sm font-semibold text-white mb-2 font-mono">Initial Price (USD) *</label>
                             <input
                               type="number"
                               step="0.01"
                               value={formData.initialPrice}
                               onChange={(e) => handleInputChange('initialPrice', e.target.value)}
-                              className={`w-full px-3 py-2 bg-gray-800 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white font-mono text-sm ${
+                              className={`w-full px-3 py-2 bg-gray-800 border rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono text-sm ${
                                 errors.initialPrice ? 'border-red-500' : 'border-gray-600'
                               }`}
                               placeholder="1.00"
@@ -660,45 +688,40 @@ const LaunchDAO = () => {
                         exit={{ opacity: 0, x: -20 }}
                         className="space-y-4"
                       >
-                        <div className="flex items-center space-x-3 mb-6">
-                          <div className="w-10 h-10 bg-gradient-to-r from-orange-400 to-red-500 rounded-lg flex items-center justify-center">
-                            <Users className="w-5 h-5 text-white" />
-                          </div>
-                          <h2 className="text-lg font-bold text-white font-mono">Governance Settings</h2>
-                        </div>
+                        <h2 className="text-lg font-bold text-white mb-4 font-mono">Governance Settings</h2>
                         
                         <div className="grid sm:grid-cols-2 gap-4">
                           <div>
-                            <label className="block text-sm font-semibold text-gray-300 mb-2 font-mono">Voting Period (days)</label>
+                            <label className="block text-sm font-semibold text-white mb-2 font-mono">Voting Period (days)</label>
                             <input
                               type="number"
                               value={formData.votingPeriod}
                               onChange={(e) => handleInputChange('votingPeriod', e.target.value)}
-                              className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-white font-mono text-sm"
+                              className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono text-sm"
                               min="1"
                               max="30"
                             />
                           </div>
 
                           <div>
-                            <label className="block text-sm font-semibold text-gray-300 mb-2 font-mono">Quorum Threshold (%)</label>
+                            <label className="block text-sm font-semibold text-white mb-2 font-mono">Quorum Threshold (%)</label>
                             <input
                               type="number"
                               value={formData.quorumThreshold}
                               onChange={(e) => handleInputChange('quorumThreshold', e.target.value)}
-                              className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-white font-mono text-sm"
+                              className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono text-sm"
                               min="1"
                               max="100"
                             />
                           </div>
 
                           <div className="sm:col-span-2">
-                            <label className="block text-sm font-semibold text-gray-300 mb-2 font-mono">Proposal Threshold (%)</label>
+                            <label className="block text-sm font-semibold text-white mb-2 font-mono">Proposal Threshold (%)</label>
                             <input
                               type="number"
                               value={formData.proposalThreshold}
                               onChange={(e) => handleInputChange('proposalThreshold', e.target.value)}
-                              className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-white font-mono text-sm"
+                              className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono text-sm"
                               min="0.1"
                               max="10"
                               step="0.1"
@@ -718,21 +741,16 @@ const LaunchDAO = () => {
                         exit={{ opacity: 0, x: -20 }}
                         className="space-y-4"
                       >
-                        <div className="flex items-center space-x-3 mb-6">
-                          <div className="w-10 h-10 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-lg flex items-center justify-center">
-                            <Target className="w-5 h-5 text-white" />
-                          </div>
-                          <h2 className="text-lg font-bold text-white font-mono">Funding Details</h2>
-                        </div>
+                        <h2 className="text-lg font-bold text-white mb-4 font-mono">Funding Details</h2>
                         
                         <div className="grid sm:grid-cols-2 gap-4">
                           <div>
-                            <label className="block text-sm font-semibold text-gray-300 mb-2 font-mono">Funding Goal (USD) *</label>
+                            <label className="block text-sm font-semibold text-white mb-2 font-mono">Funding Goal (USD) *</label>
                             <input
                               type="number"
                               value={formData.fundingGoal}
                               onChange={(e) => handleInputChange('fundingGoal', e.target.value)}
-                              className={`w-full px-3 py-2 bg-gray-800 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white font-mono text-sm ${
+                              className={`w-full px-3 py-2 bg-gray-800 border rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono text-sm ${
                                 errors.fundingGoal ? 'border-red-500' : 'border-gray-600'
                               }`}
                               placeholder="100000"
@@ -741,24 +759,24 @@ const LaunchDAO = () => {
                           </div>
 
                           <div>
-                            <label className="block text-sm font-semibold text-gray-300 mb-2 font-mono">Funding Duration (days)</label>
+                            <label className="block text-sm font-semibold text-white mb-2 font-mono">Funding Duration (days)</label>
                             <input
                               type="number"
                               value={formData.fundingDuration}
                               onChange={(e) => handleInputChange('fundingDuration', e.target.value)}
-                              className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white font-mono text-sm"
+                              className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono text-sm"
                               min="7"
                               max="365"
                             />
                           </div>
 
                           <div>
-                            <label className="block text-sm font-semibold text-gray-300 mb-2 font-mono">Min Investment (USD) *</label>
+                            <label className="block text-sm font-semibold text-white mb-2 font-mono">Min Investment (USD) *</label>
                             <input
                               type="number"
                               value={formData.minInvestment}
                               onChange={(e) => handleInputChange('minInvestment', e.target.value)}
-                              className={`w-full px-3 py-2 bg-gray-800 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white font-mono text-sm ${
+                              className={`w-full px-3 py-2 bg-gray-800 border rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono text-sm ${
                                 errors.minInvestment ? 'border-red-500' : 'border-gray-600'
                               }`}
                               placeholder="100"
@@ -767,12 +785,12 @@ const LaunchDAO = () => {
                           </div>
 
                           <div>
-                            <label className="block text-sm font-semibold text-gray-300 mb-2 font-mono">Max Investment (USD)</label>
+                            <label className="block text-sm font-semibold text-white mb-2 font-mono">Max Investment (USD)</label>
                             <input
                               type="number"
                               value={formData.maxInvestment}
                               onChange={(e) => handleInputChange('maxInvestment', e.target.value)}
-                              className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white font-mono text-sm"
+                              className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono text-sm"
                               placeholder="10000"
                             />
                           </div>
@@ -789,16 +807,11 @@ const LaunchDAO = () => {
                         exit={{ opacity: 0, x: -20 }}
                         className="space-y-4"
                       >
-                        <div className="flex items-center justify-between mb-6">
-                          <div className="flex items-center space-x-3">
-                            <div className="w-10 h-10 bg-gradient-to-r from-pink-400 to-rose-500 rounded-lg flex items-center justify-center">
-                              <Users className="w-5 h-5 text-white" />
-                            </div>
-                            <h2 className="text-lg font-bold text-white font-mono">Team Members</h2>
-                          </div>
+                        <div className="flex items-center justify-between">
+                          <h2 className="text-lg font-bold text-white font-mono">Team Members</h2>
                           <button
                             onClick={addTeamMember}
-                            className="flex items-center space-x-2 px-3 py-2 bg-pink-500/20 border border-pink-500/30 text-pink-400 rounded-lg hover:bg-pink-500/30 transition-colors font-mono text-sm"
+                            className="flex items-center space-x-2 px-3 py-2 bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 rounded-lg hover:bg-cyan-500/30 transition-colors font-mono text-sm"
                           >
                             <Plus className="w-4 h-4" />
                             <span>Add</span>
@@ -822,12 +835,12 @@ const LaunchDAO = () => {
                               
                               <div className="grid sm:grid-cols-2 gap-3">
                                 <div>
-                                  <label className="block text-xs font-semibold text-gray-300 mb-1 font-mono">Name *</label>
+                                  <label className="block text-xs font-semibold text-white mb-1 font-mono">Name *</label>
                                   <input
                                     type="text"
                                     value={member.name}
                                     onChange={(e) => handleTeamMemberChange(index, 'name', e.target.value)}
-                                    className={`w-full px-3 py-2 bg-gray-800 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent text-white font-mono text-sm ${
+                                    className={`w-full px-3 py-2 bg-gray-800 border rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono text-sm ${
                                       errors[`teamMember${index}Name`] ? 'border-red-500' : 'border-gray-600'
                                     }`}
                                     placeholder="Full name"
@@ -838,12 +851,12 @@ const LaunchDAO = () => {
                                 </div>
 
                                 <div>
-                                  <label className="block text-xs font-semibold text-gray-300 mb-1 font-mono">Role *</label>
+                                  <label className="block text-xs font-semibold text-white mb-1 font-mono">Role *</label>
                                   <input
                                     type="text"
                                     value={member.role}
                                     onChange={(e) => handleTeamMemberChange(index, 'role', e.target.value)}
-                                    className={`w-full px-3 py-2 bg-gray-800 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent text-white font-mono text-sm ${
+                                    className={`w-full px-3 py-2 bg-gray-800 border rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono text-sm ${
                                       errors[`teamMember${index}Role`] ? 'border-red-500' : 'border-gray-600'
                                     }`}
                                     placeholder="e.g., CEO, CTO"
@@ -854,12 +867,12 @@ const LaunchDAO = () => {
                                 </div>
 
                                 <div className="sm:col-span-2">
-                                  <label className="block text-xs font-semibold text-gray-300 mb-1 font-mono">Bio</label>
+                                  <label className="block text-xs font-semibold text-white mb-1 font-mono">Bio</label>
                                   <textarea
                                     value={member.bio}
                                     onChange={(e) => handleTeamMemberChange(index, 'bio', e.target.value)}
                                     rows={2}
-                                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent text-white font-mono resize-none text-sm"
+                                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono resize-none text-sm"
                                     placeholder="Brief bio..."
                                   />
                                 </div>
@@ -879,12 +892,7 @@ const LaunchDAO = () => {
                         exit={{ opacity: 0, x: -20 }}
                         className="space-y-4"
                       >
-                        <div className="flex items-center space-x-3 mb-6">
-                          <div className="w-10 h-10 bg-gradient-to-r from-green-400 to-teal-500 rounded-lg flex items-center justify-center">
-                            <CheckCircle className="w-5 h-5 text-white" />
-                          </div>
-                          <h2 className="text-lg font-bold text-white font-mono">Review & Launch</h2>
-                        </div>
+                        <h2 className="text-lg font-bold text-white mb-4 font-mono">Review & Launch</h2>
                         
                         <div className="space-y-4">
                           {/* Summary Cards */}
@@ -898,21 +906,7 @@ const LaunchDAO = () => {
                             </div>
 
                             <div className="bg-gray-800/50 border border-gray-600 rounded-lg p-3">
-                              <h3 className="text-sm font-semibold text-green-400 mb-2 font-mono">Modules</h3>
-                              <div className="space-y-1 text-xs">
-                                {Object.entries(formData.selectedModules)
-                                  .filter(([_, selected]) => selected)
-                                  .map(([moduleId, _]) => (
-                                    <p key={moduleId}>
-                                      <span className="text-green-400">✓</span>{' '}
-                                      <span className="text-white capitalize">{moduleId}</span>
-                                    </p>
-                                  ))}
-                              </div>
-                            </div>
-
-                            <div className="bg-gray-800/50 border border-gray-600 rounded-lg p-3">
-                              <h3 className="text-sm font-semibold text-purple-400 mb-2 font-mono">Tokenomics</h3>
+                              <h3 className="text-sm font-semibold text-cyan-400 mb-2 font-mono">Tokenomics</h3>
                               <div className="space-y-1 text-xs">
                                 <p><span className="text-gray-400">Token:</span> <span className="text-white">{formData.tokenName} ({formData.tokenSymbol})</span></p>
                                 <p><span className="text-gray-400">Supply:</span> <span className="text-white">{formData.totalSupply?.toLocaleString()}</span></p>
@@ -920,7 +914,15 @@ const LaunchDAO = () => {
                             </div>
 
                             <div className="bg-gray-800/50 border border-gray-600 rounded-lg p-3">
-                              <h3 className="text-sm font-semibold text-blue-400 mb-2 font-mono">Funding</h3>
+                              <h3 className="text-sm font-semibold text-cyan-400 mb-2 font-mono">Governance</h3>
+                              <div className="space-y-1 text-xs">
+                                <p><span className="text-gray-400">Voting:</span> <span className="text-white">{formData.votingPeriod} days</span></p>
+                                <p><span className="text-gray-400">Quorum:</span> <span className="text-white">{formData.quorumThreshold}%</span></p>
+                              </div>
+                            </div>
+
+                            <div className="bg-gray-800/50 border border-gray-600 rounded-lg p-3">
+                              <h3 className="text-sm font-semibold text-cyan-400 mb-2 font-mono">Funding</h3>
                               <div className="space-y-1 text-xs">
                                 <p><span className="text-gray-400">Goal:</span> <span className="text-white">${formData.fundingGoal?.toLocaleString()}</span></p>
                                 <p><span className="text-gray-400">Min:</span> <span className="text-white">${formData.minInvestment}</span></p>
@@ -939,7 +941,7 @@ const LaunchDAO = () => {
                                   onChange={(e) => handleInputChange('termsAccepted', e.target.checked)}
                                   className="mt-1 w-4 h-4 text-cyan-500 bg-gray-800 border-gray-600 rounded focus:ring-cyan-500"
                                 />
-                                <span className="text-xs text-gray-300">
+                                <span className="text-xs text-white">
                                   I agree to the Terms of Service and confirm all information is accurate.
                                 </span>
                               </label>
@@ -951,7 +953,7 @@ const LaunchDAO = () => {
                                   onChange={(e) => handleInputChange('kycRequired', e.target.checked)}
                                   className="mt-1 w-4 h-4 text-cyan-500 bg-gray-800 border-gray-600 rounded focus:ring-cyan-500"
                                 />
-                                <span className="text-xs text-gray-300">
+                                <span className="text-xs text-white">
                                   Require KYC verification for investors.
                                 </span>
                               </label>
@@ -1031,12 +1033,12 @@ const LaunchDAO = () => {
                     {currentStep === 2 && (
                       <div className="space-y-2">
                         <div className="flex items-start space-x-2">
-                          <Info className="w-3 h-3 text-green-400 mt-0.5 flex-shrink-0" />
-                          <p className="text-gray-300">Governance and Treasury are required modules.</p>
+                          <Info className="w-3 h-3 text-cyan-400 mt-0.5 flex-shrink-0" />
+                          <p className="text-gray-300">Core modules are required for basic functionality.</p>
                         </div>
                         <div className="flex items-start space-x-2">
-                          <Info className="w-3 h-3 text-green-400 mt-0.5 flex-shrink-0" />
-                          <p className="text-gray-300">Additional modules can be enabled later.</p>
+                          <Info className="w-3 h-3 text-cyan-400 mt-0.5 flex-shrink-0" />
+                          <p className="text-gray-300">Optional modules can be added later.</p>
                         </div>
                       </div>
                     )}
@@ -1044,11 +1046,11 @@ const LaunchDAO = () => {
                     {currentStep === 3 && (
                       <div className="space-y-2">
                         <div className="flex items-start space-x-2">
-                          <Info className="w-3 h-3 text-purple-400 mt-0.5 flex-shrink-0" />
+                          <Info className="w-3 h-3 text-cyan-400 mt-0.5 flex-shrink-0" />
                           <p className="text-gray-300">Token symbol should be 3-5 characters.</p>
                         </div>
                         <div className="flex items-start space-x-2">
-                          <Info className="w-3 h-3 text-purple-400 mt-0.5 flex-shrink-0" />
+                          <Info className="w-3 h-3 text-cyan-400 mt-0.5 flex-shrink-0" />
                           <p className="text-gray-300">Consider token distribution carefully.</p>
                         </div>
                       </div>
@@ -1057,11 +1059,11 @@ const LaunchDAO = () => {
                     {currentStep === 4 && (
                       <div className="space-y-2">
                         <div className="flex items-start space-x-2">
-                          <Info className="w-3 h-3 text-orange-400 mt-0.5 flex-shrink-0" />
+                          <Info className="w-3 h-3 text-cyan-400 mt-0.5 flex-shrink-0" />
                           <p className="text-gray-300">Longer voting allows more participation.</p>
                         </div>
                         <div className="flex items-start space-x-2">
-                          <Info className="w-3 h-3 text-orange-400 mt-0.5 flex-shrink-0" />
+                          <Info className="w-3 h-3 text-cyan-400 mt-0.5 flex-shrink-0" />
                           <p className="text-gray-300">Higher quorum ensures legitimacy.</p>
                         </div>
                       </div>
@@ -1070,11 +1072,11 @@ const LaunchDAO = () => {
                     {currentStep === 5 && (
                       <div className="space-y-2">
                         <div className="flex items-start space-x-2">
-                          <Info className="w-3 h-3 text-blue-400 mt-0.5 flex-shrink-0" />
+                          <Info className="w-3 h-3 text-cyan-400 mt-0.5 flex-shrink-0" />
                           <p className="text-gray-300">Set realistic funding goals.</p>
                         </div>
                         <div className="flex items-start space-x-2">
-                          <Info className="w-3 h-3 text-blue-400 mt-0.5 flex-shrink-0" />
+                          <Info className="w-3 h-3 text-cyan-400 mt-0.5 flex-shrink-0" />
                           <p className="text-gray-300">Consider minimum viable funding.</p>
                         </div>
                       </div>
@@ -1083,11 +1085,11 @@ const LaunchDAO = () => {
                     {currentStep === 6 && (
                       <div className="space-y-2">
                         <div className="flex items-start space-x-2">
-                          <Info className="w-3 h-3 text-pink-400 mt-0.5 flex-shrink-0" />
+                          <Info className="w-3 h-3 text-cyan-400 mt-0.5 flex-shrink-0" />
                           <p className="text-gray-300">Include key team members.</p>
                         </div>
                         <div className="flex items-start space-x-2">
-                          <Info className="w-3 h-3 text-pink-400 mt-0.5 flex-shrink-0" />
+                          <Info className="w-3 h-3 text-cyan-400 mt-0.5 flex-shrink-0" />
                           <p className="text-gray-300">Transparency builds confidence.</p>
                         </div>
                       </div>
