@@ -517,58 +517,58 @@ const LaunchDAO = () => {
                   rows={4}
                   className={`w-full px-4 py-3 bg-gray-800 border rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono ${
                     errors.description ? 'border-red-500' : 'border-gray-600'
-                  }`}
+                    <div className="bg-gray-800/50 border border-cyan-500/30 rounded-xl p-8 backdrop-blur-sm">
                   placeholder="Describe your DAO's mission and goals..."
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-300 mb-2 font-mono">
+                      <div className="grid md:grid-cols-2 gap-8">
                   Category <span className="text-red-400">*</span>
                 </label>
-                <select
-                  value={formData.category}
+                            <label className="block text-sm font-semibold text-cyan-400 mb-2 font-mono">DAO NAME</label>
+                            <p className="text-white bg-gray-900/50 px-4 py-3 rounded-lg border border-gray-600 font-mono text-lg">{formData.daoName}</p>
                   onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
                   className={`w-full px-4 py-3 bg-gray-800 border rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono ${
-                    errors.category ? 'border-red-500' : 'border-gray-600'
-                  }`}
+                            <label className="block text-sm font-semibold text-cyan-400 mb-2 font-mono">SYMBOL</label>
+                            <p className="text-white bg-gray-900/50 px-4 py-3 rounded-lg border border-gray-600 font-mono text-lg">{formData.symbol}</p>
                 >
                   <option value="">Select a category</option>
-                  {categories.map(cat => (
-                    <option key={cat} value={cat}>{cat}</option>
+                            <label className="block text-sm font-semibold text-cyan-400 mb-2 font-mono">TOTAL SUPPLY</label>
+                            <p className="text-white bg-gray-900/50 px-4 py-3 rounded-lg border border-gray-600 font-mono text-lg">{formData.totalSupply?.toLocaleString()}</p>
                   ))}
                 </select>
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-300 mb-2 font-mono">Website</label>
-                <input
+                            <label className="block text-sm font-semibold text-cyan-400 mb-2 font-mono">CATEGORY</label>
+                            <p className="text-white bg-gray-900/50 px-4 py-3 rounded-lg border border-gray-600 font-mono text-lg">{formData.category}</p>
                   type="url"
                   value={formData.website}
-                  onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white font-mono"
+                            <label className="block text-sm font-semibold text-cyan-400 mb-2 font-mono">FUNDING GOAL</label>
+                            <p className="text-white bg-gray-900/50 px-4 py-3 rounded-lg border border-gray-600 font-mono text-lg">${formData.fundingGoal?.toLocaleString()}</p>
                   placeholder="https://your-dao.com"
                 />
-              </div>
-            </div>
+                            <label className="block text-sm font-semibold text-cyan-400 mb-2 font-mono">WEBSITE</label>
+                            <p className="text-white bg-gray-900/50 px-4 py-3 rounded-lg border border-gray-600 font-mono text-lg">{formData.website || 'Not provided'}</p>
           )}
 
           {/* Step 2: Module Selection */}
           {currentStep === 2 && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-white mb-6 font-mono">Module Selection</h2>
-              
+                        <label className="block text-sm font-semibold text-cyan-400 mb-2 font-mono">DESCRIPTION</label>
+                        <p className="text-white bg-gray-900/50 px-4 py-3 rounded-lg border border-gray-600 leading-relaxed">{formData.description}</p>
               <div className="max-h-96 overflow-y-auto space-y-4 pr-2">
                 {modules.map((module) => {
                   const isSelected = formData.selectedModules.includes(module.id);
                   const ModuleIcon = module.icon;
-                  
+                    <div className="bg-gray-800/50 border border-cyan-500/30 rounded-xl p-8 backdrop-blur-sm">
                   return (
                     <div key={module.id} className="space-y-3">
-                      {/* Module Header */}
+                        SELECTED MODULES & FEATURES
                       <div
                         className={`p-4 rounded-lg border-2 transition-all cursor-pointer ${
-                          isSelected
+                      <div className="space-y-6">
                             ? 'border-cyan-500 bg-cyan-500/10'
                             : 'border-gray-600 bg-gray-800/50 hover:border-gray-500'
                         } ${module.required ? 'opacity-75' : ''}`}
@@ -577,22 +577,22 @@ const LaunchDAO = () => {
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-3">
                             <div className={`w-12 h-12 bg-gradient-to-r ${module.color} rounded-lg flex items-center justify-center`}>
-                              <ModuleIcon className="w-6 h-6 text-white" />
-                            </div>
+                      <div className="bg-gray-800/50 border border-cyan-500/30 rounded-xl p-8 backdrop-blur-sm">
+                              className={`p-6 rounded-xl border-2 ${module.color} relative overflow-hidden`}
                             <div>
-                              <h3 className="text-lg font-semibold text-white font-mono flex items-center">
-                                {module.name}
+                          TEAM MEMBERS
+                                <h4 className="text-xl font-bold text-white font-mono">{module.name}</h4>
                                 {module.required && (
-                                  <span className="ml-2 text-xs bg-orange-500/20 text-orange-400 px-2 py-1 rounded border border-orange-500/30">
+                        <div className="grid md:grid-cols-2 gap-6">
                                     Required
                                   </span>
                                 )}
-                              </h3>
+                              className="p-6 bg-gray-900/50 border border-gray-600 rounded-xl"
                               <p className="text-gray-400 text-sm">{module.description}</p>
-                            </div>
-                          </div>
-                          <div className={`w-6 h-6 rounded border-2 flex items-center justify-center ${
-                            isSelected ? 'bg-cyan-500 border-cyan-500' : 'border-gray-400'
+                              <h4 className="font-semibold text-white font-mono text-lg">{member.name}</h4>
+                              <p className="text-cyan-400 text-sm font-mono mt-1">{member.role}</p>
+                                  <p className="text-sm text-cyan-400 mb-3 font-mono font-semibold">SELECTED FEATURES:</p>
+                                <p className="text-gray-400 text-xs font-mono mt-2 break-all">{member.wallet}</p>
                           }`}>
                             {isSelected && <CheckCircle className="w-4 h-4 text-white" />}
                           </div>
@@ -601,7 +601,7 @@ const LaunchDAO = () => {
 
                       {/* Module Features */}
                       {isSelected && (
-                        <motion.div
+                    <div className="bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border border-cyan-500/30 rounded-xl p-8 backdrop-blur-sm">
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: 'auto' }}
                           exit={{ opacity: 0, height: 0 }}
@@ -623,7 +623,7 @@ const LaunchDAO = () => {
                                 <div className="flex items-center justify-between">
                                   <div>
                                     <h4 className="text-white font-semibold font-mono">{feature.name}</h4>
-                                    <p className="text-gray-400 text-sm">{feature.description}</p>
+                                          className="px-4 py-2 bg-white/20 text-white rounded-lg text-sm font-mono border border-white/30"
                                   </div>
                                   <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
                                     isFeatureSelected ? 'bg-purple-500 border-purple-500' : 'border-gray-400'
@@ -846,9 +846,9 @@ const LaunchDAO = () => {
                 </button>
               </div>
               
-              <div className="space-y-4">
+              <div className="flex items-center justify-between mb-6">
                 {formData.teamMembers.map((member, index) => (
-                  <div key={index} className="bg-gray-800/50 border border-gray-600 rounded-lg p-4">
+                  <div key={index} className="flex flex-col items-center" style={{ width: `${100/steps.length}%` }}>
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="text-lg font-semibold text-white font-mono">Member {index + 1}</h3>
                       {formData.teamMembers.length > 1 && (
@@ -977,19 +977,23 @@ const LaunchDAO = () => {
                       type="checkbox"
                       checked={formData.termsAccepted}
                       onChange={(e) => setFormData(prev => ({ ...prev, termsAccepted: e.target.checked }))}
-                      className="w-5 h-5 text-cyan-500 bg-gray-800 border-gray-600 rounded focus:ring-cyan-500"
+                    <span className={`text-xs mt-2 font-mono text-center leading-tight ${
                     />
-                    <span className="text-white font-mono">
+                    }`} style={{ maxWidth: '80px' }}>
                       I agree to the Terms of Service and confirm all information is accurate. <span className="text-red-400">*</span>
                     </span>
                   </label>
                   
                   <label className="flex items-center space-x-3 cursor-pointer">
                     <input
-                      type="checkbox"
+                        className={`absolute top-5 w-full h-0.5 -z-10 ${
                       checked={formData.kycRequired}
-                      onChange={(e) => setFormData(prev => ({ ...prev, kycRequired: e.target.checked }))}
-                      className="w-5 h-5 text-cyan-500 bg-gray-800 border-gray-600 rounded focus:ring-cyan-500"
+                        }`} 
+                        style={{ 
+                          left: '50%', 
+                          width: `${100/steps.length}%`,
+                          transform: 'translateX(0%)'
+                        }}
                     />
                     <span className="text-white font-mono">Require KYC verification for investors.</span>
                   </label>
