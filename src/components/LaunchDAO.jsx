@@ -443,7 +443,7 @@ const LaunchDAO = () => {
                     {daoConfig.modules.map(moduleId => {
                       const module = availableModules.find(m => m.id === moduleId);
                       return (
-                        <span key={moduleId} className="px-2 py-1 bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 rounded text-sm font-mono">
+                        <span key={moduleId} className={`px-3 py-2 bg-gradient-to-r ${module?.color} text-white rounded-lg text-sm font-medium shadow-lg`}>
                           {module?.name}
                         </span>
                       );
