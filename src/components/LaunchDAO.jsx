@@ -32,8 +32,8 @@ import {
   BarChart3,
   Award,
   Clock,
-  Star,
-  Loader2
+  Loader2,
+  LayoutDashboard
 } from 'lucide-react';
 
 const LaunchDAO = () => {
@@ -103,7 +103,7 @@ const LaunchDAO = () => {
     {
       id: 'governance',
       name: 'Governance',
-      description: 'Proposal creation and voting mechanisms',
+      description: 'Voting mechanisms and proposal systems',
       icon: Vote,
       color: 'from-blue-500 to-purple-600',
       required: true,
@@ -116,14 +116,14 @@ const LaunchDAO = () => {
     {
       id: 'treasury',
       name: 'Treasury',
-      description: 'Manage DAO funds and financial operations',
+      description: 'Fund Management and financial operations',
       icon: Wallet,
       color: 'from-green-500 to-emerald-600',
       required: true,
       features: [
         { id: 'multi-sig', name: 'Multi-Signature Wallet', description: 'Secure treasury with multiple approvers' },
-        { id: 'budget-allocation', name: 'Budget Allocation', description: 'Automated budget distribution' },
-        { id: 'expense-tracking', name: 'Expense Tracking', description: 'Track and categorize all expenses' }
+        { id: 'stream-pay', name: 'Streaming Payments', description: 'Continuous payment streams for contributors' },
+        { id: 'token-vest', name: 'Token Vesting', description: 'Time-locked token distribution' }
       ]
     },
     {
@@ -140,16 +140,16 @@ const LaunchDAO = () => {
       ]
     },
     {
-      id: 'nft',
-      name: 'NFT Integration',
-      description: 'NFT marketplace and governance',
-      icon: Star,
+      id: 'analytics',
+      name: 'Analytics',
+      description: 'Monitoring and reporting tools',
+      icon: LayoutDashboard,
       color: 'from-pink-500 to-red-600',
       required: false,
       features: [
-        { id: 'nft-marketplace', name: 'NFT Marketplace', description: 'Built-in NFT trading platform' },
-        { id: 'nft-governance', name: 'NFT Governance', description: 'Use NFTs for governance rights' },
-        { id: 'nft-rewards', name: 'NFT Rewards', description: 'Distribute NFTs as rewards' }
+        { id: 'analytics-dash', name: 'Analytics Dashboard', description: 'Real-time DAO metrics and KPIs' },
+        { id: 'alert-sys', name: 'Alert System', description: 'Automated notifications for key events' },
+        { id: 'financial-report', name: 'Financial Reports', description: 'Comprehensive financial reporting' }
       ]
     }
   ];
@@ -356,46 +356,6 @@ const LaunchDAO = () => {
             </div>
           </motion.div>
 
-          {/* Why Choose Us Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="mb-16"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 font-mono">
-              <span className="bg-gradient-to-r from-cyan-400 to-purple-500 text-transparent bg-clip-text">
-                WHY CHOOSE DAOVERSE?
-              </span>
-            </h2>
-            
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <Zap className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-xl font-bold mb-3 font-mono">Lightning Fast</h3>
-                <p className="text-gray-400">Deploy your DAO in minutes, not weeks. Our streamlined process gets you up and running quickly.</p>
-              </div>
-              
-              <div className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-r from-purple-400 to-pink-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <Shield className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-xl font-bold mb-3 font-mono">Secure & Audited</h3>
-                <p className="text-gray-400">Built on Internet Computer with security-first architecture and audited smart contracts.</p>
-              </div>
-              
-              <div className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-r from-green-400 to-emerald-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <Users className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-xl font-bold mb-3 font-mono">Community Focused</h3>
-                <p className="text-gray-400">Built-in tools for community engagement, governance, and transparent decision making.</p>
-              </div>
-            </div>
-          </motion.div>
-
           {/* CTA Section */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -409,7 +369,7 @@ const LaunchDAO = () => {
             <p className="text-xl text-gray-300 mb-8">
               Join thousands of creators building the next generation of decentralized organizations.
             </p>
-            <motion.button
+            {/* <motion.button
               onClick={() => setShowForm(true)}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -421,7 +381,7 @@ const LaunchDAO = () => {
                 LAUNCH YOUR DAO NOW
                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </span>
-            </motion.button>
+            </motion.button> */}
           </motion.div>
         </div>
       </div>
@@ -455,7 +415,7 @@ const LaunchDAO = () => {
               CREATE YOUR DAO
             </h1>
             <p className="text-cyan-400 font-mono">
-              > Step {currentStep} of {steps.length}
+              {'>'} Step {currentStep} of {steps.length}
             </p>
           </div>
         </motion.div>
